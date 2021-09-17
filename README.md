@@ -38,6 +38,12 @@ Unfinished
 #### Flower
 Unfinished
 
+### React
+To run react on localhost, make sure to have node.js installed:
+1. `cd react-frontend`
+2. `npm install`
+3. `npm start`
+
 Tasks after implementation:
 - Create docker image
 - Add GitHub OAth
