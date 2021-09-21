@@ -6,7 +6,6 @@ function Home() {
   return (
     <div>
       <MyNavBar />
-      <PriceChart symbol="BINANCE:BTCUSDT" />
     </div>
   );
 }
