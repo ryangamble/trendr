@@ -6,7 +6,7 @@ import "./Results.css";
 // Currently pass symbol as a prop, can be changed later
 function PriceChart(props) {
   return(
-    <Container fluid >
+    <Container fluid>
       <div className="chartContainer">
       <TradingViewWidget
         symbol={props.symbol}
