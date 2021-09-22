@@ -28,6 +28,7 @@ def pmaw_api() -> pmaw.PushshiftAPI:
 
 # Positive tests
 
+
 def test_get_post_by_id_positive(pmaw_api: pmaw.PushshiftAPI):
     """
     Tests retreiving post by id
@@ -70,11 +71,11 @@ def test_get_comment_by_id_positive(pmaw_api: pmaw.PushshiftAPI):
     assert comment["id"] == comment_id
     assert (
         comment["body"] == "&gt;2) rich people being able to create jobs and "
-        "stimulate the economy.\n\n* I don\'t think that rich people should be "
+        "stimulate the economy.\n\n* I don't think that rich people should be "
         "taxed out of existence. It would probably be just fine if we could "
         "just get them to pay the sticker price when it comes to taxes.\n* "
-        "I will push back on the \"rich people being able to create jobs "
-        "and stimulate the economy\" though. Not that they don\'t just "
+        'I will push back on the "rich people being able to create jobs '
+        "and stimulate the economy\" though. Not that they don't just "
         "that they are not necessary.\n   * Imagine a world where only "
         "rich people exist, could you have a successful Apple, Google, "
         "Facebook or Samsung?\n   * Imagine a world where only non-rich "
@@ -123,6 +124,7 @@ def test_get_comment_mentioning_asset_positive(pmaw_api: pmaw.PushshiftAPI):
 
 # Negative tests
 
+
 def test_get_post_by_id(pmaw_api: pmaw.PushshiftAPI):
     """
     Tests retreiving post by id that doesnt exist
@@ -132,11 +134,12 @@ def test_get_post_by_id(pmaw_api: pmaw.PushshiftAPI):
     """
 
     submission_id = "lkjlkjoin"
-    with pytest.warns(UserWarning, match='items were not found in Pushshift'):
+    with pytest.warns(UserWarning, match="items were not found in Pushshift"):
         submissions = reddit_connector.gather_submissions_by_id(
             api=pmaw_api, ids=[submission_id]
         )
     assert len(submissions) == 0
+
 
 def test_get_comment_by_id(pmaw_api: pmaw.PushshiftAPI):
     """
@@ -147,7 +150,7 @@ def test_get_comment_by_id(pmaw_api: pmaw.PushshiftAPI):
     """
 
     comment_id = "lkjlkjoin"
-    with pytest.warns(UserWarning, match='items were not found in Pushshift'):
+    with pytest.warns(UserWarning, match="items were not found in Pushshift"):
         comments = reddit_connector.gather_submissions_by_id(
             api=pmaw_api, ids=[comment_id]
         )
