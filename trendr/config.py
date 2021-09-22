@@ -48,14 +48,6 @@ if "TWITTER_CONSUMER_SECRET" in os.environ:
     TWITTER_CONSUMER_SECRET = os.getenv("TWITTER_CONSUMER_SECRET")
 else:
     TWITTER_CONSUMER_SECRET = None
-if "TWITTER_ACCESS_TOKEN" in os.environ:
-    TWITTER_ACCESS_TOKEN = os.getenv("TWITTER_ACCESS_TOKEN")
-else:
-    TWITTER_ACCESS_TOKEN = None
-if "TWITTER_ACCESS_TOKEN_SECRET" in os.environ:
-    TWITTER_ACCESS_TOKEN_SECRET = os.getenv("TWITTER_ACCESS_TOKEN_SECRET")
-else:
-    TWITTER_ACCESS_TOKEN_SECRET = None
 
 
 # TODO: Add some kind of secret loader function that handles all of this in a much more modular way.
