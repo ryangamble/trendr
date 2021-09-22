@@ -1,10 +1,12 @@
 from flask import Flask, Blueprint
 from trendr.extensions import db, login_manager, celery, migrate
 from trendr.models.user_model import UserModel
-
+from .routes.result_routes import *
+from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object("trendr.config")
 
     configure_extensions(app)
@@ -33,6 +35,12 @@ def configure_extensions(app):
 def register_blueprints(app):
     users_blueprint = Blueprint("users", __name__, url_prefix="/users")
     app.register_blueprint(users_blueprint)
+    app.register_blueprint(result)
+
+    # logging routes
+    print("\nApp routes:")
+    print([str(p) for p in app.url_map.iter_rules()])
+    print("\n")
 
 
 def init_celery(app=None):

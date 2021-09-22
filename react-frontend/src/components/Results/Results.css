@@ -9,3 +9,7 @@
   align-items: center;
   display: flex;
 }
+
+.generalInfoContainer {
+  width: 100%;
+}
