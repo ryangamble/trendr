@@ -1,6 +1,5 @@
 import praw
 import pmaw
-import datetime
 from enum import Enum
 from trendr.config import REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USER_AGENT
 
