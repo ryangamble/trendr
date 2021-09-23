@@ -1,7 +1,7 @@
 from flask import Flask, Blueprint, request, jsonify
 import yfinance as yf
 
-result = Blueprint('result', __name__, url_prefix="/result")
+result = Blueprint('result', __name__, url_prefix="/api/result")
 
 @result.route('/stats', methods=['GET', 'POST'])
 def general():

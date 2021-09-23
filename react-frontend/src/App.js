@@ -4,6 +4,8 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import Home from "./components/Home/Home";
+import Result from "./components/Results/ResultsPage";
+
 
 function App() {
   return (
@@ -11,7 +13,7 @@ function App() {
       <Router>
         <Switch>
           <Route path="/home" component={Home}></Route>
-
+          <Route path="/results" component={Result}></Route>
           <Route path="*" component={Home}></Route>
         </Switch>
       </Router>

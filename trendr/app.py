@@ -2,11 +2,9 @@ from flask import Flask, Blueprint
 from trendr.extensions import db, login_manager, celery, migrate
 from trendr.models.user_model import UserModel
 from .routes.result_routes import *
-from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
     app.config.from_object("trendr.config")
 
     configure_extensions(app)

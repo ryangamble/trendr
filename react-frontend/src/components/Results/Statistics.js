@@ -14,7 +14,7 @@ function Statistics() {
   }
 
   useEffect(() => {
-    axios.post('http://127.0.0.1:5000/result/stats', requestBody)
+    axios.post('/api/result/stats', requestBody)
       .then(res => {
         const response = JSON.parse(JSON.stringify(res.data));
         setStock({
