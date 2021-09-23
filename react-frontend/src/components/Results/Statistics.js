@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {Container, Image, Table, Col} from "react-bootstrap";
+import {Container, Image, Table, Col, Spinner} from "react-bootstrap";
 import axios from "axios";
 import "./Results.css"
 
 function Statistics(props) {
   
   const [stock, setStock] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const requestBody = {
     method: 'POST',
@@ -14,8 +15,10 @@ function Statistics(props) {
   }
 
   useEffect(() => {
+    setLoading(true);
     axios.post('/api/result/stats', requestBody)
       .then(res => {
+        setLoading(true);
         return JSON.parse(JSON.stringify(res.data));
       })
       .then (data => {
@@ -36,6 +39,9 @@ function Statistics(props) {
         });
 
         console.log(data);
+      })
+      .then (() => {
+        setLoading(false);
       })
       .catch((error) => {
         console.log(error);
@@ -59,61 +65,69 @@ function Statistics(props) {
     return x.toFixed(2) + units[Math.floor(unit / 3) - 2]
   }
 
-  return (
-    <Container fluid>
-      <Col>
-        <Image src={stock.logo} rounded/>
-        <h2>{stock.companyName}</h2>
-        <p>{stock.symbol}</p>
-      </Col>
-      <Col>
-        <Table hover size="sm">
-          <tbody>
-            <tr>
-              <td className="statName">Day Open</td>
-              <td className="statValue">{stock.dayOpen}</td>
-            </tr>
-            <tr>
-              <td className="statName">Day High</td>
-              <td className="statValue">{stock.dayHigh}</td>
-            </tr>
-            <tr>
-              <td className="statName">Day Low</td>
-              <td className="statValue">{stock.dayLow}</td>
-            </tr>
-            <tr>
-              <td className="statName">52 Week High</td>
-              <td className="statValue">{stock.fiftyTwoWeekHigh}</td>
-            </tr>
-            <tr>
-              <td className="statName">52 Week Low</td>
-              <td className="statValue">{stock.fiftyTwoWeekLow}</td>
-            </tr>
-            <tr>
-              <td className="statName">Volume</td>
-              <td className="statValue">{stock.volume}</td>
-            </tr>
-            <tr>
-              <td className="statName">Avg. Volume</td>
-              <td className="statValue">{stock.avgVolume}</td>
-            </tr>
-            <tr>
-              <td className="statName">Div/Yield</td>
-              <td className="statValue">{stock.divYield}</td>
-            </tr>
-            <tr>
-              <td className="statName">PEG ratio</td>
-              <td className="statValue">{stock.pegRatio}</td>
-            </tr>
-            <tr>
-              <td className="statName">Market Cap</td>
-              <td className="statValue">{stock.marketCap}</td>
-            </tr>
-          </tbody>        
-        </Table>
-      </Col>
-    </Container>
-  );
+  if (loading) {
+    return (
+      <Container fluid>
+        <Spinner animation="border"/>  
+      </Container>
+    );
+  } else {
+    return (
+      <Container fluid>
+        <Col>
+          <Image src={stock.logo} rounded/>
+          <h2>{stock.companyName}</h2>
+          <p>{stock.symbol}</p>
+        </Col>
+        <Col>
+          <Table hover size="sm">
+            <tbody>
+              <tr>
+                <td className="statName">Day Open</td>
+                <td className="statValue">{stock.dayOpen}</td>
+              </tr>
+              <tr>
+                <td className="statName">Day High</td>
+                <td className="statValue">{stock.dayHigh}</td>
+              </tr>
+              <tr>
+                <td className="statName">Day Low</td>
+                <td className="statValue">{stock.dayLow}</td>
+              </tr>
+              <tr>
+                <td className="statName">52 Week High</td>
+                <td className="statValue">{stock.fiftyTwoWeekHigh}</td>
+              </tr>
+              <tr>
+                <td className="statName">52 Week Low</td>
+                <td className="statValue">{stock.fiftyTwoWeekLow}</td>
+              </tr>
+              <tr>
+                <td className="statName">Volume</td>
+                <td className="statValue">{stock.volume}</td>
+              </tr>
+              <tr>
+                <td className="statName">Avg. Volume</td>
+                <td className="statValue">{stock.avgVolume}</td>
+              </tr>
+              <tr>
+                <td className="statName">Div/Yield</td>
+                <td className="statValue">{stock.divYield}</td>
+              </tr>
+              <tr>
+                <td className="statName">PEG ratio</td>
+                <td className="statValue">{stock.pegRatio}</td>
+              </tr>
+              <tr>
+                <td className="statName">Market Cap</td>
+                <td className="statValue">{stock.marketCap}</td>
+              </tr>
+            </tbody>        
+          </Table>
+        </Col>
+      </Container>
+    );
+  }
 }
 
 export default Statistics

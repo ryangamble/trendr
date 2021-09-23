@@ -11,7 +11,7 @@ function Results() {
       <Container>
         <Row>
         <Col xs={12} sm={12} md={12} lg={6}>
-          <Statistics symbol="NOVA"/>
+          <Statistics symbol="MSFT"/>
           <br/>
         </Col>
         <Col xs={12} sm={12} md={12} lg={6}>

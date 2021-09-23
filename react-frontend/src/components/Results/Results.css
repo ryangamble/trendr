@@ -20,6 +20,7 @@ td.statName {
 
 td.statValue {
   text-align: right;
+  font-weight: 400;
 }
 
 img.rounded {
