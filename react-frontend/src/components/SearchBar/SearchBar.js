@@ -31,7 +31,7 @@ function SearchBar() {
           </Col>
         </Row>
         <Row className="justify-content-md-center">
-          <Col xs="9">
+          <Col xs="7" md="9">
             <Form.Control
               size="lg"
               className="searchbar__input"
@@ -42,7 +42,7 @@ function SearchBar() {
             />
           </Col>
 
-          <Col xs="3">
+          <Col xs="5" md="3">
             <Button
               size="lg"
               className="searchbar__submit"
