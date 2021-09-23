@@ -13,8 +13,13 @@
   margin: 10px;
 }
 
-.generalInfoContainer {
-  width: 100%;
+td.statName {
+  text-align: left;
+  font-weight: 700;
+}
+
+td.statValue {
+  text-align: right;
 }
 
 img.rounded {

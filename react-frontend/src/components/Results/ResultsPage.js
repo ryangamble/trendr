@@ -11,11 +11,11 @@ function Results() {
       <Container>
         <Row>
         <Col xs={12} sm={12} md={12} lg={6}>
-          <PriceChart symbol="NOVA"/>
+          <Statistics symbol="NOVA"/>
           <br/>
         </Col>
         <Col xs={12} sm={12} md={12} lg={6}>
-          <Statistics symbol="NOVA"/>
+          <PriceChart symbol="MSFT"/>
           <br/>
         </Col>
         </Row>
