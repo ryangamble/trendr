@@ -9,7 +9,7 @@ function MyNavBar() {
         expand="lg"
         bg="primary"
         variant="dark"
-        sticky="top"
+        fixed="top"
       >
         <Container>
           <Navbar.Brand href="home">Welcome to Trendr</Navbar.Brand>
