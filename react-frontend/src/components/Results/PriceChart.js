@@ -1,33 +1,59 @@
-import React, {useEffect, useState} from "react";
-import {Container, Spinner, Row, Col} from "react-bootstrap";
+import React, {useEffect, useState, componentDidMount} from "react";
+import {Container, Spinner, Row, Col, ButtonGroup, Button} from "react-bootstrap";
 import {
   XAxis,
   YAxis,
   HorizontalGridLines,
+  VerticalGridLines,
   FlexibleXYPlot,
   LineSeries,
-  Highlight,
-  VerticalGridLines
+  Crosshair,
+  Borders
 } from "react-vis";
 import axios from "axios";
 import "./Results.css";
 import '../../../node_modules/react-vis/dist/style.css';
 
 // Currently pass symbol as a prop, can be changed later
-function PriceChart(props) {
+function PriceChart (props) {
 
   const [priceData, setPriceData] = useState([]);
-  const [lastLocation, setLastLocation] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  const requestBody = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json'},
-    name: "MSFT"
+  const [min, setMin] = useState(0);
+  const [max, setMax] = useState(0);
+  const [loadedCount, setLoadedCount] = useState(0);
+  const [crosshairValues, setCrosshairValues] = useState([]);
+  const [period, setPeriod] = useState('1d');
+
+  const periodDisplay = {
+    "1d": "Past Day",
+    "5d": "Past 5 Days",
+    "1mo": "Past Month",
+    "3mo": "Past 3 Months",
+    "1y": "Past Year"
   }
 
   useEffect(() => {
-    setLoading(true);
+    setLoadedCount(0);
+    for (var key in periodDisplay) {
+      fetchDataPoints(key);
+    }
+    getMinMax();
+  }, [props]);
+
+  useEffect (() => {
+    getMinMax();
+  }, [period]);
+
+  async function fetchDataPoints (timePeriod) {
+
+    const requestBody = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json'},
+      name: props.symbol,
+      period: timePeriod
+    }
+
     axios.post('/api/result/history', requestBody)
     .then(res => {
       return JSON.parse(JSON.stringify(res.data));
@@ -37,83 +63,176 @@ function PriceChart(props) {
       for (var key in data['Close']) {
         // console.log(key)
         // console.log(data['Close'][key].toFixed(2))
+        var value = data['Close'][key].toFixed(2);
         pd.push({
-          x: new Date(key * 1000),
-          y: data['Close'][key].toFixed(2)
+          x: new Date(parseInt(key)),
+          y: value
         });
       }
       return pd;
     })
     .then(pd => {
-      setPriceData(pd);
-      console.log(pd);
+      switch (timePeriod) {
+        case "1d": setPriceData(prev => ({...prev, "1d": pd}));
+          break;
+        case "5d": setPriceData(prev => ({...prev, "5d": pd}));
+          break;
+        case "1mo": setPriceData(prev => ({...prev, "1mo": pd}));
+          break;
+        case "3mo": setPriceData(prev => ({...prev, "3mo": pd}));
+          break;
+        case "1y": setPriceData(prev => ({...prev, "1y": pd}));
+          break;
+        default: setPriceData(prev => ({...prev, "1d": pd}));
+      }
     })
     .then(() => {
-      setLoading(false);
+      setPeriod(period);
+      setLoadedCount(prevCount => prevCount + 1);
     })
-  }, []);
+  }
 
-  if (loading) {
+  function getMinMax () {
+    var min = Number.MAX_VALUE;
+    var max = 0;
+    for (var key in priceData[period]) {
+      var val = priceData[period][key].y
+      if (val > max) {
+        max = val;
+      }
+      if (val < min) {
+        min = val;
+      }
+    }
+    setMin(min);
+    setMax(max);
+  }
+
+  function formatPrice (num) {
+    const options = {
+      style: 'currency',
+      currency: 'USD'
+    };
+    return num.toLocaleString("en-US", options);
+  }
+
+  const _onMouseLeave = () => {
+    setCrosshairValues([]);
+  };
+
+  const _onNearestX = (value) => {
+    var x = new String(value.x)
+    value.x = x;
+    setCrosshairValues([value]);
+  };
+
+  const _itemsFormat = (data) => {
+    return [{title: 'price', value: '$' + data[0].y}];
+  }
+
+  
+  if (loadedCount < 5) {
     return (
       <Container fluid>
         <Spinner animation="border"/>  
       </Container>
     );
   } else {
-    return(
-      <Container fluid>
+    return (
+      <Container className="graphLayout">
         <Row>
-          <div>
-            <h2>Price chart:</h2>
+          <div className="chartTitle">
+            <h2>Price history for {props.symbol}</h2>
           </div>
         </Row>
         <Row>
           <div className="chartContainer">
             <FlexibleXYPlot
-              animation
-              xType="time"
-              
-              xDomain={
-                lastLocation && [
-                  lastLocation.left,
-                  lastLocation.right
-                ]
-              }
-              yDomain={
-                lastLocation && [
-                  lastLocation.bottom,
-                  lastLocation.top
-                ]
-              }
-              height={300}
-              width={400}
+              onMouseLeave={_onMouseLeave}
+              xType="ordinal"
+              yDomain={[0.98 * min, 1.02 * max]}
               >
-              <HorizontalGridLines />
-              <VerticalGridLines />
-
-              <YAxis title="price"/>
-              <XAxis title="time"/>
-
+              
+              <HorizontalGridLines/>
+              {/* <VerticalGridLines/> */}
+            
               <LineSeries
-                data={priceData}
+                data={priceData[period]}
+                onNearestX={_onNearestX}
                 strokeWidth={2}
                 opacity={1}
                 color="#0D6EFD"
               />
-              <Highlight
-                onBrushEnd={area => setLastLocation(area)}
-                onDrag={area => {
-                  setLastLocation({
-                    bottom: lastLocation.bottom + (area.top - area.bottom),
-                    left: lastLocation.left - (area.right - area.left),
-                    right: lastLocation.right - (area.right - area.left),
-                    top: lastLocation.top + (area.top - area.bottom)
-                  });
-                }}
+              <Borders style={{
+                bottom: {fill: '#fff'},
+                left: {fill: '#fff'},
+                right: {fill: '#fff'},
+                top: {fill: '#fff'}
+              }}/>
+              
+              <YAxis/>
+              <XAxis
+                hideTicks
               />
+
+              <Crosshair
+                values={crosshairValues}
+                itemsFormat={_itemsFormat}
+                
+              />
+              
             </FlexibleXYPlot>
           </div>
         </Row>
+        <Row>
+          <Col>
+            <ButtonGroup size="sm">
+              <Button
+                variant="secondary"
+                onClick={() => {setPeriod("1d")}}
+                >
+                  1D
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => setPeriod("5d")}
+              >
+                5D
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => setPeriod("1mo")}
+              >
+                1M
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => setPeriod("3mo")}
+              >
+                3M
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => setPeriod("1y")}
+              >
+                1Y
+              </Button>
+            </ButtonGroup>
+          </Col>
+          <Col>
+            {priceData[period][(priceData[period].length - 1)].y - priceData[period][0].y > 0 ?
+              <div className="priceUp">
+                Up {formatPrice(priceData[period][priceData[period].length - 1].y - priceData[period][0].y)} {periodDisplay[period]}
+              </div>
+              :
+              <div className="priceDown">
+                Down {formatPrice(priceData[period][priceData[period].length - 1].y - priceData[period][0].y)} {periodDisplay[period]}
+              </div>
+            }
+          </Col>
+        </Row>
+
+        
       </Container>
     );
   }

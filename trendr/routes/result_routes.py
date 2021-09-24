@@ -19,4 +19,15 @@ def history():
     print("\nfetching history market data for: " + content['name'] + "\n")
 
     stock = yf.Ticker(content['name'])
-    return stock.history(period="1y", interval="1d").to_json()
+    p = content['period']
+
+    periodToInterval = {
+        "1d" : "5m",
+        "5d" : "30m",
+        "1mo" : "1h",
+        "3mo" : "1d",
+        "1y" : "1d",
+        "5y" : "5d"
+    }
+
+    return stock.history(period=p, interval=periodToInterval.get(p), prepost="True", actions="False").to_json()

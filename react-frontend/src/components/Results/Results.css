@@ -4,6 +4,14 @@
   max-width: 90vh;
 }
 
+div.graphLayout.container {
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+  padding: 15px;
+  margin: 10px;
+}
+
 .container-fluid {
   justify-content: center;
   align-items: center;
@@ -23,6 +31,33 @@ td.statValue {
   font-weight: 400;
 }
 
+.chartTitle {
+  text-align: left;
+}
+
 img.rounded {
   width: 100px;
+}
+
+.btn:active {
+  background-color: #0D6EFD;
+}
+
+.btn:focus {
+  background-color: #0D6EFD;
+}
+
+.btn-group {
+  width: fit-content;
+  align-self: center;
+}
+
+.priceUp {
+  color: #14AD14;
+  font-size: larger;
+}
+
+.priceDown {
+  color: #DC4B4B;
+  font-size: larger;
 }
