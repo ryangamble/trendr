@@ -16,7 +16,7 @@ function Statistics(props) {
 
   useEffect(() => {
     setLoading(true);
-    axios.post('/api/result/stats', requestBody)
+    axios.post('/api/asset/stats', requestBody)
       .then(res => {
         setLoading(true);
         return JSON.parse(JSON.stringify(res.data));
@@ -33,7 +33,7 @@ function Statistics(props) {
           fiftyTwoWeekLow: formatPrice(data['fiftyTwoWeekLow']),
           volume: data['volume'].toLocaleString("en-US"),
           avgVolume: data['averageVolume'].toLocaleString("en-US"),
-          marketCap: '$' + getNumberUnit(data['marketCap']),
+          marketCap: data['marketCap'] ? '$' + getNumberUnit(data['marketCap']) : "N/A",
           pegRatio: data['pegRatio'] ? (data['pegRatio']).toFixed(2) : "N/A",
           divYield: data['dividendYield'] ? (data['dividendYield'] * 100).toFixed(2) : "N/A"
         });

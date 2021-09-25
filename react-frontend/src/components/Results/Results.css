@@ -8,17 +8,16 @@ div.graphLayout.container {
   justify-content: center;
   align-items: center;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-  padding: 15px;
-  margin: 10px;
+  padding: 10px;
 }
 
 .container-fluid {
   justify-content: center;
+  justify-self: center;
   align-items: center;
   display: flex;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
   padding: 10px;
-  margin: 10px;
 }
 
 td.statName {
@@ -50,6 +49,10 @@ img.rounded {
 .btn-group {
   width: fit-content;
   align-self: center;
+}
+
+.btn.homeButton {
+  margin-bottom: 20px;
 }
 
 .priceUp {

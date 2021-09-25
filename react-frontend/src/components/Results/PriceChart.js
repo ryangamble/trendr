@@ -1,4 +1,4 @@
-import React, {useEffect, useState, componentDidMount} from "react";
+import React, {useEffect, useState} from "react";
 import {Container, Spinner, Row, Col, ButtonGroup, Button} from "react-bootstrap";
 import {
   XAxis,
@@ -38,12 +38,11 @@ function PriceChart (props) {
     for (var key in periodDisplay) {
       fetchDataPoints(key);
     }
-    getMinMax();
   }, [props]);
 
   useEffect (() => {
     getMinMax();
-  }, [period]);
+  }, [period, loadedCount]);
 
   async function fetchDataPoints (timePeriod) {
 
@@ -54,7 +53,7 @@ function PriceChart (props) {
       period: timePeriod
     }
 
-    axios.post('/api/result/history', requestBody)
+    axios.post('/api/asset/history', requestBody)
     .then(res => {
       return JSON.parse(JSON.stringify(res.data));
     })
@@ -72,7 +71,10 @@ function PriceChart (props) {
       return pd;
     })
     .then(pd => {
+      var min = Number.MAX_VALUE;
+      var max = 0;
       switch (timePeriod) {
+
         case "1d": setPriceData(prev => ({...prev, "1d": pd}));
           break;
         case "5d": setPriceData(prev => ({...prev, "5d": pd}));
@@ -85,6 +87,7 @@ function PriceChart (props) {
           break;
         default: setPriceData(prev => ({...prev, "1d": pd}));
       }
+      return [min,max]
     })
     .then(() => {
       setPeriod(period);
@@ -106,6 +109,7 @@ function PriceChart (props) {
     }
     setMin(min);
     setMax(max);
+    // console.log(min);
   }
 
   function formatPrice (num) {
@@ -178,7 +182,6 @@ function PriceChart (props) {
               <Crosshair
                 values={crosshairValues}
                 itemsFormat={_itemsFormat}
-                
               />
               
             </FlexibleXYPlot>
