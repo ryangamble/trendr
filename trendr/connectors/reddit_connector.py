@@ -18,19 +18,15 @@ def create_praw_pmaw_api(
     client_id: str = REDDIT_CLIENT_ID,
     client_secret: str = REDDIT_CLIENT_SECRET,
     user_agent: str = REDDIT_USER_AGENT,
-):
+) -> pmaw.PushshiftAPI:
     """
     Create pmaw api object wrapping praw api object
 
     :param client_id: reddit api client id, defaults to REDDIT_CLIENT_ID
-    :type client_id: str, optional
     :param client_secret: reddit api client secret, defaults to REDDIT_CLIENT_SECRET
-    :type client_secret: str, optional
     :param user_agent: reddit api user agent, defaults to REDDIT_USER_AGENT
-    :type user_agent: str, optional
     :raises Exception: if secrets are not found or authentication fails
     :return: pushshift api object
-    :rtype: pmaw.PushshiftAPI
     """
 
     if client_id and client_secret and user_agent:
@@ -44,12 +40,11 @@ def create_praw_pmaw_api(
         )
 
 
-def create_pmaw_api():
+def create_pmaw_api() -> pmaw.PushshiftAPI:
     """
     Create pmaw api object
 
     :return: pushshift api object
-    :rtype: pmaw.PushshiftAPI
     """
 
     return pmaw.PushshiftAPI()
@@ -61,29 +56,21 @@ def gather_items(
     keywords: list[str],
     subreddits: list[str] = None,
     **kwargs
-):
+) -> list:
     """
     Gather all reddit comments/submissions from subreddits between
     after and before which contain any keywords
 
     :param api: api object to use when gathering
-    :type api: pmaw.PushshiftAPI
     :param item: item to collect (comment or submission)
-    :type item: RedditItem
     :param keywords: strings to search for
-    :type keywords: list[str]
     :param before: limit query to content posted before timestamp
-    :type before: int
     :param after: limit query to content posted after timestamp
-    :type after: int
     :param subreddits: strings of subreddit names to search,
         defaults to None (search all subreddits)
-    :type subreddits: list[str], optional
     :param filters: fields to collect from each matching entity,
         defaults to None (collect all attributes)
-    :type filters: list[str], optional
     :param limit: limit number of results to this maximum
-    :type limit: int
     :return: res
     :rtype: list[pmaw.PushshiftAPI.comment or pmaw.PushshiftAPI.submission]
     """
@@ -104,25 +91,19 @@ def gather_items(
     return gen
 
 
-def gather_submissions(**kwargs):
+def gather_submissions(**kwargs) -> list:
     """
     Gather all reddit submissions from subreddits between
     after and before which contain any keywords
 
     :param api: api object to use when gathering
-    :type api: pmaw.PushshiftAPI
     :param keywords: strings to search for
-    :type keywords: list[str]
     :param before: limit query to content posted before timestamp
-    :type before: int
     :param after: limit query to content posted after timestamp
-    :type after: int
     :param subreddits: strings of subreddit names to search,
         defaults to None (search all subreddits)
-    :type subreddits: list[str], optional
     :param filters: fields to collect from each matching entity,
         defaults to None (collect all attributes)
-    :type filters: list[str], optional
     :return: res
     :rtype: list[pmaw.PushshiftAPI.submission]
     """
@@ -131,25 +112,19 @@ def gather_submissions(**kwargs):
     return gather_items(**kwargs)
 
 
-def gather_comments(**kwargs):
+def gather_comments(**kwargs) -> list:
     """
     Gather all reddit comments from subreddits between
     after and before which contain any keywords
 
     :param api: api object to use when gathering
-    :type api: pmaw.PushshiftAPI
     :param keywords: strings to search for
-    :type keywords: list[str]
     :param before: limit query to content posted before timestamp
-    :type before: int
     :param after: limit query to content posted after timestamp
-    :type after: int
     :param subreddits: strings of subreddit names to search,
         defaults to None (search all subreddits)
-    :type subreddits: list[str], optional
     :param filters: fields to collect from each matching entity,
         defaults to None (collect all attributes)
-    :type filters: list[str], optional
     :return: res
     :rtype: list[pmaw.PushshiftAPI.comment]
     """
@@ -158,19 +133,15 @@ def gather_comments(**kwargs):
     return gather_items(**kwargs)
 
 
-def gather_items_by_id(api: pmaw.PushshiftAPI, item: RedditItem, **kwargs):
+def gather_items_by_id(api: pmaw.PushshiftAPI, item: RedditItem, **kwargs) -> list:
     """
     Gather all reddit comments/submissions by their ids
 
     :param api: api object to use when gathering
-    :type api: pmaw.PushshiftAPI
     :param item: item to collect (comment or submission)
-    :type item: RedditItem
     :param ids: ids to collect
-    :type ids: list[str]
     :param filters: fields to collect from each matching entity,
         defaults to None (collect all attributes)
-    :type filters: list[str], optional
     :return: res
     :rtype: list[pmaw.PushshiftAPI.comment or pmaw.PushshiftAPI.submission]
     """
@@ -185,17 +156,14 @@ def gather_items_by_id(api: pmaw.PushshiftAPI, item: RedditItem, **kwargs):
     return gen
 
 
-def gather_submissions_by_id(**kwargs):
+def gather_submissions_by_id(**kwargs) -> list:
     """
     Gather all reddit submissions by their ids
 
     :param api: api object to use when gathering
-    :type api: pmaw.PushshiftAPI
     :param ids: ids to collect
-    :type ids: list[str]
     :param filters: fields to collect from each matching entity,
         defaults to None (collect all attributes)
-    :type filters: list[str], optional
     :return: res
     :rtype: list[pmaw.PushshiftAPI.submission]
     """
@@ -204,17 +172,14 @@ def gather_submissions_by_id(**kwargs):
     return gather_items_by_id(**kwargs)
 
 
-def gather_comments_by_id(**kwargs):
+def gather_comments_by_id(**kwargs) -> list:
     """
     Gather all reddit comments by their ids
 
     :param api: api object to use when gathering
-    :type api: pmaw.PushshiftAPI
     :param ids: ids to collect
-    :type ids: list[str]
     :param filters: fields to collect from each matching entity,
         defaults to None (collect all attributes)
-    :type filters: list[str], optional
     :return: res
     :rtype: list[pmaw.PushshiftAPI.comment]
     """

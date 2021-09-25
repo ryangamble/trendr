@@ -10,7 +10,6 @@ def praw_pmaw_api() -> pmaw.PushshiftAPI:
     Creates pushshift api object wrapping praw api object
 
     :return: pushshift api object
-    :rtype: pmaw.PushshiftAPI
     """
     return reddit_connector.create_praw_pmaw_api()
 
@@ -21,7 +20,6 @@ def pmaw_api() -> pmaw.PushshiftAPI:
     Creates pushshift api object
 
     :return: pushshift api object
-    :rtype: pmaw.PushshiftAPI
     """
     return reddit_connector.create_pmaw_api()
 
@@ -34,7 +32,6 @@ def test_get_post_by_id_positive(pmaw_api: pmaw.PushshiftAPI):
     Tests retreiving post by id
 
     :param pmaw_api: pushshift api object
-    :type pmaw_api: pmaw.PushshiftAPI
     """
 
     submission_id = "ptacat"
@@ -58,7 +55,6 @@ def test_get_comment_by_id_positive(pmaw_api: pmaw.PushshiftAPI):
     Tests retreiving comment by id
 
     :param pmaw_api: pushshift api object
-    :type pmaw_api: pmaw.PushshiftAPI
 
     https://www.reddit.com/r/undefined/comments/ptacat/comment/hdvagh1/?utm_source=share&utm_medium=web2x&context=3
     """
@@ -89,7 +85,6 @@ def test_get_post_mentioning_asset_positive(pmaw_api: pmaw.PushshiftAPI):
     Tests retreiving posts matching keyword
 
     :param pmaw_api: pushshift api object
-    :type pmaw_api: pmaw.PushshiftAPI
     """
     after = int((datetime.datetime.now() - datetime.timedelta(days=7)).timestamp())
     keyword = "apple"
@@ -109,7 +104,6 @@ def test_get_comment_mentioning_asset_positive(pmaw_api: pmaw.PushshiftAPI):
     Tests retreiving comments matching keyword
 
     :param pmaw_api: pushshift api object
-    :type pmaw_api: pmaw.PushshiftAPI
     """
     after = int((datetime.datetime.now() - datetime.timedelta(days=7)).timestamp())
     keyword = "apple"
@@ -130,7 +124,6 @@ def test_get_post_by_id(pmaw_api: pmaw.PushshiftAPI):
     Tests retreiving post by id that doesnt exist
 
     :param pmaw_api: pushshift api object
-    :type pmaw_api: pmaw.PushshiftAPI
     """
 
     submission_id = "lkjlkjoin"
@@ -146,7 +139,6 @@ def test_get_comment_by_id(pmaw_api: pmaw.PushshiftAPI):
     Tests retreiving comment by id that doesnt exist
 
     :param pmaw_api: pushshift api object
-    :type pmaw_api: pmaw.PushshiftAPI
     """
 
     comment_id = "lkjlkjoin"
