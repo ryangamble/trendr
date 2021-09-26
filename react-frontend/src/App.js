@@ -4,6 +4,7 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import Home from "./components/Home/Home";
+import Register from "./components/Register/Register";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Router>
         <Switch>
           <Route path="/home" component={Home}></Route>
+          <Route path="/register" component={Register}></Route>
 
           <Route path="*" component={Home}></Route>
         </Switch>
