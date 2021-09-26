@@ -1,9 +1,11 @@
-from .extensions import celery
-from .models import *
+from trendr.extensions import celery
+from trendr.tasks import *
 from celery.schedules import crontab
 
+
 # import general tasks
-celery.conf.imports = celery.conf.imports + ("trendr.tasks",)
+# celery.conf.imports = celery.conf.imports + ("trendr.tasks",)
+
 
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
@@ -18,7 +20,3 @@ def setup_periodic_tasks(sender, **kwargs):
         crontab(hour=7, minute=30, day_of_week=1),
         test.s('Happy Mondays!'),
     )
-
-@celery.task
-def test(arg):
-    print(arg)
