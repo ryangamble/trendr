@@ -27,6 +27,7 @@ td.statName {
 
 td.statValue {
   text-align: right;
+  align-self: baseline;
   font-weight: 400;
 }
 
@@ -38,12 +39,20 @@ img.rounded {
   width: 100px;
 }
 
-.btn:active {
+.btn.pricePeriodToggle:active {
   background-color: #0D6EFD;
 }
 
-.btn:focus {
+.btn.pricePeriodToggle:focus {
   background-color: #0D6EFD;
+}
+
+.btn.volumePeriodToggle:active {
+  background-color: orange;
+}
+
+.btn.volumePeriodToggle:focus {
+  background-color: orange;
 }
 
 .btn-group {

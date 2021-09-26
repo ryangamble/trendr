@@ -4,7 +4,6 @@ import {
   XAxis,
   YAxis,
   HorizontalGridLines,
-  VerticalGridLines,
   FlexibleXYPlot,
   LineSeries,
   Crosshair,
@@ -15,15 +14,16 @@ import "./Results.css";
 import '../../../node_modules/react-vis/dist/style.css';
 
 // Currently pass symbol as a prop, can be changed later
-function PriceChart (props) {
+function Graph (props) {
 
-  const [priceData, setPriceData] = useState([]);
+  const [graphData, setgraphData] = useState([]);
 
   const [min, setMin] = useState(0);
   const [max, setMax] = useState(0);
   const [loadedCount, setLoadedCount] = useState(0);
   const [crosshairValues, setCrosshairValues] = useState([]);
   const [period, setPeriod] = useState('1d');
+
 
   const periodDisplay = {
     "1d": "Past Day",
@@ -33,15 +33,20 @@ function PriceChart (props) {
     "1y": "Past Year"
   }
 
+
+
   useEffect(() => {
+    
     setLoadedCount(0);
     for (var key in periodDisplay) {
+      console.log("fetching " + props.graphType + " data for " + key + "...")
       fetchDataPoints(key);
     }
   }, [props]);
 
   useEffect (() => {
     getMinMax();
+    console.log("changing " + props.graphType + " period to " + period);
   }, [period, loadedCount]);
 
   async function fetchDataPoints (timePeriod) {
@@ -59,14 +64,27 @@ function PriceChart (props) {
     })
     .then(data => {
       var pd = [];
-      for (var key in data['Close']) {
+      var tableCol = "";
+      if (props.graphType === "price") {
+        tableCol = "Close";
+      } else {
+        tableCol = "Volume"
+      }
+      for (var key in data[tableCol]) {
         // console.log(key)
         // console.log(data['Close'][key].toFixed(2))
-        var value = data['Close'][key].toFixed(2);
-        pd.push({
-          x: new Date(parseInt(key)),
-          y: value
-        });
+        var value = data[tableCol][key];
+        if (props.graphType === "price") {
+          pd.push({
+            x: new Date(parseInt(key)),
+            y: value
+          });
+        } else if (value > 0) {
+          pd.push({
+            x: new Date(parseInt(key)),
+            y: value
+          });
+        }
       }
       return pd;
     })
@@ -75,31 +93,33 @@ function PriceChart (props) {
       var max = 0;
       switch (timePeriod) {
 
-        case "1d": setPriceData(prev => ({...prev, "1d": pd}));
+        case "1d": setgraphData(prev => ({...prev, "1d": pd}));
           break;
-        case "5d": setPriceData(prev => ({...prev, "5d": pd}));
+        case "5d": setgraphData(prev => ({...prev, "5d": pd}));
           break;
-        case "1mo": setPriceData(prev => ({...prev, "1mo": pd}));
+        case "1mo": setgraphData(prev => ({...prev, "1mo": pd}));
           break;
-        case "3mo": setPriceData(prev => ({...prev, "3mo": pd}));
+        case "3mo": setgraphData(prev => ({...prev, "3mo": pd}));
           break;
-        case "1y": setPriceData(prev => ({...prev, "1y": pd}));
+        case "1y": setgraphData(prev => ({...prev, "1y": pd}));
           break;
-        default: setPriceData(prev => ({...prev, "1d": pd}));
+        default: setgraphData(prev => ({...prev, "1d": pd}));
       }
       return [min,max]
     })
     .then(() => {
-      setPeriod(period);
+      console.log(props.graphType + " data loaded for " + requestBody.period);
       setLoadedCount(prevCount => prevCount + 1);
+    }).catch((error) => {
+      console.log(error);
     })
   }
 
   function getMinMax () {
     var min = Number.MAX_VALUE;
     var max = 0;
-    for (var key in priceData[period]) {
-      var val = priceData[period][key].y
+    for (var key in graphData[period]) {
+      var val = graphData[period][key].y
       if (val > max) {
         max = val;
       }
@@ -115,7 +135,7 @@ function PriceChart (props) {
   function formatPrice (num) {
     const options = {
       style: 'currency',
-      currency: 'USD'
+      currency: props.currency
     };
     return num.toLocaleString("en-US", options);
   }
@@ -125,15 +145,18 @@ function PriceChart (props) {
   };
 
   const _onNearestX = (value) => {
-    var x = new String(value.x)
+    var x = value.x.toString()
     value.x = x;
     setCrosshairValues([value]);
   };
 
-  const _itemsFormat = (data) => {
-    return [{title: 'price', value: '$' + data[0].y}];
+  const itemsFormatPrice = (data) => {
+    return [{title: 'price', value: formatPrice(data[0].y)}];
   }
 
+  const itemsFormatVol = (data) => {
+    return [{title: 'volume', value: data[0].y.toLocaleString("en-US")}];
+  }
   
   if (loadedCount < 5) {
     return (
@@ -146,7 +169,11 @@ function PriceChart (props) {
       <Container className="graphLayout">
         <Row>
           <div className="chartTitle">
-            <h2>Price history for {props.symbol}</h2>
+            {props.graphType === "price" ?
+              <h2>Price history</h2>
+            :
+              <h2>Volume history</h2>
+            }
           </div>
         </Row>
         <Row>
@@ -154,18 +181,18 @@ function PriceChart (props) {
             <FlexibleXYPlot
               onMouseLeave={_onMouseLeave}
               xType="ordinal"
-              yDomain={[0.98 * min, 1.02 * max]}
+              yDomain={props.graphType === "price" ? [0.98 * min, 1.02 * max] : [.9 * min, 1.2 * max]}
               >
               
               <HorizontalGridLines/>
               {/* <VerticalGridLines/> */}
             
               <LineSeries
-                data={priceData[period]}
+                data={graphData[period]}
                 onNearestX={_onNearestX}
                 strokeWidth={2}
                 opacity={1}
-                color="#0D6EFD"
+                color={props.color}
               />
               <Borders style={{
                 bottom: {fill: '#fff'},
@@ -181,7 +208,7 @@ function PriceChart (props) {
 
               <Crosshair
                 values={crosshairValues}
-                itemsFormat={_itemsFormat}
+                itemsFormat={props.graphType === "price" ? itemsFormatPrice : itemsFormatVol}
               />
               
             </FlexibleXYPlot>
@@ -192,47 +219,57 @@ function PriceChart (props) {
             <ButtonGroup size="sm">
               <Button
                 variant="secondary"
+                className={props.graphType + "PeriodToggle"}
                 onClick={() => {setPeriod("1d")}}
                 >
                   1D
               </Button>
               <Button
                 variant="secondary"
+                className={props.graphType + "PeriodToggle"}
                 onClick={() => setPeriod("5d")}
               >
                 5D
               </Button>
               <Button
                 variant="secondary"
+                className={props.graphType + "PeriodToggle"}
                 onClick={() => setPeriod("1mo")}
               >
                 1M
               </Button>
               <Button
                 variant="secondary"
+                className={props.graphType + "PeriodToggle"}
                 onClick={() => setPeriod("3mo")}
               >
                 3M
               </Button>
               <Button
                 variant="secondary"
+                className={props.graphType + "PeriodToggle"}
                 onClick={() => setPeriod("1y")}
               >
                 1Y
               </Button>
             </ButtonGroup>
           </Col>
-          <Col>
-            {priceData[period][(priceData[period].length - 1)].y - priceData[period][0].y > 0 ?
-              <div className="priceUp">
-                Up {formatPrice(priceData[period][priceData[period].length - 1].y - priceData[period][0].y)} {periodDisplay[period]}
-              </div>
-              :
-              <div className="priceDown">
-                Down {formatPrice(priceData[period][priceData[period].length - 1].y - priceData[period][0].y)} {periodDisplay[period]}
-              </div>
-            }
-          </Col>
+          {props.graphType === "price" ?
+            <Col>
+              {graphData[period][(graphData[period].length - 1)].y - graphData[period][0].y > 0 ?
+                <div className="priceUp">
+                  Up {formatPrice(graphData[period][graphData[period].length - 1].y - graphData[period][0].y)} {periodDisplay[period]}
+                </div>
+                :
+                <div className="priceDown">
+                  Down {formatPrice(graphData[period][graphData[period].length - 1].y - graphData[period][0].y)} {periodDisplay[period]}
+                </div>
+              }
+            </Col>
+          :
+            <Col>
+            </Col>
+          }
         </Row>
 
         
@@ -241,4 +278,4 @@ function PriceChart (props) {
   }
 }
 
-export default PriceChart;
+export default Graph;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Row, Col, Button, Table } from "react-bootstrap";
+import { Form, Row, Col, Button, Table} from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 import "./SearchBar.css";
@@ -43,8 +43,9 @@ function SearchBar() {
     })
     .then(data => {
       var sg = [];
+      console.log("autocomplete suggestions:");
       for(var key in data) {
-        if (data[key].typeDisp === "Equity" || data[key].typeDisp === "Cryptocurrency") {
+        if (data[key].typeDisp === "Equity" || data[key].typeDisp === "Cryptocurrency" || data[key].typeDisp === "ETF") {
           sg.push({
             symbol: data[key].symbol,
             name: data[key].shortname,
@@ -52,7 +53,7 @@ function SearchBar() {
             typeDisp: data[key].typeDisp
           })
         }
-        // console.log(data[key]);
+        console.log(data[key]);
       }
       return sg;
     })

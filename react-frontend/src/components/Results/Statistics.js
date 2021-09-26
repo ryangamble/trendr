@@ -26,18 +26,21 @@ function Statistics(props) {
           companyName: data['longName'] ? data['longName'] : data['shortName'],
           logo: data['logo_url'],
           symbol: data['symbol'],
-          dayOpen: formatPrice(data['open']),
-          dayHigh: formatPrice(data['dayHigh']),
-          dayLow: formatPrice(data['dayLow']),
-          fiftyTwoWeekHigh: formatPrice(data['fiftyTwoWeekHigh']),
-          fiftyTwoWeekLow: formatPrice(data['fiftyTwoWeekLow']),
+          currency: data['currency'] ? data['currency'] : "USD",
+          dayOpen: data['open'],
+          dayHigh: data['dayHigh'],
+          dayLow: data['dayLow'],
+          fiftyTwoWeekHigh: data['fiftyTwoWeekHigh'],
+          fiftyTwoWeekLow: data['fiftyTwoWeekLow'],
           volume: data['volume'].toLocaleString("en-US"),
           avgVolume: data['averageVolume'].toLocaleString("en-US"),
-          marketCap: data['marketCap'] ? '$' + getNumberUnit(data['marketCap']) : "N/A",
+          marketCap: data['marketCap'] ? getNumberUnit(data['marketCap']) : "N/A",
           pegRatio: data['pegRatio'] ? (data['pegRatio']).toFixed(2) : "N/A",
           divYield: data['dividendYield'] ? (data['dividendYield'] * 100).toFixed(2) : "N/A"
         });
-
+        
+        props.currencyCallback(data['currency']);
+        console.log("fetched general statistics for " + requestBody.name);
         console.log(data);
       })
       .then (() => {
@@ -52,7 +55,7 @@ function Statistics(props) {
   function formatPrice (num) {
     const options = {
       style: 'currency',
-      currency: 'USD'
+      currency: stock.currency
     };
     return num.toLocaleString("en-US", options);
   }
@@ -83,24 +86,28 @@ function Statistics(props) {
           <Table hover size="sm">
             <tbody>
               <tr>
+                <td className="statName">Currency</td>
+                <td className="statValue">{stock.currency}</td>
+              </tr>
+              <tr>
                 <td className="statName">Day Open</td>
-                <td className="statValue">{stock.dayOpen}</td>
+                <td className="statValue">{formatPrice(stock.dayOpen)}</td>
               </tr>
               <tr>
                 <td className="statName">Day High</td>
-                <td className="statValue">{stock.dayHigh}</td>
+                <td className="statValue">{formatPrice(stock.dayHigh)}</td>
               </tr>
               <tr>
                 <td className="statName">Day Low</td>
-                <td className="statValue">{stock.dayLow}</td>
+                <td className="statValue">{formatPrice(stock.dayLow)}</td>
               </tr>
               <tr>
                 <td className="statName">52 Week High</td>
-                <td className="statValue">{stock.fiftyTwoWeekHigh}</td>
+                <td className="statValue">{formatPrice(stock.fiftyTwoWeekHigh)}</td>
               </tr>
               <tr>
                 <td className="statName">52 Week Low</td>
-                <td className="statValue">{stock.fiftyTwoWeekLow}</td>
+                <td className="statValue">{formatPrice(stock.fiftyTwoWeekLow)}</td>
               </tr>
               <tr>
                 <td className="statName">Volume</td>
@@ -120,7 +127,7 @@ function Statistics(props) {
               </tr>
               <tr>
                 <td className="statName">Market Cap</td>
-                <td className="statValue">{stock.marketCap}</td>
+                <td className="statValue">{formatPrice(Number(stock.marketCap.slice(0, -1))) + stock.marketCap.slice(-1)}</td>
               </tr>
             </tbody>        
           </Table>
