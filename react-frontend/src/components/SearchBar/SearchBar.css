@@ -71,3 +71,20 @@
     opacity: 0.7;
   }
 }
+
+td.suggestSymbol {
+  text-align: left;
+  font-weight: 700;
+}
+
+td.suggestName {
+  text-align: right;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.table.suggestions {
+  cursor: pointer;
+  margin-left: 10px;
+}
+
