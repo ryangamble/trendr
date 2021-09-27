@@ -36,11 +36,13 @@ def test_get_tweets_mentioning_asset_positive(twitter_api: tweepy.API):
     """
     Tests that if you attempt to get tweets with a search string, then you get some results back
     """
-    tweets = twitter_connector.get_tweets_mentioning_asset("and", api=twitter_api)
+    search_term = "apple"
+    tweets = twitter_connector.get_tweets_mentioning_asset(search_term, api=twitter_api)
     assert tweets
     assert isinstance(tweets, tweepy.SearchResults)
     assert tweets.__getattribute__("count") >= 1
-    assert "and" in tweets[0].__getattribute__("text")
+    # Tweets are returned when attributes other than text contain the search term such as tweet.entities.urls so we
+    # can't always assert the search term will be in the tweet text
 
 
 # Negative tests
