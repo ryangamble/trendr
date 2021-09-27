@@ -44,7 +44,7 @@ class UserModel(UserMixin, db.Model):
     access_level = db.Column(Enum(AccessLevelEnum), nullable=False)
 
     # There is a one-many relationship between users and searches
-    searches = relationship("TweetModel")
+    searches = relationship("SearchModel", backref="users")
 
     def __repr__(self):
         return '<User {}>'.format(self.username)

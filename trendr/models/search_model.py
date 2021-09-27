@@ -1,22 +1,9 @@
-from sqlalchemy import ForeignKey, Table
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import Integer, DateTime, String
 
 from trendr.extensions import db
-
-tweet_association_table = Table(
-    'association',
-    db.metadata,
-    db.Column('search_id', ForeignKey('searches.id')),
-    db.Column('tweet_id', ForeignKey('tweets.id'))
-)
-
-reddit_post_association_table = Table(
-    'association',
-    db.metadata,
-    db.Column('search_id', ForeignKey('searches.id')),
-    db.Column('reddit_post_id', ForeignKey('reddit_posts.id'))
-)
+from trendr.models.assocation_tables import tweet_association_table, reddit_post_association_table
 
 
 class SearchModel(db.Model):

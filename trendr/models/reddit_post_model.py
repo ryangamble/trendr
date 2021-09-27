@@ -1,6 +1,8 @@
+from sqlalchemy.orm import relationship
 from sqlalchemy.types import Integer, Text, DateTime, String
 
 from trendr.extensions import db
+from trendr.models.association_tables import reddit_post_association_table
 
 
 class RedditPostModel(db.Model):
@@ -14,3 +16,5 @@ class RedditPostModel(db.Model):
     down_votes = db.Column(Integer, nullable=False)
     sentiment_score = db.Column(Integer, nullable=False)
 
+    # There is a many-many relationship between searches and reddit posts
+    searches = relationship("SearchModel", secondary=reddit_post_association_table)

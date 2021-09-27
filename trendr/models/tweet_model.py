@@ -1,6 +1,9 @@
+from sqlalchemy.orm import relationship
 from sqlalchemy.types import Integer, Text, DateTime
 
+
 from trendr.extensions import db
+from trendr.models.association_tables import tweet_association_table
 
 
 class TweetModel(db.Model):
@@ -14,3 +17,5 @@ class TweetModel(db.Model):
     retweets = db.Column(Integer, nullable=False)
     sentiment_score = db.Column(Integer, nullable=False)
 
+    # There is a many-many relationship between searches and tweets
+    searches = relationship("SearchModel", secondary=tweet_association_table)
