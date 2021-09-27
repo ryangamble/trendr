@@ -1,7 +1,7 @@
 from flask import Flask, Blueprint
 from trendr.extensions import db, login_manager, celery, migrate
 from trendr.models.user_model import UserModel
-
+from .routes.asset_routes import *
 
 def create_app():
     app = Flask(__name__)
@@ -21,7 +21,7 @@ def configure_extensions(app):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = 'routes.auth_routes.login'
     login_manager.init_app(app)
 
     @login_manager.user_loader
@@ -33,6 +33,12 @@ def configure_extensions(app):
 def register_blueprints(app):
     users_blueprint = Blueprint("users", __name__, url_prefix="/users")
     app.register_blueprint(users_blueprint)
+    app.register_blueprint(asset)
+
+    # logging routes
+    print("\nApp routes:")
+    print([str(p) for p in app.url_map.iter_rules()])
+    print("\n")
 
 
 def init_celery(app=None):
