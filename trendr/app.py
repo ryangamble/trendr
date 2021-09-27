@@ -21,7 +21,7 @@ def configure_extensions(app):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    login_manager.login_view = 'routes.auth_routes.login'
+    login_manager.login_view = "routes.auth_routes.login"
     login_manager.init_app(app)
 
     @login_manager.user_loader
@@ -37,9 +37,9 @@ def register_blueprints(app):
 
 def init_celery(app=None):
     app = app or create_app()
-    celery.conf.broker_url = app.config['CELERY_BROKER_URL']
-    celery.conf.result_backend = app.config['CELERY_RESULT_BACKEND']
-    celery.conf.timezone = 'US/Eastern'
+    celery.conf.broker_url = app.config["CELERY_BROKER_URL"]
+    celery.conf.result_backend = app.config["CELERY_RESULT_BACKEND"]
+    celery.conf.timezone = "US/Eastern"
     celery.conf.update(app.config)
 
     class ContextTask(celery.Task):
