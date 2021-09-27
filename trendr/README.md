@@ -16,9 +16,13 @@ To use celery tasks we need a few parts:
 - celerybeat (scheduled tasks)
 - flower (monitor tasks and queue)
 
+We can run these all automatically from the main docker compose. This is the preffered method for deployment and development. Read about it in [`README.md`](../README.md)
+
 #### Celery worker
 To run a celery worker:  
-`celery -A trendr.tasks worker --loglevel=INFO`
+`celery -A trendr.celery.workers.basic worker --loglevel=INFO`
+
+In the future these workers will be differentiated, so this command will change based on the target worker.
 
 #### RabbitMQ
 See information on how to install RabbitMQ:  
@@ -28,7 +32,14 @@ To run the docker image for RabbitMQ:
 `docker run -d -p 5672:5672 rabbitmq`
 
 #### Celerybeat
-Unfinished
+Celerybeat is a task scheduler for celery. It can be used to schedule recurring tasks similar to how you can use `cron` to schedule tasks.
+
+To run celerybeat:  
+`celery -A trendr.celery.celerybeat beat -l info`
+
 
 #### Flower
-Unfinished
+Flower is a dashboard monitoring and administration tool for celery. It is used to view the status of your worker pool, understand errors, and view statistics.
+
+To run flower:  
+`celery -A trendr.celery --broker="pyamqp://rabbitmq:5672" flower`
