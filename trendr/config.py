@@ -33,8 +33,8 @@ defaults = {
     "SECRET_KEY": "secret-key",
     "PASSWORD_SCHEMES": "pbkdf2_sha512",
     "SQLALCHEMY_DATABASE_URI": "sqlite:///db.sqlite",
-    "CELERY_BROKER_URL": "amqp://localhost:5672",
-    "CELERY_RESULT_BACKEND": "amqp://localhost:5672",
+    "CELERY_BROKER_URL": "pyamqp://rabbitmq:5672",
+    "CELERY_RESULT_BACKEND": "rpc://rabbitmq:5672",
 }
 
 ENV = fetch_config("FLASK_ENV", default=defaults["FLASK_ENV"])
@@ -65,17 +65,13 @@ CELERY_BROKER_URL = fetch_config(
 )
 if CELERY_BROKER_URL == defaults["CELERY_BROKER_URL"]:
     print("WARNING: Local insecure celery broker being used")
+
 CELERY_RESULT_BACKEND = fetch_config(
     "CELERY_RESULT_BACKEND", default=defaults["CELERY_RESULT_BACKEND"]
 )
 if CELERY_RESULT_BACKEND == defaults["CELERY_RESULT_BACKEND"]:
     print("WARNING: Local insecure celery backend being used")
-    
-"""
-Twitter API secrets
-"""
-TWITTER_CONSUMER_KEY = fetch_config("TWITTER_CONSUMER_KEY", default=None)
-TWITTER_CONSUMER_SECRET = fetch_config("TWITTER_CONSUMER_SECRET", default=None)
+
 
 """
 Reddit API secrets
@@ -83,4 +79,3 @@ Reddit API secrets
 REDDIT_CLIENT_ID = fetch_config("REDDIT_CLIENT_ID")
 REDDIT_CLIENT_SECRET = fetch_config("REDDIT_CLIENT_SECRET")
 REDDIT_USER_AGENT = fetch_config("REDDIT_USER_AGENT")
-
