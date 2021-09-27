@@ -1,7 +1,13 @@
-from ..extensions import celery
-from ..extensions import db
-from ..models import *
+from trendr.extensions import celery
+from trendr.extensions import db
+from trendr.models import *
+
 
 @celery.task
 def add(x, y):
     return x + y
+
+
+@celery.task
+def test(arg):
+    print(arg)

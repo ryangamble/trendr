@@ -30,8 +30,7 @@ class UserModel(UserMixin, db.Model):
     password = db.Column(
         PasswordType(
             onload=lambda **kwargs: dict(
-                schemes=flask.current_app.config['PASSWORD_SCHEMES'],
-                **kwargs
+                schemes=flask.current_app.config["PASSWORD_SCHEMES"], **kwargs
             ),
         ),
         nullable=False

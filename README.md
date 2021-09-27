@@ -10,8 +10,7 @@
 1. Run `docker-compose up --build -d` from the root of the repo to run the full app 
    (all frontend and backend components) in local docker containers (see https://docs.docker.com/compose/)
 2. Access the web frontend at `localhost`
-   
-(Not yet fully implemented, need to tie Flask/Celery into main docker-compose.yml)
+3. Access the flower dashboard at `localhost:5555`
 
 ### Running just the backend
 For more information on how to run the backend individually, see `trendr/README.md`
