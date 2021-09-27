@@ -24,13 +24,12 @@ def test_get_tweet_by_id_positive(twitter_api: tweepy.API):
     """
     Tests that if you attempt to get a tweet by id, then you get that tweet back
     """
-    tweet_id = 1440481481755824144
+    tweets = twitter_connector.get_tweets_mentioning_asset("and", api=twitter_api)
+    tweet_id = tweets[0].__getattribute__("id")
     tweet = twitter_connector.get_tweet_by_id(tweet_id, api=twitter_api)
     assert tweet
     assert isinstance(tweet, tweepy.Status)
     assert tweet.__getattribute__("id") == tweet_id
-    assert tweet.__getattribute__("text") == "If you were in chat this afternoon you can see how I predicted the end " \
-                                             "of the day $SPY move. $AAPL as a guide 🙌🙌🙌.… https://t.co/8sDQAqkWOw"
 
 
 def test_get_tweets_mentioning_asset_positive(twitter_api: tweepy.API):
@@ -41,6 +40,7 @@ def test_get_tweets_mentioning_asset_positive(twitter_api: tweepy.API):
     assert tweets
     assert isinstance(tweets, tweepy.SearchResults)
     assert tweets.__getattribute__("count") >= 1
+    assert "and" in tweets[0].__getattribute__("text")
 
 
 # Negative tests
