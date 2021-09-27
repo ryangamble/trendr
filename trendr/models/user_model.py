@@ -10,10 +10,7 @@ force_auto_coercion()
 class UserModel(UserMixin, db.Model):
     # __tablename__ = 'flasklogin-users'
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    id = db.Column(db.Integer, primary_key=True)
     email = db.Column(EmailType)
 
     # https://sqlalchemy-utils.readthedocs.io/en/latest/data_types.html#module-sqlalchemy_utils.types.password
@@ -21,15 +18,12 @@ class UserModel(UserMixin, db.Model):
     password = db.Column(
         PasswordType(
             onload=lambda **kwargs: dict(
-                schemes=flask.current_app.config['PASSWORD_SCHEMES'],
-                **kwargs
+                schemes=flask.current_app.config["PASSWORD_SCHEMES"], **kwargs
             ),
         ),
     )
 
-    name = db.Column(
-        db.String
-    )
+    name = db.Column(db.String)
 
     def __repr__(self):
-        return '<User {}>'.format(self.username)
+        return "<User {}>".format(self.username)

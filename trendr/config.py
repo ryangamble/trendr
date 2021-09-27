@@ -33,8 +33,8 @@ defaults = {
     "SECRET_KEY": "secret-key",
     "PASSWORD_SCHEMES": "pbkdf2_sha512",
     "SQLALCHEMY_DATABASE_URI": "sqlite:///db.sqlite",
-    "CELERY_BROKER_URL": "amqp://localhost:5672",
-    "CELERY_RESULT_BACKEND": "amqp://localhost:5672",
+    "CELERY_BROKER_URL": "pyamqp://rabbitmq:5672",
+    "CELERY_RESULT_BACKEND": "rpc://rabbitmq:5672",
 }
 
 ENV = fetch_config("FLASK_ENV", default=defaults["FLASK_ENV"])
