@@ -13,6 +13,11 @@ function Login() {
     console.log("Email is ", email);
     console.log("password1 is ", password);
   };
+
+  const handleReset = (event) => {
+    event.preventDefault();
+    console.log("firing request to reset password...");
+  };
   return (
     <div>
       <MyNavBar />
@@ -45,13 +50,18 @@ function Login() {
             </Form.Group>
 
             <Row className="justify-content-sm-center">
-              <Col sm="6">
+              <Col sm="4">
                 <Button variant="primary" type="submit">
                   Log In
                 </Button>
               </Col>
-              <Col sm="6">
-                <Link to="register">Do not have an account? Register Now</Link>
+              <Col sm="4">
+                <Link to="register">Do not have an account? </Link>
+              </Col>
+              <Col sm="4">
+                <Button onClick={handleReset} variant="light">
+                  Forget Password
+                </Button>
               </Col>
             </Row>
           </Form>
