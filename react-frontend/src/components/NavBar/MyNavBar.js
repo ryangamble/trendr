@@ -3,14 +3,8 @@ import { Navbar, Container, Nav } from "react-bootstrap";
 
 function MyNavBar() {
   return (
-    <div>
-      <Navbar
-        collapseOnSelect
-        expand="lg"
-        bg="primary"
-        variant="dark"
-        fixed="top"
-      >
+    <div fixed="top">
+      <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
         <Container>
           <Navbar.Brand href="home">Welcome to Trendr</Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
