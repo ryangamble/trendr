@@ -1,10 +1,11 @@
-from flask import Flask, Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify
 import yfinance as yf
 import yahooquery as yq
 
-asset = Blueprint('result', __name__, url_prefix="/api/asset")
+assets = Blueprint('assets', __name__, url_prefix="/assets")
 
-@asset.route('/search', methods=['POST'])
+
+@assets.route('/search', methods=['POST'])
 def search():
     content = request.get_json()
 
@@ -12,7 +13,8 @@ def search():
 
     return jsonify(data)
 
-@asset.route('/stats', methods=['POST'])
+
+@assets.route('/stats', methods=['POST'])
 def stats():
     content = request.get_json()
 
@@ -21,7 +23,8 @@ def stats():
     stock = yf.Ticker(content['name'])
     return jsonify(stock.info)
 
-@asset.route('/history', methods=['POST'])
+
+@assets.route('/history', methods=['POST'])
 def history():
     content = request.get_json()
     
@@ -30,13 +33,13 @@ def history():
     stock = yf.Ticker(content['name'])
     p = content['period']
 
-    periodToInterval = {
-        "1d" : "5m",
-        "5d" : "30m",
-        "1mo" : "1h",
-        "3mo" : "1h",
-        "1y" : "1d",
-        "5y" : "5d"
+    period_to_interval = {
+        "1d": "5m",
+        "5d": "30m",
+        "1mo": "1h",
+        "3mo": "1h",
+        "1y": "1d",
+        "5y": "5d"
     }
 
-    return stock.history(period=p, interval=periodToInterval.get(p), prepost="True", actions="False").to_json()
+    return stock.history(period=p, interval=period_to_interval.get(p), prepost="True", actions="False").to_json()
