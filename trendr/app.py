@@ -1,11 +1,18 @@
 from flask import Flask, Blueprint
-from trendr.extensions import db, login_manager, celery, migrate
+from flask_sqlalchemy import SQLAlchemy
+from trendr.extensions import login_manager, celery, migrate
 from trendr.models.user_model import UserModel
-from .routes.asset_routes import *
+from trendr.routes.asset_routes import *
+
+db = None
+
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object("trendr.config")
+
+    db = SQLAlchemy(app)
+    db.init_app(app)
 
     configure_extensions(app)
     register_blueprints(app)
@@ -18,7 +25,6 @@ def create_app():
 
 
 def configure_extensions(app):
-    db.init_app(app)
     migrate.init_app(app, db)
 
     login_manager.login_view = "routes.auth_routes.login"
@@ -55,3 +61,8 @@ def init_celery(app=None):
 
     celery.Task = ContextTask
     return celery
+
+
+if __name__ == "__main__":
+    app = create_app()
+    app.run()

@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy_utils import EmailType, PasswordType, force_auto_coercion
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from trendr.extensions import db
+from trendr.app import db
 
 
 force_auto_coercion()
@@ -45,5 +45,20 @@ class UserModel(UserMixin, db.Model):
     # There is a one-many relationship between users and searches
     searches = relationship("SearchModel", backref="users")
 
+    def __init__(self, username, first_name, last_name, email, password, access_level):
+        self.username = username
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.password = password
+        self.access_level = access_level
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
+
+def create_user(username, first_name, last_name, email, password, access_level):
+    user = UserModel(username, first_name, last_name, email, password, access_level)
+    db.session.add(user)
+    db.session.commit()
+    return user
