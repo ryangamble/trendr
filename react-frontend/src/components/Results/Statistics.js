@@ -56,7 +56,7 @@ function Statistics(props) {
       .catch((error) => {
         console.log(error);
       });
-  }, [props]);
+  }, []);
 
   function formatPrice(num) {
     const options = {

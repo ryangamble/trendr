@@ -8,7 +8,7 @@ function Home() {
   const currentTheme = useSelector((state) => state.currentTheme);
 
   return (
-    <div style={{ "background-color": currentTheme.background }}>
+    <div style={{ backgroundColor: currentTheme.background }}>
       <MyNavBar />
       <SearchBar />
     </div>

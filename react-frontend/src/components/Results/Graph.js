@@ -49,7 +49,7 @@ function Graph(props) {
       console.log("fetching " + props.graphType + " data for " + key + "...");
       fetchDataPoints(key);
     }
-  }, [props]);
+  }, []);
 
   useEffect(() => {
     getMinMax();
