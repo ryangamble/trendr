@@ -1,9 +1,13 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import Integer, DateTime, String
+from sqlalchemy_utils import force_auto_coercion
 
 from trendr.extensions import db
-from trendr.models.assocation_tables import tweet_association_table, reddit_post_association_table
+from trendr.models.association_tables import tweet_association_table, reddit_post_association_table
+
+
+force_auto_coercion()
 
 
 class SearchModel(db.Model):

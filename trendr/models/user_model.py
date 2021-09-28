@@ -6,7 +6,6 @@ from flask_login import UserMixin
 from sqlalchemy import Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import EmailType, PasswordType, force_auto_coercion
-from werkzeug.security import generate_password_hash, check_password_hash
 
 from trendr.app import db
 

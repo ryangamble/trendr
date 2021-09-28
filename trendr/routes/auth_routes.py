@@ -17,14 +17,14 @@ def signup():
     data = request.json
     print(data)
 
-    # # Verify all required fields are present and have values
-    # required_fields = ["username", "first_name", "last_name", "email", "password"]
-    # for field in required_fields:
-    #     if field not in data or not data[field]:
-    #         return json_response({"error": f"Field {field} is required"}, status=400)
-    #
-    # create_user(data["username"], data["first_name"], data["last_name"], data["email"], data["password"],
-    #             AccessLevelEnum.basic)
+    # Verify all required fields are present and have values
+    required_fields = ["username", "first_name", "last_name", "email", "password"]
+    for field in required_fields:
+        if field not in data or not data[field]:
+            return json_response({"error": f"Field {field} is required"}, status=400)
+
+    create_user(data["username"], data["first_name"], data["last_name"], data["email"], data["password"],
+                AccessLevelEnum.basic)
 
     return json_response({"message": "Success"}, status=200)
 
