@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { Form, Button, Col, Row } from "react-bootstrap";
 import MyNavBar from "../NavBar/MyNavBar";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function Register() {
+  const currentTheme = useSelector((state) => state.currentTheme);
   const [email, setEmail] = useState("");
   const [password1, setPassword1] = useState("");
   const [password2, setPassword2] = useState("");
@@ -21,7 +23,13 @@ function Register() {
     }
   };
   return (
-    <div>
+    <div
+      style={{
+        background: currentTheme.background,
+        color: currentTheme.foreground,
+        height: "100vh",
+      }}
+    >
       <MyNavBar />
       <Row className="position-relative">
         <h2>Register an account</h2>
@@ -67,12 +75,14 @@ function Register() {
 
             <Row className="justify-content-sm-center">
               <Col sm="6">
-                <Button variant="primary" type="submit">
+                <Button variant={currentTheme.variant} type="submit">
                   Register
                 </Button>
               </Col>
               <Col sm="6">
-                <Link to="login">Already have an account? Login</Link>
+                <Link to="login" style={{ color: currentTheme.linkColor }}>
+                  Already have an account? Login
+                </Link>
               </Col>
             </Row>
           </Form>

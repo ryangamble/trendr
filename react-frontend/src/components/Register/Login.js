@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import MyNavBar from "../NavBar/MyNavBar";
 import { Row, Col, Form, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 function Login() {
+  const currentTheme = useSelector((state) => state.currentTheme);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -19,7 +21,13 @@ function Login() {
     console.log("firing request to reset password...");
   };
   return (
-    <div>
+    <div
+      style={{
+        background: currentTheme.background,
+        color: currentTheme.foreground,
+        height: "100vh",
+      }}
+    >
       <MyNavBar />
       <Row className="position-relative">
         <h2>Log In To Your Account</h2>
@@ -51,16 +59,18 @@ function Login() {
 
             <Row className="justify-content-sm-center">
               <Col sm="4">
-                <Button variant="primary" type="submit">
+                <Button variant={currentTheme.variant} type="submit">
                   Log In
                 </Button>
               </Col>
               <Col sm="4">
-                <Link to="register">Do not have an account? </Link>
+                <Link to="signup" style={{ color: currentTheme.linkColor }}>
+                  Do not have an account?{" "}
+                </Link>
               </Col>
               <Col sm="4">
-                <Button onClick={handleReset} variant="light">
-                  Forget Password
+                <Button onClick={handleReset} variant={currentTheme.variant}>
+                  Reset Password
                 </Button>
               </Col>
             </Row>
