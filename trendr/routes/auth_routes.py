@@ -16,6 +16,9 @@ def login():
 @auth.route("/signup", methods=["POST"])
 def signup():
     data = request.json
+    print("TEST")
+    print(type(data))
+    print(data)
 
     # Verify all required fields are present and have values
     required_fields = ["username", "first_name", "last_name", "email", "password"]
@@ -24,9 +27,9 @@ def signup():
             return json_response({"error": f"Field {field} is required"}, status=400)
 
     # If either of the reserved fields are taken, throw an error
-    if db.session.query(UserModel).filter(UserModel.username == data["username"]):
+    if db.session.query(UserModel).filter(UserModel.username == data["username"]).all():
         return json_response({"error": f"Username must be unique"}, status=400)
-    if db.session.query(UserModel).filter(UserModel.email == data["email"]):
+    if db.session.query(UserModel).filter(UserModel.email == data["email"]).all():
         return json_response({"error": f"Email must be unique"}, status=400)
 
     # Create the user in the database
