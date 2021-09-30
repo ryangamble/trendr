@@ -16,9 +16,6 @@ def login():
 @auth.route("/signup", methods=["POST"])
 def signup():
     data = request.json
-    print("TEST")
-    print(type(data))
-    print(data)
 
     # Verify all required fields are present and have values
     required_fields = ["username", "first_name", "last_name", "email", "password"]
