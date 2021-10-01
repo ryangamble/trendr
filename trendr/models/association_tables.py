@@ -1,7 +1,7 @@
 from sqlalchemy import ForeignKey, Table
 from sqlalchemy_utils import force_auto_coercion
 
-from trendr.app import db
+from trendr.extensions import db
 
 force_auto_coercion()
 

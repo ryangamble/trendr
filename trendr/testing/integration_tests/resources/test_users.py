@@ -25,8 +25,6 @@ def test_create_user():
 
 def test_create_user_missing_username():
     body = {
-        "first_name": create_random_string(20),
-        "last_name": create_random_string(20),
         "email": create_random_string(20),
         "password": create_random_string(20),
     }
@@ -37,39 +35,9 @@ def test_create_user_missing_username():
     assert data["error"] == "Field username is required"
 
 
-def test_create_user_missing_first_name():
-    body = {
-        "username": create_random_string(20),
-        "last_name": create_random_string(20),
-        "email": create_random_string(20),
-        "password": create_random_string(20),
-    }
-    resp = requests.post("http://localhost:5000/auth/signup", json=body)
-    assert resp.status_code == 400
-    data = resp.json()
-    assert "error" in data
-    assert data["error"] == "Field first_name is required"
-
-
-def test_create_user_missing_last_name():
-    body = {
-        "username": create_random_string(20),
-        "first_name": create_random_string(20),
-        "email": create_random_string(20),
-        "password": create_random_string(20),
-    }
-    resp = requests.post("http://localhost:5000/auth/signup", json=body)
-    assert resp.status_code == 400
-    data = resp.json()
-    assert "error" in data
-    assert data["error"] == "Field last_name is required"
-
-
 def test_create_user_missing_email():
     body = {
         "username": create_random_string(20),
-        "first_name": create_random_string(20),
-        "last_name": create_random_string(20),
         "password": create_random_string(20),
     }
     resp = requests.post("http://localhost:5000/auth/signup", json=body)
@@ -82,8 +50,6 @@ def test_create_user_missing_email():
 def test_create_user_missing_password():
     body = {
         "username": create_random_string(20),
-        "first_name": create_random_string(20),
-        "last_name": create_random_string(20),
         "email": create_random_string(20),
     }
     resp = requests.post("http://localhost:5000/auth/signup", json=body)
@@ -97,8 +63,6 @@ def test_create_user_duplicate_username():
     # Create a random user
     body = {
         "username": create_random_string(20),
-        "first_name": create_random_string(20),
-        "last_name": create_random_string(20),
         "email": create_random_string(20),
         "password": create_random_string(20),
     }
@@ -117,8 +81,6 @@ def test_create_user_duplicate_email():
     # Create a random user
     body = {
         "username": create_random_string(20),
-        "first_name": create_random_string(20),
-        "last_name": create_random_string(20),
         "email": create_random_string(20),
         "password": create_random_string(20),
     }

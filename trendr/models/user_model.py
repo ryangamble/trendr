@@ -7,7 +7,7 @@ from sqlalchemy import Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import EmailType, PasswordType, force_auto_coercion
 
-from trendr.app import db
+from trendr.extensions import db
 
 
 force_auto_coercion()

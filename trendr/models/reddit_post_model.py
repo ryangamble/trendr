@@ -2,7 +2,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.types import Integer, Text, DateTime, String
 from sqlalchemy_utils import force_auto_coercion
 
-from trendr.app import db
+from trendr.extensions import db
 from trendr.models.association_tables import reddit_post_association_table
 
 
