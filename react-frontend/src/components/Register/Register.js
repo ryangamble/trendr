@@ -1,19 +1,25 @@
 import React, { useState } from "react";
 import { Form, Button, Col, Row } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import MyNavBar from "../NavBar/MyNavBar";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import axios from "axios";
 
 function Register() {
   const currentTheme = useSelector((state) => state.currentTheme);
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password1, setPassword1] = useState("");
   const [password2, setPassword2] = useState("");
+
+  const history = useHistory();
 
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log("firing registration request to the backend...");
     console.log("Email is ", email);
+    console.log("Username is", username);
     console.log("password1 is ", password1);
     console.log("password2 is ", password2);
 
@@ -21,6 +27,27 @@ function Register() {
       alert("Passwords are not the same!");
       return;
     }
+
+    const requestBody = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      username: username,
+      email: email,
+      password: password1,
+    };
+
+    axios
+      .post("/auth/signup", requestBody)
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.message === "Success") {
+          history.push("/home");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        alert("Username or Email already exists! Please use a different one");
+      });
   };
   return (
     <div
@@ -49,6 +76,17 @@ function Register() {
               <Form.Text className="text-muted">
                 We'll never share your email with anyone else.
               </Form.Text>
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formBasicUsername">
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                type="input"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
