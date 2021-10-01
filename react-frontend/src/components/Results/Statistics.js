@@ -4,7 +4,7 @@ import axios from "axios";
 import "./Results.css"
 
 function Statistics(props) {
-  
+
   const [stock, setStock] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -16,7 +16,7 @@ function Statistics(props) {
 
   useEffect(() => {
     setLoading(true);
-    axios.post('/api/asset/stats', requestBody)
+    axios.post('/assets/stats', requestBody)
       .then(res => {
         setLoading(true);
         return JSON.parse(JSON.stringify(res.data));
@@ -38,7 +38,7 @@ function Statistics(props) {
           pegRatio: data['pegRatio'] ? (data['pegRatio']).toFixed(2) : "N/A",
           divYield: data['dividendYield'] ? (data['dividendYield'] * 100).toFixed(2) : "N/A"
         });
-        
+
         props.currencyCallback(data['currency']);
         console.log("fetched general statistics for " + requestBody.name);
         console.log(data);
@@ -49,7 +49,7 @@ function Statistics(props) {
       .catch((error) => {
         console.log(error);
       });
-      
+
   }, [props]);
 
   function formatPrice (num) {
@@ -71,7 +71,7 @@ function Statistics(props) {
   if (loading) {
     return (
       <Container fluid>
-        <Spinner animation="border"/>  
+        <Spinner animation="border"/>
       </Container>
     );
   } else {
@@ -129,7 +129,7 @@ function Statistics(props) {
                 <td className="statName">Market Cap</td>
                 <td className="statValue">{formatPrice(Number(stock.marketCap.slice(0, -1))) + stock.marketCap.slice(-1)}</td>
               </tr>
-            </tbody>        
+            </tbody>
           </Table>
         </Col>
       </Container>

@@ -15,7 +15,7 @@ function SearchBar() {
       return;
     }
     console.log("firing search to backend...");
-    
+
     if (suggestions[0]) {
       history.push(`/result:${suggestions[0].symbol}`);
     } else {
@@ -30,14 +30,14 @@ function SearchBar() {
       setSuggestions([]);
       return;
     }
-    
+
     const requestBody = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json'},
       query: keyword
     }
 
-    axios.post("/api/asset/search", requestBody)
+    axios.post("/assets/search", requestBody)
     .then(res => {
       return JSON.parse(JSON.stringify(res.data.quotes));
     })
@@ -74,7 +74,7 @@ function SearchBar() {
       return;
     });
     setSuggestions([]);
-    history.push(`/result:${suggestions[i].symbol}`); 
+    history.push(`/result:${suggestions[i].symbol}`);
   }
 
   return (

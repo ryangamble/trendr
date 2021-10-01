@@ -36,7 +36,7 @@ function Graph (props) {
 
 
   useEffect(() => {
-    
+
     setLoadedCount(0);
     for (var key in periodDisplay) {
       console.log("fetching " + props.graphType + " data for " + key + "...")
@@ -58,7 +58,7 @@ function Graph (props) {
       period: timePeriod
     }
 
-    axios.post('/api/asset/history', requestBody)
+    axios.post('/assets/history', requestBody)
     .then(res => {
       return JSON.parse(JSON.stringify(res.data));
     })
@@ -157,11 +157,11 @@ function Graph (props) {
   const itemsFormatVol = (data) => {
     return [{title: 'volume', value: data[0].y.toLocaleString("en-US")}];
   }
-  
+
   if (loadedCount < 5) {
     return (
       <Container fluid>
-        <Spinner animation="border"/>  
+        <Spinner animation="border"/>
       </Container>
     );
   } else {
@@ -183,10 +183,10 @@ function Graph (props) {
               xType="ordinal"
               yDomain={props.graphType === "price" ? [0.98 * min, 1.02 * max] : [.9 * min, 1.2 * max]}
               >
-              
+
               <HorizontalGridLines/>
               {/* <VerticalGridLines/> */}
-            
+
               <LineSeries
                 data={graphData[period]}
                 onNearestX={_onNearestX}
@@ -200,7 +200,7 @@ function Graph (props) {
                 right: {fill: '#fff'},
                 top: {fill: '#fff'}
               }}/>
-              
+
               <YAxis/>
               <XAxis
                 hideTicks
@@ -210,7 +210,7 @@ function Graph (props) {
                 values={crosshairValues}
                 itemsFormat={props.graphType === "price" ? itemsFormatPrice : itemsFormatVol}
               />
-              
+
             </FlexibleXYPlot>
           </div>
         </Row>
@@ -272,7 +272,7 @@ function Graph (props) {
           }
         </Row>
 
-        
+
       </Container>
     );
   }

@@ -36,28 +36,17 @@ class UserModel(UserMixin, db.Model):
     )
 
     username = db.Column(db.String, nullable=False, unique=True)
-    first_name = db.Column(db.String, nullable=False)
-    last_name = db.Column(db.String, nullable=False)
     email = db.Column(EmailType, nullable=False, unique=True)
     access_level = db.Column(Enum(AccessLevelEnum), nullable=False)
 
     # There is a one-many relationship between users and searches
     searches = relationship("SearchModel", backref="users")
 
-    def __init__(self, username, first_name, last_name, email, password, access_level):
+    def __init__(self, username, email, password, access_level):
         self.username = username
-        self.first_name = first_name
-        self.last_name = last_name
         self.email = email
         self.password = password
         self.access_level = access_level
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
-
-
-def create_user(username, first_name, last_name, email, password, access_level):
-    user = UserModel(username, first_name, last_name, email, password, access_level)
-    db.session.add(user)
-    db.session.commit()
-    return user

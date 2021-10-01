@@ -2,7 +2,8 @@ from flask import Blueprint, redirect, url_for, request
 from flask_login import login_required, logout_user
 
 from trendr.app import db
-from trendr.models.user_model import create_user, AccessLevelEnum, UserModel
+from trendr.models.user_model import AccessLevelEnum, UserModel
+from trendr.controllers.user_controller import create_user
 from trendr.routes.helpers.json_response import json_response
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
