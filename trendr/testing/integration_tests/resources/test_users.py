@@ -8,8 +8,6 @@ from trendr.testing.helpers import create_random_string
 def test_create_user():
     body = {
         "username": create_random_string(20),
-        "first_name": create_random_string(20),
-        "last_name": create_random_string(20),
         "email": create_random_string(20),
         "password": create_random_string(20),
     }
