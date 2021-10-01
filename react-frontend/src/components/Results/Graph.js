@@ -65,7 +65,7 @@ function Graph(props) {
     };
 
     axios
-      .post("/api/asset/history", requestBody)
+      .post("/assets/history", requestBody)
       .then((res) => {
         return JSON.parse(JSON.stringify(res.data));
       })

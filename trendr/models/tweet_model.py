@@ -1,9 +1,12 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import Integer, Text, DateTime
-
+from sqlalchemy_utils import force_auto_coercion
 
 from trendr.extensions import db
 from trendr.models.association_tables import tweet_association_table
+
+
+force_auto_coercion()
 
 
 class TweetModel(db.Model):

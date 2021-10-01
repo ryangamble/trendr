@@ -1,7 +1,14 @@
-from flask import Flask, Blueprint
-from trendr.extensions import db, login_manager, celery, migrate
+from flask import Flask
+from trendr.extensions import login_manager, celery, migrate, db
 from trendr.models.user_model import UserModel
-from .routes.asset_routes import *
+from trendr.models.search_model import SearchModel
+from trendr.models.tweet_model import TweetModel
+from trendr.models.reddit_post_model import RedditPostModel
+from trendr.models.association_tables import tweet_association_table, reddit_post_association_table
+from trendr.routes.asset_routes import assets as assets_blueprint
+from trendr.routes.auth_routes import auth as auth_blueprint
+from trendr.routes.user_routes import users as users_blueprint
+
 
 def create_app():
     app = Flask(__name__)
@@ -20,8 +27,7 @@ def create_app():
 def configure_extensions(app):
     db.init_app(app)
     migrate.init_app(app, db)
-
-    login_manager.login_view = "routes.auth_routes.login"
+    login_manager.login_view = 'routes.auth.login'
     login_manager.init_app(app)
 
     @login_manager.user_loader
@@ -31,9 +37,9 @@ def configure_extensions(app):
 
 
 def register_blueprints(app):
-    users_blueprint = Blueprint("users", __name__, url_prefix="/users")
+    app.register_blueprint(assets_blueprint)
+    app.register_blueprint(auth_blueprint)
     app.register_blueprint(users_blueprint)
-    app.register_blueprint(asset)
 
     # logging routes
     print("\nApp routes:")
@@ -55,3 +61,8 @@ def init_celery(app=None):
 
     celery.Task = ContextTask
     return celery
+
+
+if __name__ == "__main__":
+    app = create_app()
+    app.run(debug=True)

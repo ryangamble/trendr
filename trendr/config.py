@@ -72,6 +72,11 @@ CELERY_RESULT_BACKEND = fetch_config(
 if CELERY_RESULT_BACKEND == defaults["CELERY_RESULT_BACKEND"]:
     print("WARNING: Local insecure celery backend being used")
 
+"""
+Reddit API secrets
+"""
+TWITTER_CONSUMER_KEY = fetch_config("TWITTER_CONSUMER_KEY")
+TWITTER_CONSUMER_SECRET = fetch_config("TWITTER_CONSUMER_SECRET")
 
 """
 Reddit API secrets
