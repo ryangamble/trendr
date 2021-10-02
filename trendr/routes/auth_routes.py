@@ -9,9 +9,30 @@ from trendr.routes.helpers.json_response import json_response
 auth = Blueprint("auth", __name__, url_prefix="/auth")
 
 
-@auth.route("/login", methods=["GET", "POST"])
+@auth.route("/login", methods=["POST"])
 def login():
-    pass
+    data = request.json
+
+    # Verify all required fields are present and have values
+    required_fields = ["email", "password"]
+    for field in required_fields:
+        if field not in data or not data[field]:
+            return json_response({"error": f"Field {field} is required"}, status=400)
+
+    user = db.session.query(UserModel).filter(
+        UserModel.email == data["email"],
+        UserModel.password == data["password"]
+    ).one()
+
+    if not user:
+        return json_response({"error": f"Email/password did not match"}, status=400)
+
+    response_body = {
+        "username": user.username,
+        "email": user.email,
+        "access_level": user.access_level
+    }
+    return json_response(response_body, status=200)
 
 
 @auth.route("/signup", methods=["POST"])
