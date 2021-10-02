@@ -40,13 +40,15 @@ function Register() {
       .post("/auth/signup", requestBody)
       .then((res) => {
         console.log(res.data);
-        if (res.data.message === "Success") {
+        if (res.status === 200) {
           history.push("/home");
         }
       })
       .catch((error) => {
-        console.log(error);
-        alert("Username or Email already exists! Please use a different one");
+        console.log(error.response);
+        if (error.response.status === 400) {
+          alert(error.response.data.error);
+        }
       });
   };
   return (
