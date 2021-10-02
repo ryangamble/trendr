@@ -1,5 +1,6 @@
 from flask import Blueprint, redirect, url_for, request
 from flask_login import login_required, logout_user
+from sqlalchemy.orm.exc import NoResultFound
 
 from trendr.extensions import db
 from trendr.models.user_model import AccessLevelEnum, UserModel
@@ -19,18 +20,18 @@ def login():
         if field not in data or not data[field]:
             return json_response({"error": f"Field {field} is required"}, status=400)
 
-    user = db.session.query(UserModel).filter(
-        UserModel.email == data["email"],
-        UserModel.password == data["password"]
-    ).one()
+    try:
+        user = db.session.query(UserModel).filter(UserModel.email == data["email"]).one()
+    except NoResultFound:
+        return json_response({"error": f"Email does not exist"}, status=400)
 
-    if not user:
+    if user.password != data["password"]:
         return json_response({"error": f"Email/password did not match"}, status=400)
 
     response_body = {
         "username": user.username,
         "email": user.email,
-        "access_level": user.access_level
+        "access_level": user.access_level.name
     }
     return json_response(response_body, status=200)
 
