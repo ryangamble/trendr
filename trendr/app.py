@@ -19,6 +19,8 @@ def create_app():
     init_celery(app)
 
     with app.app_context():
+        # TODO: When we care about saving data, stop dropping the tables
+        db.drop_all()
         db.create_all()
 
     return app
