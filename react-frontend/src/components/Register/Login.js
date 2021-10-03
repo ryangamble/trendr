@@ -1,19 +1,46 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import MyNavBar from "../NavBar/MyNavBar";
 import { Row, Col, Form, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 function Login() {
   const currentTheme = useSelector((state) => state.currentTheme);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const history = useHistory();
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("firing registration request to the backend...");
+    console.log("firing login request to the backend...");
     console.log("Email is ", email);
-    console.log("password1 is ", password);
+    console.log("password is ", password);
+
+    const requestBody = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      email: email,
+      password: password,
+    };
+
+    axios
+      .post("/auth/login", requestBody)
+      .then((res) => {
+        if (res.status === 200) {
+          console.log(res.data);
+          history.push("/home");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(error.response);
+        if (error.response.status === 400) {
+          alert(error.response.data.error);
+        }
+      });
   };
 
   const handleReset = (event) => {
