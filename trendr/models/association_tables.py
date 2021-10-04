@@ -1,20 +1,16 @@
 from sqlalchemy import ForeignKey, Table
-from sqlalchemy_utils import force_auto_coercion
-
 from trendr.extensions import db
 
-force_auto_coercion()
-
-tweet_association_table = Table(
-    'searches_tweets_association_table',
+search_tweet_association = Table(
+    "searches_tweets",
     db.metadata,
-    db.Column('search_id', ForeignKey('searches.id')),
-    db.Column('tweet_id', ForeignKey('tweets.id'))
+    db.Column("search_id", db.Integer(), ForeignKey("searches.id")),
+    db.Column("tweet_id", db.Integer(), ForeignKey("tweets.id")),
 )
 
-reddit_post_association_table = Table(
-    'searches_reddit_posts_association_table',
+search_reddit_post_association = Table(
+    "searches_reddit_posts",
     db.metadata,
-    db.Column('search_id', ForeignKey('searches.id')),
-    db.Column('reddit_post_id', ForeignKey('reddit_posts.id'))
+    db.Column("search_id", db.Integer(), ForeignKey("searches.id")),
+    db.Column("reddit_post_id", db.Integer(), ForeignKey("reddit_posts.id")),
 )

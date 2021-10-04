@@ -31,15 +31,17 @@ def fetch_config(name: str, default: any = None, cast: any = str):
 defaults = {
     "FLASK_ENV": "development",
     "SECRET_KEY": "secret-key",
+    "SECURITY_PASSWORD_SALT": "146585145368132386173505678016728509634",
     "PASSWORD_SCHEMES": "pbkdf2_sha512",
+    "SECURITY_PASSWORD_NORMALIZE_FORM": "NFKD",
+    "SECURITY_PASSWORD_COMPLEXITY_CHECKER": "zxcvbn",
     "SQLALCHEMY_DATABASE_URI": "sqlite:///db.sqlite",
     "CELERY_BROKER_URL": "pyamqp://rabbitmq:5672",
     "CELERY_RESULT_BACKEND": "rpc://rabbitmq:5672",
 }
 
 ENV = fetch_config("FLASK_ENV", default=defaults["FLASK_ENV"])
-if ENV == "development":
-    DEBUG = ENV
+DEBUG = ENV == "development"
 
 SECRET_KEY = fetch_config("SECRET_KEY", default=defaults["SECRET_KEY"])
 if SECRET_KEY == defaults["SECRET_KEY"]:
@@ -49,8 +51,26 @@ if SECRET_KEY == defaults["SECRET_KEY"]:
     else:
         raise insecure_exc
 
+SECURITY_PASSWORD_SALT = fetch_config(
+    "SECURITY_PASSWORD_SALT", default=defaults["SECURITY_PASSWORD_SALT"]
+)
+if SECURITY_PASSWORD_SALT == defaults["SECURITY_PASSWORD_SALT"]:
+    insecure_exc = Exception("WARNING: Default password salt used")
+    if ENV == "development":
+        print(str(insecure_exc))
+    else:
+        raise insecure_exc
+
 PASSWORD_SCHEMES = fetch_config(
     "PASSWORD_SCHEMES", default=defaults["PASSWORD_SCHEMES"]
+)
+SECURITY_PASSWORD_NORMALIZE_FORM = fetch_config(
+    "SECURITY_PASSWORD_NORMALIZE_FORM",
+    default=defaults["SECURITY_PASSWORD_NORMALIZE_FORM"],
+)
+SECURITY_PASSWORD_COMPLEXITY_CHECKER = fetch_config(
+    "SECURITY_PASSWORD_COMPLEXITY_CHECKER",
+    default=defaults["SECURITY_PASSWORD_COMPLEXITY_CHECKER"],
 )
 SQLALCHEMY_DATABASE_URI = fetch_config(
     "SQLALCHEMY_DATABASE_URI", default=defaults["SQLALCHEMY_DATABASE_URI"]
@@ -84,3 +104,12 @@ Reddit API secrets
 REDDIT_CLIENT_ID = fetch_config("REDDIT_CLIENT_ID")
 REDDIT_CLIENT_SECRET = fetch_config("REDDIT_CLIENT_SECRET")
 REDDIT_USER_AGENT = fetch_config("REDDIT_USER_AGENT")
+
+"""
+Mail config
+"""
+MAIL_SERVER = fetch_config("MAIL_SERVER")
+MAIL_PORT = fetch_config("MAIL_PORT")
+MAIL_USE_SSL = fetch_config("MAIL_USE_SSL")
+MAIL_USERNAME = fetch_config("MAIL_USERNAME")
+MAIL_PASSWORD = fetch_config("MAIL_PASSWORD")
