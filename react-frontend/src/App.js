@@ -7,6 +7,7 @@ import Home from "./components/Home/Home";
 import Register from "./components/Register/Register";
 import Login from "./components/Register/Login";
 import Result from "./components/Results/ResultsPage";
+import About from "./components/About/About"
 
 import { Provider } from "react-redux";
 import { store } from "./components/Theme/themeActions";
@@ -23,6 +24,7 @@ function App() {
             <Route path="/login" component={Login}></Route>
 
             <Route path="/result:id" component={Result}></Route>
+            <Route path="/about" component={About}></Route>
 
             <Route path="*" component={Home}></Route>
           </Switch>
