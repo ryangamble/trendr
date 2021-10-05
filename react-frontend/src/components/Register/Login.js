@@ -10,6 +10,7 @@ function Login() {
   const currentTheme = useSelector((state) => state.currentTheme);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [csrfToken, setCsrfToken] = useState("");
 
   const history = useHistory();
 
@@ -19,19 +20,38 @@ function Login() {
     console.log("Email is ", email);
     console.log("password is ", password);
 
-    const requestBody = {
-      method: "POST",
+    const tokenRequestBody = {
+      method: "GET",
       headers: { "Content-Type": "application/json" },
-      email: email,
-      password: password,
+      data: null,
+    };
+
+    const loginRequestBody = {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken},
+      data: {"email": email, "password": password},
     };
 
     axios
-      .post("/auth/login", requestBody)
+      .get("/auth/login", tokenRequestBody)
       .then((res) => {
         if (res.status === 200) {
-          console.log(res.data);
-          history.push("/home");
+          setCsrfToken(res.data['response']['csrf_token']);
+          axios
+              .post("/auth/login", loginRequestBody)
+              .then((res) => {
+                if (res.status === 200) {
+                  console.log(res.data);
+                  history.push("/home");
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+                console.log(error.response);
+                if (error.response.status === 400) {
+                  alert(error.response.data.error);
+                }
+              });
         }
       })
       .catch((error) => {

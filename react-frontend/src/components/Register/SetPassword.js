@@ -5,12 +5,13 @@ import MyNavBar from "../NavBar/MyNavBar";
 import { Row, Col, Form, Button } from "react-bootstrap";
 import axios from "axios";
 
-function Login() {
+function SetPassword() {
     const currentTheme = useSelector((state) => state.currentTheme);
-    const [email, setEmail] = useState("");
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(false);
     const [csrfToken, setCsrfToken] = useState("");
+    const [password1, setPassword1] = useState("");
+    const [password2, setPassword2] = useState("");
 
     const history = useHistory();
 
@@ -18,8 +19,14 @@ function Login() {
         event.preventDefault();
         setSuccess(false)
         setError(false)
-        console.log("firing reset password request to the backend...");
-        console.log("Email is ", email);
+
+        if (password1 !== password2) {
+            alert("Passwords are not the same!");
+            setError(true)
+            return;
+        }
+
+        console.log("firing set password request to the backend...");
 
         const tokenRequestBody = {
             method: "GET",
@@ -27,21 +34,21 @@ function Login() {
             data: null,
         };
 
-        const resetRequestBody = {
+        const setRequestBody = {
             method: "POST",
             headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken},
-            data: {"email": email},
+            data: {"password": password1},
         };
 
         axios
-            .get("/auth/reset", tokenRequestBody)
+            .get("/auth/reset", tokenRequestBody) // TODO: what is the proper url for these requests
             .then((res) => {
                 if (res.status === 200) {
                     setCsrfToken(res.data['response']['csrf_token']);
                     console.log("token response:");
                     console.log(res.data);
                     axios
-                        .post("/auth/reset", resetRequestBody)
+                        .post("/auth/reset", setRequestBody)
                         .then((res) => {
                             if (res.status === 200) {
                                 console.log("reset response:");
@@ -58,7 +65,6 @@ function Login() {
                                 alert(error.response.data.error);
                             }
                         });
-
                 }
             })
             .catch((error) => {
@@ -85,31 +91,43 @@ function Login() {
             </Row>
             {error &&
                 <Row>
-                    <p>Error, could not reset password.</p>
+                    <p>Error, could not set password.</p>
                 </Row>
             }
             {success &&
                 <Row>
-                    <p>Password reset request sent.</p>
+                    <p>Password set.</p>
                 </Row>
             }
             <Row className="justify-content-md-center">
                 <Col sm="12" md="6">
                     <Form onSubmit={handleSubmit}>
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
+                        <Form.Group className="mb-3" controlId="formBasicPassword">
+                            <Form.Label>Password</Form.Label>
                             <Form.Control
-                                type="email"
-                                placeholder="Enter email"
+                                type="password"
+                                placeholder="Password"
+                                value={password1}
+                                onChange={(e) => setPassword1(e.target.value)}
                                 required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="formBasicPassword">
+                            <Form.Label>Confirm Password</Form.Label>
+                            <Form.Control
+                                type="password"
+                                placeholder="Retype password"
+                                value={password2}
+                                onChange={(e) => setPassword2(e.target.value)}
+                                required
                             />
                         </Form.Group>
 
                         <Row className="justify-content-sm-center">
                             <Col sm="4">
                                 <Button variant={currentTheme.variant} type="submit">
-                                    Reset
+                                    Set Password
                                 </Button>
                             </Col>
                         </Row>
@@ -120,4 +138,4 @@ function Login() {
     );
 }
 
-export default Reset;
+export default SetPassword;

@@ -8,6 +8,7 @@ import Register from "./components/Register/Register";
 import Login from "./components/Register/Login";
 import Result from "./components/Results/ResultsPage";
 import Reset from "./components/Register/Reset"
+import SetPassword from "./components/Register/SetPassword";
 
 import { Provider } from "react-redux";
 import { store } from "./components/Theme/themeActions";
@@ -22,6 +23,7 @@ function App() {
             <Route path="/signup" component={Register}/>
             <Route path="/login" component={Login}/>
             <Route path="/reset" component={Reset}/>
+            <Route path="/set-password" component={SetPassword}/>
             <Route path="/result:id" component={Result}/>
             <Route path="*" component={Home}/>
           </Switch>
