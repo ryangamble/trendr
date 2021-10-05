@@ -43,10 +43,6 @@ function Login() {
       });
   };
 
-  const handleReset = (event) => {
-    event.preventDefault();
-    console.log("firing request to reset password...");
-  };
   return (
     <div
       style={{
@@ -92,13 +88,13 @@ function Login() {
               </Col>
               <Col sm="4">
                 <Link to="signup" style={{ color: currentTheme.linkColor }}>
-                  Do not have an account?{" "}
+                  Register An Acocunt{" "}
                 </Link>
               </Col>
               <Col sm="4">
-                <Button onClick={handleReset} variant={currentTheme.variant}>
-                  Reset Password
-                </Button>
+                <Link to="reset" style={{ color: currentTheme.linkColor }}>
+                  Reset Password{" "}
+                </Link>
               </Col>
             </Row>
           </Form>
