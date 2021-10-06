@@ -5,12 +5,11 @@ import MyNavBar from "../NavBar/MyNavBar";
 import { Row, Col, Form, Button } from "react-bootstrap";
 import axios from "axios";
 
-function Login() {
+function Reset() {
     const currentTheme = useSelector((state) => state.currentTheme);
     const [email, setEmail] = useState("");
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(false);
-    const [csrfToken, setCsrfToken] = useState("");
 
     const history = useHistory();
 
@@ -21,44 +20,20 @@ function Login() {
         console.log("firing reset password request to the backend...");
         console.log("Email is ", email);
 
-        const tokenRequestBody = {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-            data: null,
-        };
-
         const resetRequestBody = {
             method: "POST",
-            headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken},
+            headers: {"Content-Type": "application/json"},
             data: {"email": email},
         };
 
         axios
-            .get("/auth/reset", tokenRequestBody)
+            .post("/auth/reset", resetRequestBody)
             .then((res) => {
                 if (res.status === 200) {
-                    setCsrfToken(res.data['response']['csrf_token']);
-                    console.log("token response:");
+                    console.log("reset response:");
                     console.log(res.data);
-                    axios
-                        .post("/auth/reset", resetRequestBody)
-                        .then((res) => {
-                            if (res.status === 200) {
-                                console.log("reset response:");
-                                console.log(res.data);
-                                setSuccess(true);
-                                history.push("/home");
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                            console.log(error.response);
-                            setError(true)
-                            if (error.response.status === 400) {
-                                alert(error.response.data.error);
-                            }
-                        });
-
+                    setSuccess(true);
+                    history.push("/home");
                 }
             })
             .catch((error) => {
