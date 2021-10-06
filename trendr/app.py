@@ -1,6 +1,8 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_security import SQLAlchemyUserDatastore
 from flask_wtf.csrf import CSRFProtect
+
 from trendr.extensions import db, security, mail, celery, migrate
 from trendr.mail_util import CeleryMailUtil
 from trendr.models import (
@@ -16,6 +18,7 @@ from trendr.models import (
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object("trendr.config")
 
     configure_extensions(app)
@@ -23,8 +26,6 @@ def create_app():
     init_celery(app)
 
     with app.app_context():
-        # TODO: When we care about saving data, stop dropping the tables
-        db.drop_all()
         db.create_all()
 
     return app

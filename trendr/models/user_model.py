@@ -6,6 +6,7 @@ from trendr.extensions import db
 class Role(db.Model, fsqla.FsRoleMixin):
     __tablename__ = "roles"
 
+
 class User(db.Model, fsqla.FsUserMixin):
     __tablename__ = "users"
 
