@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import MyNavBar from "../NavBar/MyNavBar";
-import { Row, Col, Form, Button } from "react-bootstrap";
+import { Row, Col, Form, Button, Card } from "react-bootstrap";
 import axios from "axios";
 
 function Reset() {
@@ -21,10 +21,10 @@ function Reset() {
         console.log("Email is ", email);
 
         const json = JSON.stringify({
-          "email": email,
+            "email": email,
         })
         const config = {
-          headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json" }
         }
 
         axios
@@ -47,9 +47,6 @@ function Reset() {
             }}
         >
             <MyNavBar />
-            <Row className="position-relative">
-                <h2>Reset Your Password</h2>
-            </Row>
             {error &&
                 <Row>
                     <p>Error, could not reset password.</p>
@@ -61,26 +58,31 @@ function Reset() {
                 </Row>
             }
             <Row className="justify-content-md-center">
-                <Col sm="12" md="6">
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Control
-                                type="email"
-                                placeholder="Enter email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </Form.Group>
+                <Col sm="12" md="6" lg="3">
+                    <Card>
+                        <Card.Header>Reset Your Password</Card.Header>
+                        <Card.Body>
+                            <Form onSubmit={handleSubmit}>
+                                <Form.Group className="mb-3" controlId="formBasicEmail">
+                                    <Form.Control
+                                        type="email"
+                                        placeholder="Enter email"
+                                        required
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                </Form.Group>
 
-                        <Row className="justify-content-sm-center">
-                            <Col sm="4">
-                                <Button variant={currentTheme.variant} type="submit">
-                                    Reset
-                                </Button>
-                            </Col>
-                        </Row>
-                    </Form>
+                                <Row className="justify-content-sm-center">
+                                    <Col sm="4">
+                                        <Button variant={currentTheme.variant} type="submit">
+                                            Reset
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </Form>
+                        </Card.Body>
+                    </Card>
                 </Col>
             </Row>
         </div>
