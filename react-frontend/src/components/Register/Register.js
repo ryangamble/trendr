@@ -37,7 +37,7 @@ function Register() {
     }
 
     axios
-      .post("/auth/register", json, config)
+      .post("http://localhost:5000/auth/register", json, config)
       .then((res) => {
         history.push("/login");
       })

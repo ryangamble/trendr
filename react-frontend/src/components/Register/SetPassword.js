@@ -37,7 +37,7 @@ function SetPassword() {
         }
 
         axios
-            .post("/auth/reset/" + resetCode, json, config)
+            .post("http://localhost:5000/auth/reset/" + resetCode, json, config)
             .then((res) => {
                 if (res.status === 200) {
                     console.log("reset response:");

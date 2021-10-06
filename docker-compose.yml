@@ -1,16 +1,16 @@
 version: "3.8"
 services:
-  frontend:
+  client:
     build:
       context: ./react-frontend
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "3000:80"
     volumes:
       - "/usr/src/frontend/node_modules"
       - "./react-frontend:/usr/src/frontend"
 
-  backend:
+  api:
     build:
       context: .
       dockerfile: ./compose/local/flask/Dockerfile

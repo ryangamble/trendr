@@ -28,7 +28,7 @@ function Reset() {
         }
 
         axios
-            .post("/auth/reset", json, config)
+            .post("http://localhost:5000/auth/reset", json, config)
             .then((res) => {
                 if (res.status === 200) {
                     console.log("reset response:");

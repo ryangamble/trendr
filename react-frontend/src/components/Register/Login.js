@@ -28,7 +28,7 @@ function Login() {
     };
 
     axios
-        .post("/auth/login", json, config)
+        .post("http://localhost:5000/auth/login", json, config)
         .then((res) => {
           if (res.status === 200) {
             console.log(res.data);
@@ -88,7 +88,7 @@ function Login() {
                 </Button>
               </Col>
               <Col sm="4">
-                <Link to="signup" style={{ color: currentTheme.linkColor }}>
+                <Link to="register" style={{ color: currentTheme.linkColor }}>
                   Register An Acocunt{" "}
                 </Link>
               </Col>

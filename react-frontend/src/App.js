@@ -21,7 +21,7 @@ function App() {
         <Router>
           <Switch>
             <Route path="/home" component={Home}/>
-            <Route path="/signup" component={Register}/>
+            <Route path="/register" component={Register}/>
             <Route path="/login" component={Login}/>
             <Route path="/reset" component={Reset}/>
             <Route path="/set-password/:resetCode" component={SetPassword}/>
