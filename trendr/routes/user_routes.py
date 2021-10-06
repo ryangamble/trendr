@@ -1,8 +1,6 @@
-from flask import Blueprint, request
-
-from trendr.controllers.user_controller import find_user
-from trendr.routes.helpers.json_response import json_response
-from trendr.tasks.email import send_flask_mail
+from flask import Blueprint
+from trendr.tasks.mail import send_flask_mail
+from trendr.tasks.basic import test
 
 users = Blueprint("users", __name__, url_prefix="/users")
 
