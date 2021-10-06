@@ -17,7 +17,7 @@ function MyNavBar() {
         variant="dark"
       >
         <Container>
-          <Navbar.Brand href="home">Welcome to Trendr</Navbar.Brand>
+          <Navbar.Brand href="home" style={{fontSize: "2em"}}>Trendr</Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ms-auto">
