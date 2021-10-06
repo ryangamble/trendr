@@ -26,8 +26,6 @@ function SetPassword() {
             return;
         }
 
-        console.log("firing set password request to the backend...");
-
         const json = JSON.stringify({
             "password": password1,
             "password_confirm": password2
@@ -39,20 +37,11 @@ function SetPassword() {
         axios
             .post("http://localhost:5000/auth/reset/" + resetCode, json, config)
             .then((res) => {
-                if (res.status === 200) {
-                    console.log("reset response:");
-                    console.log(res.data);
-                    setSuccess(true);
-                    history.push("/home");
-                }
+                setSuccess(true);
+                history.push("/home");
             })
             .catch((error) => {
-                console.log(error);
-                console.log(error.response);
-                setError(true)
-                if (error.response.status === 400) {
-                    alert(error.response.data.error);
-                }
+                alert(error.response.data.response.errors);
             });
     };
 

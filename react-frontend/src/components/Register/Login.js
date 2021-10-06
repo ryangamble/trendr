@@ -15,9 +15,6 @@ function Login() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("firing login request to the backend...");
-    console.log("Email is ", email);
-    console.log("password is ", password);
 
     const json = JSON.stringify({
       "email": email,
@@ -30,17 +27,10 @@ function Login() {
     axios
         .post("http://localhost:5000/auth/login", json, config)
         .then((res) => {
-          if (res.status === 200) {
-            console.log(res.data);
-            history.push("/home");
-          }
+          history.push("/home");
         })
         .catch((error) => {
-          console.log(error);
-          console.log(error.response);
-          if (error.response.status === 400) {
-            alert(error.response.data.error);
-          }
+          alert(error.response.data.response.errors);
         });
   };
 

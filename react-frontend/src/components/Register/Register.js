@@ -17,11 +17,6 @@ function Register() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("firing registration request to the backend...");
-    console.log("Email is ", email);
-    console.log("Username is", username);
-    console.log("password1 is ", password1);
-    console.log("password2 is ", password2);
 
     if (password1 !== password2) {
       alert("Passwords are not the same!");
@@ -42,10 +37,7 @@ function Register() {
         history.push("/login");
       })
       .catch((error) => {
-        console.log(error.response);
-        if (error.response.status === 400) {
-          alert(error.response.errors);
-        }
+        alert(error.response.data.response.errors);
       });
   };
   return (
