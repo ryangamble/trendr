@@ -28,20 +28,16 @@ function SetPassword() {
 
         console.log("firing set password request to the backend...");
 
-        const tokenRequestBody = {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-            data: null,
-        };
-
-        const setRequestBody = {
-            method: "POST",
-            headers: { "Content-Type": "application/json"},
-            data: {"password": password1},
-        };
+        const json = JSON.stringify({
+            "password": password1,
+            "password_confirm": password2
+        })
+        const config = {
+          headers: { "Content-Type": "application/json" }
+        }
 
         axios
-            .post("/auth/reset/" + resetCode, setRequestBody)
+            .post("/auth/reset/" + resetCode, json, config)
             .then((res) => {
                 if (res.status === 200) {
                     console.log("reset response:");

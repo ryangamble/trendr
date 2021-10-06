@@ -10,7 +10,6 @@ function Login() {
   const currentTheme = useSelector((state) => state.currentTheme);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [csrfToken, setCsrfToken] = useState("");
 
   const history = useHistory();
 
@@ -20,47 +19,29 @@ function Login() {
     console.log("Email is ", email);
     console.log("password is ", password);
 
-    const tokenRequestBody = {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      data: null,
-    };
-
-    const loginRequestBody = {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken},
-      data: {"email": email, "password": password},
+    const json = JSON.stringify({
+      "email": email,
+      "password": password,
+    });
+    const config = {
+      headers: { "Content-Type": "application/json" }
     };
 
     axios
-      .get("/auth/login", tokenRequestBody)
-      .then((res) => {
-        if (res.status === 200) {
-          setCsrfToken(res.data['response']['csrf_token']);
-          axios
-              .post("/auth/login", loginRequestBody)
-              .then((res) => {
-                if (res.status === 200) {
-                  console.log(res.data);
-                  history.push("/home");
-                }
-              })
-              .catch((error) => {
-                console.log(error);
-                console.log(error.response);
-                if (error.response.status === 400) {
-                  alert(error.response.data.error);
-                }
-              });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        console.log(error.response);
-        if (error.response.status === 400) {
-          alert(error.response.data.error);
-        }
-      });
+        .post("/auth/login", json, config)
+        .then((res) => {
+          if (res.status === 200) {
+            console.log(res.data);
+            history.push("/home");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          console.log(error.response);
+          if (error.response.status === 400) {
+            alert(error.response.data.error);
+          }
+        });
   };
 
   return (

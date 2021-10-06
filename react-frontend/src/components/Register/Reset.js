@@ -20,14 +20,15 @@ function Reset() {
         console.log("firing reset password request to the backend...");
         console.log("Email is ", email);
 
-        const resetRequestBody = {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            data: {"email": email},
-        };
+        const json = JSON.stringify({
+          "email": email,
+        })
+        const config = {
+          headers: { "Content-Type": "application/json" }
+        }
 
         axios
-            .post("/auth/reset", resetRequestBody)
+            .post("/auth/reset", json, config)
             .then((res) => {
                 if (res.status === 200) {
                     console.log("reset response:");

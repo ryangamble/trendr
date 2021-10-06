@@ -44,11 +44,9 @@ def configure_extensions(app):
 def register_blueprints(app):
 
     from trendr.routes.asset_routes import assets as assets_blueprint
-    # from trendr.routes.auth_routes import auth as auth_blueprint
     from trendr.routes.user_routes import users as users_blueprint
 
     app.register_blueprint(assets_blueprint)
-    # app.register_blueprint(auth_blueprint)
     app.register_blueprint(users_blueprint)
 
     # logging routes

@@ -28,26 +28,23 @@ function Register() {
       return;
     }
 
-    const requestBody = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      username: username,
-      email: email,
-      password: password1,
-    };
+    const json = JSON.stringify({
+      "email": email,
+      "password": password1,
+    })
+    const config = {
+      headers: { "Content-Type": "application/json" }
+    }
 
     axios
-      .post("/auth/signup", requestBody)
+      .post("/auth/register", json, config)
       .then((res) => {
-        console.log(res.data);
-        if (res.status === 200) {
-          history.push("/home");
-        }
+        history.push("/login");
       })
       .catch((error) => {
         console.log(error.response);
         if (error.response.status === 400) {
-          alert(error.response.data.error);
+          alert(error.response.errors);
         }
       });
   };
