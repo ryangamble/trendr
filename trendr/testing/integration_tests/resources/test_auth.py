@@ -4,10 +4,33 @@ import requests
 from trendr.testing.helpers import create_random_string
 
 
+class Helpers:
+    @staticmethod
+    def csrf_post(url, session=None, json=None):
+        if session == None:
+            session = requests.Session()
+
+        headers = {"Accept": "application/json"}
+        resp = session.get(url, headers=headers)
+        print(resp.status_code)
+        print(resp.headers)
+        if "X-XSS-Protection" in resp.headers and int(resp.headers["X-XSS-Protection"]):
+            cookies = session.cookies.get_dict()
+            print(cookies)
+
+            headers["X-XSRF-TOKEN"] = cookies["XSRF-TOKEN"]
+        return session.post(url, json=json, headers=headers)
+
+
+@pytest.fixture
+def helpers():
+    return Helpers
+
+
 # Positive Tests
 
 
-def test_create_user_login():
+def test_create_user_login(helpers):
     username = create_random_string(20)
     email = create_random_string(7) + "@gmail.com"
     password = create_random_string(20)
@@ -18,9 +41,10 @@ def test_create_user_login():
         "email": email,
         "password": password,
     }
-    resp = requests.post("http://localhost:5000/auth/signup", json=body)
+    resp = helpers.csrf_post("http://localhost:5000/auth/signup", json=body)
     assert resp.status_code == 200
     data = resp.json()
+    print(data)
     assert "message" in data
     assert data["message"] == "Success"
 
@@ -29,9 +53,10 @@ def test_create_user_login():
         "email": email,
         "password": password,
     }
-    resp = requests.post("http://localhost:5000/auth/login", json=body)
+    resp = helpers.csrf_post("http://localhost:5000/auth/login", json=body)
     assert resp.status_code == 200
     data = resp.json()
+    print(data)
     assert "username" in data
     assert data["username"] == username
     assert "email" in data
@@ -53,6 +78,7 @@ def test_create_user_logout_login():
         "password": password,
     }
     resp = s.post("http://localhost:5000/auth/signup", json=body)
+    print(resp)
     assert resp.status_code == 200
     data = resp.json()
     assert "message" in data
@@ -64,6 +90,7 @@ def test_create_user_logout_login():
         "password": create_random_string(20),
     }
     resp = s.post("http://localhost:5000/auth/login", json=body)
+    print(resp)
     assert resp.status_code == 200
     data = resp.json()
     assert "username" in data
@@ -73,6 +100,7 @@ def test_create_user_logout_login():
     assert "roles" in data
 
     resp = s.post("http://localhost:5000/auth/logout")
+    print(resp)
     assert resp.status_code == 200
     data = resp.json()
     assert "message" in data
@@ -84,6 +112,7 @@ def test_create_user_logout_login():
         "password": password,
     }
     resp = requests.post("http://localhost:5000/auth/login", json=body)
+    print(resp)
     assert resp.status_code == 200
     data = resp.json()
     assert "username" in data
@@ -111,6 +140,7 @@ def test_create_user_missing_field(missing_field):
     }
     del body[missing_field]
     resp = requests.post("http://localhost:5000/auth/signup", json=body)
+    print(resp)
     assert resp.status_code == 400
     data = resp.json()
     assert "error" in data
@@ -131,6 +161,7 @@ def test_login_missing_field(missing_field):
     }
     del body[missing_field]
     resp = requests.post("http://localhost:5000/auth/login", json=body)
+    print(resp)
     assert resp.status_code == 400
     data = resp.json()
     assert "error" in data
@@ -148,10 +179,12 @@ def test_create_user_duplicate_username():
         "password": create_random_string(20),
     }
     requests.post("http://localhost:5000/auth/signup", json=body)
+    print(resp)
 
     # Create a new random user with the same username as the first
     body["email"] = create_random_string(7) + "@gmail.com"
     resp = requests.post("http://localhost:5000/auth/signup", json=body)
+    print(resp)
     assert resp.status_code == 400
     data = resp.json()
     assert "error" in data
@@ -169,10 +202,12 @@ def test_create_user_duplicate_email():
         "password": create_random_string(20),
     }
     requests.post("http://localhost:5000/auth/signup", json=body)
+    print(resp)
 
     # Create a new random user with the same email as the first
     body["username"] = create_random_string(20)
     resp = requests.post("http://localhost:5000/auth/signup", json=body)
+    print(resp)
     assert resp.status_code == 400
     data = resp.json()
     assert "error" in data
@@ -197,6 +232,7 @@ def test_create_user_invalid_password(password, error_msgs):
         "password": password,
     }
     resp = requests.post("http://localhost:5000/auth/signup", json=body)
+    print(resp)
     assert resp.status_code == 400
     data = resp.json()
     assert "error" in data
@@ -212,6 +248,7 @@ def test_login_email_does_not_exist():
         "password": create_random_string(20),
     }
     resp = requests.post("http://localhost:5000/auth/login", json=body)
+    print(resp)
     assert resp.status_code == 400
     data = resp.json()
     assert "error" in data
@@ -231,6 +268,7 @@ def test_login_password_does_not_match():
         "password": create_random_string(20),
     }
     resp = requests.post("http://localhost:5000/auth/signup", json=body)
+    print(resp)
     assert resp.status_code == 200
     data = resp.json()
     assert "message" in data
@@ -242,6 +280,7 @@ def test_login_password_does_not_match():
         "password": create_random_string(20),
     }
     resp = requests.post("http://localhost:5000/auth/login", json=body)
+    print(resp)
     assert resp.status_code == 400
     data = resp.json()
     assert "error" in data

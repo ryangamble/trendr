@@ -17,14 +17,10 @@ def fetch_config(name: str, default: any = None, cast: any = str):
 
     if name in os.environ:
         val = os.getenv(name)
-        if cast != str:
-            try:
-                return cast(val)
-            except Exception:
-                return val
-        else:
+        try:
+            return cast(val)
+        except Exception:
             return val
-
     return default
 
 
@@ -72,6 +68,19 @@ SECURITY_PASSWORD_COMPLEXITY_CHECKER = fetch_config(
     "SECURITY_PASSWORD_COMPLEXITY_CHECKER",
     default=defaults["SECURITY_PASSWORD_COMPLEXITY_CHECKER"],
 )
+SECURITY_BLUEPRINT_NAME = "auth"
+SECURITY_URL_PREFIX = "/auth"
+SECURITY_CSRF_COOKIE_NAME = "XSRF-TOKEN"
+WTF_CSRF_TIME_LIMIT = None
+SECURITY_CSRF_IGNORE_UNAUTH_ENDPOINTS = True
+SECURITY_LOGOUT_METHODS = ["POST"]
+SECURITY_RECOVERABLE = True
+SECURITY_TRACKABLE = True
+SECURITY_CHANGEABLE = True
+SECURITY_CONFIRMABLE = True
+SECURITY_REGISTERABLE = True
+SECURITY_USERNAME_ENABLE = True
+SECURITY_EMAIL_SENDER = "admin@trendr.dev"
 SQLALCHEMY_DATABASE_URI = fetch_config(
     "SQLALCHEMY_DATABASE_URI", default=defaults["SQLALCHEMY_DATABASE_URI"]
 )

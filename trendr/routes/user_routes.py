@@ -1,4 +1,6 @@
 from flask import Blueprint
+from trendr.tasks.mail import send_flask_mail
+from trendr.tasks.basic import test
 
 users = Blueprint("users", __name__, url_prefix="/users")
 

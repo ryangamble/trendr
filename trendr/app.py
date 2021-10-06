@@ -1,8 +1,18 @@
 from flask import Flask
 from flask_security import SQLAlchemyUserDatastore
-# from flask_security.models import fsqla_v2 as fsqla
+from flask_wtf.csrf import CSRFProtect
 from trendr.extensions import db, security, mail, celery, migrate
-from trendr.models import *
+from trendr.mail_util import CeleryMailUtil
+from trendr.models import (
+    User,
+    Role,
+    Search,
+    RedditPost,
+    Tweet,
+    search_tweet_association,
+    search_reddit_post_association,
+)
+
 
 def create_app():
     app = Flask(__name__)
@@ -21,42 +31,30 @@ def create_app():
 
 
 def configure_extensions(app):
-    # fsqla.FsModels.set_db_info(
-    #     db, user_table_name="users", role_table_name="roles"
-    # )
-
-    # from trendr.models import (
-    #     User,
-    #     Role,
-    #     Search,
-    #     RedditPost,
-    #     Tweet,
-    #     search_tweet_association,
-    #     search_reddit_post_association,
-    # )
 
     db.init_app(app)
     migrate.init_app(app, db)
 
     mail.init_app(app)
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-    security.init_app(app, user_datastore)
+    security.init_app(app, user_datastore, mail_util_cls=CeleryMailUtil)
+    CSRFProtect(app)
 
 
 def register_blueprints(app):
-    
+
     from trendr.routes.asset_routes import assets as assets_blueprint
-    from trendr.routes.auth_routes import auth as auth_blueprint
+    # from trendr.routes.auth_routes import auth as auth_blueprint
     from trendr.routes.user_routes import users as users_blueprint
 
     app.register_blueprint(assets_blueprint)
-    app.register_blueprint(auth_blueprint)
+    # app.register_blueprint(auth_blueprint)
     app.register_blueprint(users_blueprint)
 
     # logging routes
     print("\nApp routes:")
-    print([str(p) for p in app.url_map.iter_rules()])
-    print("\n")
+    print(app.url_map)
+    # print("\n".join(sorted([f"{p.method}" for p in app.url_map.iter_rules()])))
 
 
 def init_celery(app=None):
