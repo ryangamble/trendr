@@ -30,8 +30,11 @@ function MyNavBar() {
               <Nav.Link as={Link} to="/report">
                 MyReport
               </Nav.Link>
-              <Nav.Link as={Link} to="/about" style={{ marginRight: "20px" }}>
+              <Nav.Link as={Link} to="/about">
                 About
+              </Nav.Link>
+              <Nav.Link as={Link} to="/login" style={{ marginRight: "20px" }}>
+                Login
               </Nav.Link>
               <Button
                 variant={currentTheme.variant}

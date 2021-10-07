@@ -1,17 +1,24 @@
 from flask import Flask
-from trendr.extensions import login_manager, celery, migrate, db
-from trendr.models.user_model import UserModel
-from trendr.models.search_model import SearchModel
-from trendr.models.tweet_model import TweetModel
-from trendr.models.reddit_post_model import RedditPostModel
-from trendr.models.association_tables import tweet_association_table, reddit_post_association_table
-from trendr.routes.asset_routes import assets as assets_blueprint
-from trendr.routes.auth_routes import auth as auth_blueprint
-from trendr.routes.user_routes import users as users_blueprint
+from flask_cors import CORS
+from flask_security import SQLAlchemyUserDatastore
+from flask_wtf.csrf import CSRFProtect
+
+from trendr.extensions import db, security, mail, celery, migrate
+from trendr.mail_util import CeleryMailUtil
+from trendr.models import (
+    User,
+    Role,
+    Search,
+    RedditPost,
+    Tweet,
+    search_tweet_association,
+    search_reddit_post_association,
+)
 
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object("trendr.config")
 
     configure_extensions(app)
@@ -19,34 +26,34 @@ def create_app():
     init_celery(app)
 
     with app.app_context():
-        # TODO: When we care about saving data, stop dropping the tables
-        db.drop_all()
         db.create_all()
 
     return app
 
 
 def configure_extensions(app):
+
     db.init_app(app)
     migrate.init_app(app, db)
-    login_manager.login_view = 'routes.auth.login'
-    login_manager.init_app(app)
 
-    @login_manager.user_loader
-    def load_user(user_id):
-        # since the user_id is just the primary key of our user table, use it in the query for the user
-        return UserModel.query.get(int(user_id))
+    mail.init_app(app)
+    user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+    security.init_app(app, user_datastore, mail_util_cls=CeleryMailUtil)
+    CSRFProtect(app)
 
 
 def register_blueprints(app):
+
+    from trendr.routes.asset_routes import assets as assets_blueprint
+    from trendr.routes.user_routes import users as users_blueprint
+
     app.register_blueprint(assets_blueprint)
-    app.register_blueprint(auth_blueprint)
     app.register_blueprint(users_blueprint)
 
     # logging routes
     print("\nApp routes:")
-    print([str(p) for p in app.url_map.iter_rules()])
-    print("\n")
+    print(app.url_map)
+    # print("\n".join(sorted([f"{p.method}" for p in app.url_map.iter_rules()])))
 
 
 def init_celery(app=None):
@@ -67,4 +74,4 @@ def init_celery(app=None):
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True, port=5000)

@@ -21,3 +21,4 @@ def update_user(user_id):
 @users.route("/<user_id>", methods=["DELETE"])
 def delete_user(user_id):
     pass
+

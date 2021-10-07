@@ -22,13 +22,13 @@ RUN pip install -r /requirements.txt
 # RUN sed -i 's/\r$//g' /entrypoint
 # RUN chmod +x /entrypoint
 
-# COPY ./compose/local/flask/start /start
-# RUN sed -i 's/\r$//g' /start
-# RUN chmod +x /start
+COPY ./compose/local/flask/start /start
+RUN sed -i 's/\r$//g' /start
+RUN chmod +x /start
 
-COPY ./compose/local/flask/celery/worker/basic/start /start-celeryworker-basic
-RUN sed -i 's/\r$//g' /start-celeryworker-basic
-RUN chmod +x /start-celeryworker-basic
+COPY ./compose/local/flask/celery/worker/general/start /start-celeryworker-general
+RUN sed -i 's/\r$//g' /start-celeryworker-general
+RUN chmod +x /start-celeryworker-general
 
 COPY ./compose/local/flask/celery/beat/start /start-celerybeat
 RUN sed -i 's/\r$//g' /start-celerybeat

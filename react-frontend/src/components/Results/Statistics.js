@@ -19,7 +19,7 @@ function Statistics(props) {
   useEffect(() => {
     setLoading(true);
     axios
-      .post("/assets/stats", requestBody)
+      .post("http://localhost:5000/assets/stats", requestBody)
       .then((res) => {
         setLoading(true);
         return JSON.parse(JSON.stringify(res.data));

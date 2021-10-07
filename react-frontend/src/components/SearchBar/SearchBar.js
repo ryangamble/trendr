@@ -39,7 +39,7 @@ function SearchBar() {
     };
 
     axios
-      .post("/assets/search", requestBody)
+      .post("http://localhost:5000/assets/search", requestBody)
       .then((res) => {
         return JSON.parse(JSON.stringify(res.data.quotes));
       })

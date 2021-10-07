@@ -8,6 +8,8 @@ import re
 import pmaw
 from trendr.connectors import twitter_connector
 from trendr.connectors import reddit_connector
+from trendr.tasks.reddit import *
+from .helpers.json_response import json_response
 
 assets = Blueprint('assets', __name__, url_prefix="/assets")
 
@@ -76,12 +78,7 @@ def twitter_sentiment():
     return jsonify(text)
 
 @assets.route('/reddit_sentiment', methods=['GET'])
-def reddit_sentiment():
-    # pmaw_api = reddit_connector.create_pmaw_api()
-    results = reddit_connector.gather_submissions(api=reddit_connector.create_pmaw_api(), keywords="AAPL")
-    text = []
+def reddit_sentiment_route():
+    res = reddit_sentiment.delay()
 
-    for result in results:
-        print(str(result))
-        
-    return jsonify(str(result))
+    return json_response(res.get(timeout=30))
