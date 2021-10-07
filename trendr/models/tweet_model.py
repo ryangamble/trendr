@@ -1,15 +1,10 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import Integer, Text, DateTime
-from sqlalchemy_utils import force_auto_coercion
-
 from trendr.extensions import db
-from trendr.models.association_tables import tweet_association_table
+from trendr.models.association_tables import search_tweet_association
 
 
-force_auto_coercion()
-
-
-class TweetModel(db.Model):
+class Tweet(db.Model):
     __tablename__ = "tweets"
 
     id = db.Column(Integer, primary_key=True, autoincrement="auto")
@@ -18,7 +13,11 @@ class TweetModel(db.Model):
     tweeted_at = db.Column(DateTime, nullable=False)
     likes = db.Column(Integer, nullable=False)
     retweets = db.Column(Integer, nullable=False)
-    sentiment_score = db.Column(Integer, nullable=False)
+    sentiment_score = db.Column(Integer, nullable=True)
 
     # There is a many-many relationship between searches and tweets
-    searches = relationship("SearchModel", secondary=tweet_association_table)
+    searches = relationship(
+        "Search",
+        secondary=search_tweet_association,
+        back_populates="tweets",
+    )
