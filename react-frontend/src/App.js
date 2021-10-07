@@ -24,8 +24,8 @@ function App() {
             <Route path="/register" component={Register}/>
             <Route path="/login" component={Login}/>
             <Route path="/reset" component={Reset}/>
-            <Route path="/set-password/:resetCode" component={SetPassword}/>
-            <Route path="/result/:id" component={Result}/>
+            <Route path="/set-password:resetCode" component={SetPassword}/>
+            <Route path="/result:id" component={Result}/>
             <Route path="/about" component={About}/>
             <Route path="*" component={Home}/>
           </Switch>

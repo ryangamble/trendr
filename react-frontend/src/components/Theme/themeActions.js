@@ -8,6 +8,7 @@ export const themes = {
     foreground: "#000000",
     background: "#ffffff",
     linkColor: "#1976D2",
+    textColorLightBackground: "black",
     fill: "#fff",
   },
   dark: {
@@ -16,6 +17,7 @@ export const themes = {
     foreground: "#ffffff",
     background: "#222222",
     linkColor: "white",
+    textColorLightBackground: "black",
     fill: "#222",
   },
 };

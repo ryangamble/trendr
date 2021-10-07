@@ -9,16 +9,10 @@ function Reset() {
     const currentTheme = useSelector((state) => state.currentTheme);
     const [email, setEmail] = useState("");
     const [success, setSuccess] = useState(false);
-    const [error, setError] = useState(false);
-
-    const history = useHistory();
 
     const handleSubmit = (event) => {
         event.preventDefault();
         setSuccess(false)
-        setError(false)
-        console.log("firing reset password request to the backend...");
-        console.log("Email is ", email);
 
         const json = JSON.stringify({
             "email": email,
@@ -33,8 +27,7 @@ function Reset() {
                 setSuccess(true);
             })
             .catch((error) => {
-                setError(true)
-                alert(error.response.data.response.errors);
+                alert(JSON.stringify(error.response.data.response.errors));
             });
     };
 
@@ -47,11 +40,6 @@ function Reset() {
             }}
         >
             <MyNavBar />
-            {error &&
-                <Row>
-                    <p>Error, could not reset password.</p>
-                </Row>
-            }
             {success &&
                 <Row>
                     <p>Password reset request sent.</p>
@@ -60,7 +48,7 @@ function Reset() {
             <Row className="justify-content-md-center">
                 <Col sm="12" md="6" lg="3">
                     <Card>
-                        <Card.Header>Reset Your Password</Card.Header>
+                        <Card.Header style={{ color: currentTheme.textColorLightBackground }}>Reset Your Password</Card.Header>
                         <Card.Body>
                             <Form onSubmit={handleSubmit}>
                                 <Form.Group className="mb-3" controlId="formBasicEmail">

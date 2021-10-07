@@ -8,8 +8,6 @@ import axios from "axios";
 function SetPassword() {
     const { resetCode } = useParams();
     const currentTheme = useSelector((state) => state.currentTheme);
-    const [success, setSuccess] = useState(false);
-    const [error, setError] = useState(false);
     const [password1, setPassword1] = useState("");
     const [password2, setPassword2] = useState("");
 
@@ -17,31 +15,27 @@ function SetPassword() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        setSuccess(false)
-        setError(false)
 
         if (password1 !== password2) {
             alert("Passwords are not the same!");
-            setError(true)
             return;
         }
 
         const json = JSON.stringify({
             "password": password1,
             "password_confirm": password2
-        })
+        });
         const config = {
             headers: { "Content-Type": "application/json" }
-        }
+        };
 
         axios
-            .post("http://localhost:5000/auth/reset/" + resetCode, json, config)
+            .post("http://localhost:5000/auth/reset/" + resetCode.substring(1), json, config)
             .then((res) => {
-                setSuccess(true);
-                history.push("/home");
+                history.push("/login");
             })
             .catch((error) => {
-                alert(error.response.data.response.errors);
+                alert(JSON.stringify(error.response.data.response.errors));
             });
     };
 
@@ -54,24 +48,14 @@ function SetPassword() {
             }}
         >
             <MyNavBar />
-            {error &&
-                <Row>
-                    <p>Error, could not set password.</p>
-                </Row>
-            }
-            {success &&
-                <Row>
-                    <p>Password set.</p>
-                </Row>
-            }
             <Row className="justify-content-md-center">
                 <Col sm="12" md="6" lg="3">
                     <Card>
-                        <Card.Header>Reset Your Password</Card.Header>
+                        <Card.Header style={{ color: currentTheme.textColorLightBackground }}>Reset Your Password</Card.Header>
                         <Card.Body>
-                            <Form onSubmit={handleSubmit} className="col-5">
+                            <Form onSubmit={handleSubmit}>
                                 <Form.Group className="mb-3" controlId="formBasicPassword">
-                                    <Form.Label>Password</Form.Label>
+                                    <Form.Label style={{ color: currentTheme.textColorLightBackground }}>Password</Form.Label>
                                     <Form.Control
                                         type="password"
                                         placeholder="Password"
@@ -82,7 +66,7 @@ function SetPassword() {
                                 </Form.Group>
 
                                 <Form.Group className="mb-3" controlId="formBasicPassword">
-                                    <Form.Label>Confirm Password</Form.Label>
+                                    <Form.Label style={{ color: currentTheme.textColorLightBackground }}>Confirm Password</Form.Label>
                                     <Form.Control
                                         type="password"
                                         placeholder="Retype password"

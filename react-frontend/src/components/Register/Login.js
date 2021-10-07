@@ -30,7 +30,7 @@ function Login() {
         history.push("/home");
       })
       .catch((error) => {
-        alert(error.response.data.response.errors);
+        alert(JSON.stringify(error.response.data.response.errors));
       });
   };
 
@@ -46,11 +46,11 @@ function Login() {
       <Row className="justify-content-md-center">
         <Col sm="12" md="6" lg="3">
           <Card>
-            <Card.Header>Login</Card.Header>
+            <Card.Header style={{ color: currentTheme.textColorLightBackground }}>Login</Card.Header>
             <Card.Body>
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                  <Form.Label>Email address</Form.Label>
+                  <Form.Label style={{ color: currentTheme.textColorLightBackground }}>Email address</Form.Label>
                   <Form.Control
                     type="email"
                     placeholder="Enter email"
@@ -61,7 +61,7 @@ function Login() {
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
-                  <Form.Label>Password</Form.Label>
+                  <Form.Label style={{ color: currentTheme.textColorLightBackground }}>Password</Form.Label>
                   <Form.Control
                     type="password"
                     placeholder="Password"
