@@ -16,7 +16,7 @@ export const themes = {
     variant: "secondary",
     foreground: "#ffffff",
     background: "#222222",
-    linkColor: "white",
+    linkColor: "#1976D2",
     textColorLightBackground: "black",
     fill: "#222",
   },
