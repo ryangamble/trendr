@@ -50,4 +50,4 @@ def get_tweets_mentioning_asset(
     """
     if not api:
         api = auth_to_api(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
-    return api.search(q=asset_identifier, since_id=since_id)
+    return api.search(q=asset_identifier, lang="en", result_type="popular", since_id=since_id)
