@@ -59,24 +59,15 @@ def test_get_comment_by_id_positive(pmaw_api: pmaw.PushshiftAPI):
     https://www.reddit.com/r/undefined/comments/ptacat/comment/hdvagh1/?utm_source=share&utm_medium=web2x&context=3
     """
 
-    comment_id = "hd9f49u"
+    comment_id = "hdvagh1"
     comments = reddit_connector.gather_comments_by_id(api=pmaw_api, ids=[comment_id])
 
     assert len(comments) == 1
     comment = next(comments)
     assert comment["id"] == comment_id
     assert (
-        comment["body"] == "&gt;2) rich people being able to create jobs and "
-        "stimulate the economy.\n\n* I don't think that rich people should be "
-        "taxed out of existence. It would probably be just fine if we could "
-        "just get them to pay the sticker price when it comes to taxes.\n* "
-        'I will push back on the "rich people being able to create jobs '
-        "and stimulate the economy\" though. Not that they don't just "
-        "that they are not necessary.\n   * Imagine a world where only "
-        "rich people exist, could you have a successful Apple, Google, "
-        "Facebook or Samsung?\n   * Imagine a world where only non-rich "
-        "people existed, could you fund a successful Apple, Google, "
-        "Facebook or Samsung?"
+        comment["body"] == "We aim to have a public website where users can view "
+        "sentiment graphs of stocks and cryptocurrencies!"
     )
 
 
