@@ -4,6 +4,7 @@ Integration tests for the Twitter connector module
 
 import pytest
 import tweepy
+from tweepy import models
 
 import trendr.exceptions
 from trendr.config import TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET
@@ -28,7 +29,7 @@ def test_get_tweet_by_id_positive(twitter_api: tweepy.API):
     tweet_id = tweets[0].__getattribute__("id")
     tweet = twitter_connector.get_tweet_by_id(tweet_id, api=twitter_api)
     assert tweet
-    assert isinstance(tweet, tweepy.Status)
+    assert isinstance(tweet, tweepy.models.Status)
     assert tweet.__getattribute__("id") == tweet_id
 
 
@@ -39,7 +40,7 @@ def test_get_tweets_mentioning_asset_positive(twitter_api: tweepy.API):
     search_term = "apple"
     tweets = twitter_connector.get_tweets_mentioning_asset(search_term, api=twitter_api)
     assert tweets
-    assert isinstance(tweets, tweepy.SearchResults)
+    assert isinstance(tweets, tweepy.models.SearchResults)
     assert tweets.__getattribute__("count") >= 1
     # Tweets are returned when attributes other than text contain the search term such as tweet.entities.urls so we
     # can't always assert the search term will be in the tweet text
@@ -53,7 +54,7 @@ def test_get_tweet_by_id_invalid_id(twitter_api: tweepy.API):
     Tests that when you try to retrieve a tweet that doesn't exist, you get a TweepError
     """
     tweet_id = -1
-    with pytest.raises(tweepy.error.TweepError):
+    with pytest.raises(tweepy.errors.TweepyException):
         twitter_connector.get_tweet_by_id(tweet_id, api=twitter_api)
 
 
