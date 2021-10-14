@@ -1,15 +1,19 @@
-from trendr.models.user_model import UserModel
+from flask_security import hash_password
+from trendr.extensions import db, security
+
+user_datastore = security.datastore
 
 
-def create_user(name: str, password: str):
-    """
-    Creates a user in the database
+def find_user(email):
+    return user_datastore.find_user(email=email)
 
-    :param name: The name of the new user
-    :param password: The password of the new user
-    :return: UserModel
-    """
-    new_user = UserModel
-    UserModel.name = name
-    UserModel.password = password
+
+def create_user(email, password, roles=None, **kwargs):
+    if roles != None:
+        kwargs["roles"] = roles
+
+    new_user = user_datastore.create_user(
+        email=email, password=hash_password(password), **kwargs
+    )
+    db.session.commit()
     return new_user

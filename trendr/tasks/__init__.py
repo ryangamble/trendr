@@ -1,2 +1,2 @@
-from ..extensions import celery
 from .basic import *
+from .mail import *

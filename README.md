@@ -1,49 +1,19 @@
 # Trendr
-## Setup
-1. Ensure Python 3.9.x installed on your system
-2. Ensure python3.9-venv installed
-3. Repo cloned and is cwd
-4. Initilize venv `python3.9 -m venv .venv`
 
-## Usage
-Before running any python commands, please enter the environment:
-`source .venv/bin/activate`
+## Basic Setup
+1. Ensure Python 3.9.x is installed on your system (https://www.python.org/downloads/)
+2. Ensure docker engine and cli are installed (both come with docker desktop https://docs.docker.com/desktop/)
+3. Clone the repo (https://github.com/ryangamble/trendr)
+4. Setup and activate a python environment for this project (see https://docs.python.org/3/library/venv.html)
 
-### Flask
-The following commands set the name of the flask app module, and then run the app:
-1. `export FLASK_APP=trendr`
-2. `flask run`
+## Running the full application in local docker containers
+1. Run `docker-compose up --build -d` from the root of the repo to run the full app 
+   (all frontend and backend components) in local docker containers (see https://docs.docker.com/compose/)
+2. Access the web frontend at `localhost`
+3. Access the flower dashboard at `localhost:5555`
 
-### Celery
-To use celery tasks we need a few parts:
-- celery workers
-- rabbitmq (message broker)
-- celerybeat (scheduled tasks)
-- flower (monitor tasks and queue)
+### Running just the backend
+For more information on how to run the backend individually, see `trendr/README.md`
 
-#### Celery worker
-To run a celery worker:  
-`celery -A trendr.tasks worker --loglevel=INFO`
-
-#### RabbitMQ
-See information on how to install RabbitMQ:  
-https://docs.celeryproject.org/en/stable/getting-started/backends-and-brokers/rabbitmq.html#broker-rabbitmq
-
-To run the docker image for RabbitMQ:  
-`docker run -d -p 5672:5672 rabbitmq`
-
-#### Celerybeat
-Unfinished
-
-#### Flower
-Unfinished
-
-### React
-To run react on localhost, make sure to have node.js installed:
-1. `cd react-frontend`
-2. `npm install`
-3. `npm start`
-
-Tasks after implementation:
-- Create docker image
-- Add GitHub OAth
+### Running just the frontend
+For more information on how to run the frontend individually, see `react-frontend/README.md`

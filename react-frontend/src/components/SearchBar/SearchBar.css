@@ -1,0 +1,35 @@
+.searchbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.searchbar__title {
+  opacity: 0.7;
+  margin-bottom: 3em;
+}
+
+.searchbar__input {
+  margin-left: 10px;
+}
+
+.searchbar__submit {
+  margin-right: 20px;
+}
+
+td.suggestSymbol {
+  text-align: left;
+  font-weight: 700;
+}
+
+td.suggestName {
+  text-align: right;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.table.suggestions {
+  cursor: pointer;
+  margin-left: 10px;
+}

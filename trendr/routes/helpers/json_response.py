@@ -9,4 +9,5 @@ def json_response(payload, status: int = 200):
     :param status: An integer http status code
     :return: (json, int, dict)
     """
-    return json.dumps(payload), status, {'content-type': 'application/json'}
+    print(payload)
+    return json.dumps(payload), status, {"content-type": "application/json"}
