@@ -3,7 +3,6 @@ from textblob import Blobber
 from textblob.sentiments import NaiveBayesAnalyzer
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
-import pandas as pd
 
 nltk.download('vader_lexicon')
 
