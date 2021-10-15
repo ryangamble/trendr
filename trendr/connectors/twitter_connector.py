@@ -3,6 +3,7 @@ Functions for interacting with the Twitter API using the tweepy library
 """
 
 import tweepy
+from tweepy import models
 
 from trendr.config import TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET
 from trendr.exceptions import ConnectorException
@@ -23,7 +24,7 @@ def auth_to_api(consumer_key: str, consumer_secret: str) -> tweepy.API:
         raise ConnectorException("Could not authenticate to Twitter because the necessary secrets were not available.")
 
 
-def get_tweet_by_id(tweet_id: int, api: tweepy.API = None) -> tweepy.Status:
+def get_tweet_by_id(tweet_id: int, api: tweepy.API = None) -> tweepy.models.Status:
     """
     Gets all the information available for given tweet.
 
@@ -38,7 +39,7 @@ def get_tweet_by_id(tweet_id: int, api: tweepy.API = None) -> tweepy.Status:
 
 def get_tweets_mentioning_asset(
         asset_identifier: str, since_id: str = None, api: tweepy.API = None
-) -> tweepy.SearchResults:
+) -> tweepy.models.SearchResults:
     """
     Queries Twitter for tweets that mention an asset_identifier (AAPL, BTC) within the last 7 days, starting at the
     tweet with the id since_id if one is provided.
@@ -50,4 +51,4 @@ def get_tweets_mentioning_asset(
     """
     if not api:
         api = auth_to_api(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
-    return api.search(q=asset_identifier, since_id=since_id)
+    return api.search_tweets(q=asset_identifier, lang="en", result_type="popular", since_id=since_id)
