@@ -6,7 +6,7 @@ import axios from "axios";
 import "./SearchBar.css";
 
 function SearchBar() {
-  const currentTheme = useSelector((state) => state.currentTheme);
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
   const [keyword, setKeyword] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const history = useHistory();

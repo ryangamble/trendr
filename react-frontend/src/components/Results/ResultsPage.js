@@ -7,7 +7,7 @@ import Statistics from "./Statistics";
 import { Container, Col, Row, Button, Spinner } from "react-bootstrap";
 
 function Results() {
-  const currentTheme = useSelector((state) => state.currentTheme);
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const { id } = useParams();
   const [currency, setCurrency] = useState(null);
