@@ -6,6 +6,8 @@ new_user_data = {
     "username": "test_username",
     "email": "test@test.test",
     "password": "test_password",
+    "active": True,
+    "fs_uniquifier": "test",
 }
 new_role_data = {
     "name": "test_role",

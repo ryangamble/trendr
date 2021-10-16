@@ -1,6 +1,9 @@
 import argparse
+import os
 import pytest
 import sys
+
+from pathlib import Path
 
 
 def create_parser():
@@ -14,6 +17,20 @@ def create_parser():
     parser.add_argument('-i', action='store_true', default=False,
                         help='Run integration tests')
     return parser
+
+
+def load_env_files():
+    """
+    Reads all environment variables files in trend/.env/ and sets them locally
+    :return:
+    """
+    env_path = Path("../../.env")
+    env_files = [filename for filename in env_path.iterdir()]
+    for env_file in env_files:
+        with env_file.open() as open_file:
+            for line in open_file.readlines():
+                env_var_parts = line.split("=")
+                os.environ[env_var_parts[0].strip()] = env_var_parts[1].strip()
 
 
 def run_unit_tests():
@@ -42,6 +59,9 @@ def run_tests():
     # Parse the command line to get the command line options
     parser = create_parser()
     args = parser.parse_args()
+
+    # Load environment variables for the tests that need them (i.e. twitter connector tests)
+    load_env_files()
 
     # Initialize result variables to 0, indicating success
     unit_result = 0
