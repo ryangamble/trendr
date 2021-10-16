@@ -22,7 +22,6 @@ def run_unit_tests():
     :return: integer result
     """
     print("RUNNING UNIT TESTS")
-    print("------------------")
     return pytest.main(["unit_tests"])
 
 
@@ -32,7 +31,6 @@ def run_integration_tests():
     :return: integer result
     """
     print("RUNNING INTEGRATION TESTS")
-    print("------------------")
     return pytest.main(["integration_tests"])
 
 
