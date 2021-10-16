@@ -1,7 +1,6 @@
 import pytest
-from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-from trendr.extensions import db, security
+from trendr.extensions import db
 from sqlalchemy import create_engine
 
 

@@ -1,7 +1,5 @@
-import pytest
 from trendr.models.tweet_model import Tweet
 from .test_data import new_tweets_data
-from .fixtures import *
 
 
 def test_add_search(db_session):
@@ -10,8 +8,6 @@ def test_add_search(db_session):
 
     :param db_session: sqlalchemy database session
     """
-
-
     new_tweet = Tweet(**new_tweets_data[0])
     db_session.add(new_tweet)
     db_session.commit()
