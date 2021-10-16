@@ -1,32 +1,37 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { registerUser } from "../Theme/userActions";
 import MyNavBar from "../NavBar/MyNavBar";
 import { Row, Col, Form, Button, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
 function Login() {
-  const currentTheme = useSelector((state) => state.currentTheme);
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const dispatch = useDispatch();
   const history = useHistory();
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
     const json = JSON.stringify({
-      "email": email,
-      "password": password,
+      email: email,
+      password: password,
     });
     const config = {
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
     };
 
     axios
       .post("http://localhost:5000/auth/login", json, config)
       .then((res) => {
+        //register the user to global user
+        dispatch(registerUser("", email));
+
         history.push("/home");
       })
       .catch((error) => {
@@ -46,11 +51,19 @@ function Login() {
       <Row className="justify-content-md-center">
         <Col sm="12" md="6" lg="3">
           <Card>
-            <Card.Header style={{ color: currentTheme.textColorLightBackground }}>Login</Card.Header>
+            <Card.Header
+              style={{ color: currentTheme.textColorLightBackground }}
+            >
+              Login
+            </Card.Header>
             <Card.Body>
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                  <Form.Label style={{ color: currentTheme.textColorLightBackground }}>Email address</Form.Label>
+                  <Form.Label
+                    style={{ color: currentTheme.textColorLightBackground }}
+                  >
+                    Email address
+                  </Form.Label>
                   <Form.Control
                     type="email"
                     placeholder="Enter email"
@@ -61,7 +74,11 @@ function Login() {
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
-                  <Form.Label style={{ color: currentTheme.textColorLightBackground }}>Password</Form.Label>
+                  <Form.Label
+                    style={{ color: currentTheme.textColorLightBackground }}
+                  >
+                    Password
+                  </Form.Label>
                   <Form.Control
                     type="password"
                     placeholder="Password"
@@ -78,7 +95,10 @@ function Login() {
                     </Button>
                   </Col>
                   <Col sm="4">
-                    <Link to="register" style={{ color: currentTheme.linkColor }}>
+                    <Link
+                      to="register"
+                      style={{ color: currentTheme.linkColor }}
+                    >
                       Register An Acocunt{" "}
                     </Link>
                   </Col>

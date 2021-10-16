@@ -5,7 +5,7 @@ import SearchBar from "../SearchBar/SearchBar";
 import { useSelector } from "react-redux";
 
 function Home() {
-  const currentTheme = useSelector((state) => state.currentTheme);
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   return (
     <div style={{ backgroundColor: currentTheme.background }}>
