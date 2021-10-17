@@ -12,18 +12,20 @@ jobs:
 
     - name: Create .env_dev
       run: |
-          touch .env/.env_dev
-          echo TWITTER_CONSUMER_KEY=${{ secrets.MAIL_SERVER }} >> .env/.env_dev
-          echo TWITTER_CONSUMER_SECRET=${{ secrets.MAIL_SERVER }} >> .env/.env_dev
+        touch .env/.env_dev
+        echo TWITTER_CONSUMER_KEY=${{ secrets.TWITTER_CONSUMER_KEY }} >> .env/.env_dev
+        echo TWITTER_CONSUMER_SECRET=${{ secrets.TWITTER_CONSUMER_SECRET }} >> .env/.env_dev
+        cat .env/.env_dev
 
     - name: Create .env_mail_secrets
       run: |
-          touch .env_mail_secrets
-          echo MAIL_SERVER=${{ secrets.MAIL_SERVER }} >> .env/.env_mail_secrets
-          echo MAIL_PORT=${{ secrets.MAIL_SERVER }} >> .env/.env_mail_secrets
-          echo MAIL_USE_SSL=${{ secrets.MAIL_SERVER }} >> .env/.env_mail_secrets
-          echo MAIL_USERNAME=${{ secrets.MAIL_SERVER }} >> .env/.env_mail_secrets
-          echo MAIL_PASSWORD=${{ secrets.MAIL_SERVER }} >> .env/.env_mail_secrets
+        touch .env/.env_mail_secrets
+        echo MAIL_SERVER=${{ secrets.MAIL_SERVER }} >> .env/.env_mail_secrets
+        echo MAIL_PORT=${{ secrets.MAIL_PORT }} >> .env/.env_mail_secrets
+        echo MAIL_USE_SSL=${{ secrets.MAIL_USE_SSL }} >> .env/.env_mail_secrets
+        echo MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} >> .env/.env_mail_secrets
+        echo MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} >> .env/.env_mail_secrets
+        cat .env/.env_mail_secrets
 
     - name: Build Docker
       run: docker-compose up --build -d
