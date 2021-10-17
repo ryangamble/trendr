@@ -6,6 +6,9 @@ import sys
 from pathlib import Path
 
 
+TESTING_DIR = Path(__file__).parent.resolve()
+
+
 def create_parser():
     """
     Parses arguments from the command line
@@ -24,7 +27,7 @@ def load_env_files():
     Reads all environment variables files in trend/.env/ and sets them locally
     :return:
     """
-    env_path = Path("../../.env")
+    env_path = TESTING_DIR.parent.parent.resolve() / ".env"
     env_files = [filename for filename in env_path.iterdir()]
     for env_file in env_files:
         with env_file.open() as open_file:
@@ -39,7 +42,7 @@ def run_unit_tests():
     :return: integer result
     """
     print("RUNNING UNIT TESTS")
-    return pytest.main(["unit_tests"])
+    return pytest.main([str(TESTING_DIR / "unit_tests")])
 
 
 def run_integration_tests():
@@ -48,7 +51,7 @@ def run_integration_tests():
     :return: integer result
     """
     print("RUNNING INTEGRATION TESTS")
-    return pytest.main(["integration_tests"])
+    return pytest.main([str(TESTING_DIR / "integration_tests")])
 
 
 def run_tests():
