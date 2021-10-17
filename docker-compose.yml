@@ -46,6 +46,8 @@ services:
     env_file:
       - .env/.env_dev
       - .env/.env_mail_secrets
+    environment:
+      - FLASK_APP=trendr
     depends_on:
       - rabbitmq
 
