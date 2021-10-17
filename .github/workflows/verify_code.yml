@@ -4,8 +4,16 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
+    env:
+      MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+      MAIL_PORT: ${{ secrets.MAIL_SERVER }}
+      MAIL_USE_SSL: ${{ secrets.MAIL_SERVER }}
+      MAIL_USERNAME: ${{ secrets.MAIL_SERVER }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_SERVER }}
+      TWITTER_CONSUMER_KEY: ${{ secrets.MAIL_SERVER }}
+      TWITTER_CONSUMER_SECRET: ${{ secrets.MAIL_SERVER }}
     steps:
     - name: Checkout
       uses: actions/checkout@v1

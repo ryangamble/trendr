@@ -43,11 +43,16 @@ services:
     command: /start-celeryworker-general
     volumes:
       - .:/app
+    environment:
+      - FLASK_APP=trendr
+      - MAIL_SERVER
+      - MAIL_PORT
+      - MAIL_USE_SSL
+      - MAIL_USERNAME
+      - MAIL_PASSWORD
     env_file:
       - .env/.env_dev
       - .env/.env_mail_secrets
-    environment:
-      - FLASK_APP=trendr
     depends_on:
       - rabbitmq
   
