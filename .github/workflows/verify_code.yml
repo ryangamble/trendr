@@ -6,17 +6,24 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    env:
-      MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
-      MAIL_PORT: ${{ secrets.MAIL_SERVER }}
-      MAIL_USE_SSL: ${{ secrets.MAIL_SERVER }}
-      MAIL_USERNAME: ${{ secrets.MAIL_SERVER }}
-      MAIL_PASSWORD: ${{ secrets.MAIL_SERVER }}
-      TWITTER_CONSUMER_KEY: ${{ secrets.MAIL_SERVER }}
-      TWITTER_CONSUMER_SECRET: ${{ secrets.MAIL_SERVER }}
     steps:
     - name: Checkout
       uses: actions/checkout@v1
+
+    - name: Create .env_dev
+      run: |
+          touch .env/.env_dev
+          echo TWITTER_CONSUMER_KEY=${{ secrets.MAIL_SERVER }} >> .env/.env_dev
+          echo TWITTER_CONSUMER_SECRET=${{ secrets.MAIL_SERVER }} >> .env/.env_dev
+
+    - name: Create .env_mail_secrets
+      run: |
+          touch .env_mail_secrets
+          echo MAIL_SERVER=${{ secrets.MAIL_SERVER }} >> .env/.env_mail_secrets
+          echo MAIL_PORT=${{ secrets.MAIL_SERVER }} >> .env/.env_mail_secrets
+          echo MAIL_USE_SSL=${{ secrets.MAIL_SERVER }} >> .env/.env_mail_secrets
+          echo MAIL_USERNAME=${{ secrets.MAIL_SERVER }} >> .env/.env_mail_secrets
+          echo MAIL_PASSWORD=${{ secrets.MAIL_SERVER }} >> .env/.env_mail_secrets
 
     - name: Build Docker
       run: docker-compose up --build -d
