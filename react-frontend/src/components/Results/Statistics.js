@@ -5,7 +5,7 @@ import axios from "axios";
 import "./Results.css";
 
 function Statistics(props) {
-  const currentTheme = useSelector((state) => state.currentTheme);
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const [stock, setStock] = useState([]);
   const [loading, setLoading] = useState(true);

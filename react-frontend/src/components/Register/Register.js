@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 
 function Register() {
-  const currentTheme = useSelector((state) => state.currentTheme);
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password1, setPassword1] = useState("");
@@ -24,12 +24,12 @@ function Register() {
     }
 
     const json = JSON.stringify({
-      "email": email,
-      "password": password1,
-    })
+      email: email,
+      password: password1,
+    });
     const config = {
-      headers: { "Content-Type": "application/json" }
-    }
+      headers: { "Content-Type": "application/json" },
+    };
 
     axios
       .post("http://localhost:5000/auth/register", json, config)
@@ -52,11 +52,19 @@ function Register() {
       <Row className="justify-content-md-center">
         <Col sm="12" md="6" lg="3">
           <Card>
-            <Card.Header style={{ color: currentTheme.textColorLightBackground }}>Register</Card.Header>
+            <Card.Header
+              style={{ color: currentTheme.textColorLightBackground }}
+            >
+              Register
+            </Card.Header>
             <Card.Body>
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                  <Form.Label style={{ color: currentTheme.textColorLightBackground }}>Email address</Form.Label>
+                  <Form.Label
+                    style={{ color: currentTheme.textColorLightBackground }}
+                  >
+                    Email address
+                  </Form.Label>
                   <Form.Control
                     type="email"
                     placeholder="Enter email"
@@ -70,7 +78,11 @@ function Register() {
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicUsername">
-                  <Form.Label style={{ color: currentTheme.textColorLightBackground }}>Username</Form.Label>
+                  <Form.Label
+                    style={{ color: currentTheme.textColorLightBackground }}
+                  >
+                    Username
+                  </Form.Label>
                   <Form.Control
                     type="input"
                     placeholder="Username"
@@ -81,7 +93,11 @@ function Register() {
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
-                  <Form.Label style={{ color: currentTheme.textColorLightBackground }}>Password</Form.Label>
+                  <Form.Label
+                    style={{ color: currentTheme.textColorLightBackground }}
+                  >
+                    Password
+                  </Form.Label>
                   <Form.Control
                     type="password"
                     placeholder="Password"
@@ -92,7 +108,11 @@ function Register() {
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
-                  <Form.Label style={{ color: currentTheme.textColorLightBackground }}>Confirm Password</Form.Label>
+                  <Form.Label
+                    style={{ color: currentTheme.textColorLightBackground }}
+                  >
+                    Confirm Password
+                  </Form.Label>
                   <Form.Control
                     type="password"
                     placeholder="Retype password"

@@ -25,7 +25,7 @@ import "../../../node_modules/react-vis/dist/style.css";
 
 // Currently pass symbol as a prop, can be changed later
 function Graph(props) {
-  const currentTheme = useSelector((state) => state.currentTheme);
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const [graphData, setgraphData] = useState([]);
 
