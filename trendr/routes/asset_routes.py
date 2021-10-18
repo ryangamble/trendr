@@ -28,7 +28,7 @@ def stats():
     content = request.get_json()
 
     print("\nfetching general stats for: " + content['name'] + "\n")
-    
+
     stock = yf.Ticker(content['name'])
     return jsonify(stock.info)
 
@@ -36,7 +36,7 @@ def stats():
 @assets.route('/history', methods=['POST'])
 def history():
     content = request.get_json()
-    
+
     print("\nfetching history market data for: " + content['name'] + "\n")
 
     stock = yf.Ticker(content['name'])
@@ -68,7 +68,7 @@ def twitter_sentiment():
 
         # using this will take a lot longer that TextBlobs default analyzer
         # blob = TextBlob(result.text, analyzer=NaiveBayesAnalyzer())
-        
+
         blob = TextBlob(textClean)
 
         # first number: polarity (-1.0 = very negative, 0 = neutral, 1.0 = very positive)
