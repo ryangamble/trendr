@@ -1,7 +1,5 @@
-import pytest
 from trendr.models.reddit_post_model import RedditPost
 from .test_data import new_reddit_posts_data
-from .fixtures import *
 
 
 def test_add_search(db_session):
@@ -10,8 +8,6 @@ def test_add_search(db_session):
 
     :param db_session: sqlalchemy database session
     """
-
-
     new_reddit_post = RedditPost(**new_reddit_posts_data[0])
     db_session.add(new_reddit_post)
     db_session.commit()

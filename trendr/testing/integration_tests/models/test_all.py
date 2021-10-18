@@ -1,7 +1,6 @@
-import pytest
 from trendr.models import *
 from .test_data import *
-from .fixtures import *
+
 
 def test_add_user(db_session):
     """
@@ -9,7 +8,6 @@ def test_add_user(db_session):
 
     :param db_session: sqlalchemy database session
     """
-
     # add role
     new_role = Role(**new_role_data)
     db_session.add(new_role)
@@ -76,5 +74,3 @@ def test_add_user(db_session):
         assert query_res is new_reddit_post
         assert new_reddit_post in new_reddit_search.reddit_posts
         assert new_reddit_search in new_reddit_post.searches
-
-    
