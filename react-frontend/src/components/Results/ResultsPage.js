@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import MyNavBar from "../NavBar/MyNavBar";
 import Graph from "./Graph";
 import Statistics from "./Statistics";
 import { Container, Col, Row, Button, Spinner } from "react-bootstrap";
+import FollowBtn from "../FollowButton/FollowBtn";
 
 function Results() {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
+  //current user
+  const currentUser = useSelector((state) => state.user);
 
   const { id, type } = useParams();
   const [currency, setCurrency] = useState(null);
