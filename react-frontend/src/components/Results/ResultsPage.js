@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import MyNavBar from "../NavBar/MyNavBar";
 import Graph from "./Graph";
 import Statistics from "./Statistics";
 import { Container, Col, Row, Button, Spinner } from "react-bootstrap";
+import FollowBtn from "../FollowButton/FollowBtn";
 
 function Results() {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
+  //current user
+  const currentUser = useSelector((state) => state.user);
 
   const { id } = useParams();
   const [currency, setCurrency] = useState(null);
@@ -29,6 +32,16 @@ function Results() {
       <br />
       <br />
       <Container className="resultsContainer">
+        <Row>
+          <Col xs={12} className="resultsHeader">
+            <h3 style={{ marginRight: 10 }}>
+              Showing Results For: {id.substring(1)}
+            </h3>
+            {currentUser.username === "" && currentUser.email === "" ? null : (
+              <FollowBtn id={id.substring(1)} />
+            )}
+          </Col>
+        </Row>
         <Row>
           <Col xs={12} sm={12} md={12} lg={6}>
             <Statistics
