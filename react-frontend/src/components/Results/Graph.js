@@ -14,17 +14,22 @@ import {
   XAxis,
   YAxis,
   HorizontalGridLines,
+  VerticalGridLines,
   FlexibleXYPlot,
+  XYPlot,
   LineSeries,
+  MarkSeries,
   Crosshair,
   Borders,
 } from "react-vis";
+
 import axios from "axios";
 import "./Results.css";
 import "../../../node_modules/react-vis/dist/style.css";
 
 // Currently pass symbol as a prop, can be changed later
-function Graph(props) {
+// Used for both price and volume charts for stocks
+function StockGraph(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const [graphData, setgraphData] = useState([]);
@@ -96,6 +101,7 @@ function Graph(props) {
         return pd;
       })
       .then((pd) => {
+        // console.log(pd)
         var min = Number.MAX_VALUE;
         var max = 0;
         switch (timePeriod) {
@@ -308,4 +314,90 @@ function Graph(props) {
   }
 }
 
-export default Graph;
+
+function SentimentGraph(props) {
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
+
+  const [sentimentData, setSentimentData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect (() => {
+    const requestBody = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      name: props.symbol,
+    };
+
+    axios
+      .post("http://localhost:5000/assets/twitter_sentiment", requestBody)
+      .then((res) => {
+        // console.log(res.data)
+        return JSON.parse(JSON.stringify(res.data));
+      })
+      .then((data) => {
+        // console.log(data['0']['1']['1'])
+        var points = [];
+        for (var i = 0; i < data.length; i++) {
+          // console.log(data[i.toString()]['1'])
+          points.push({
+            x: parseFloat(data[i.toString()]['1']['0']),
+            y: parseFloat(data[i.toString()]['1']['1']),
+            size: 1,
+          });
+        }
+        // console.log(points)
+        return points;
+      })
+      .then((points) => {
+        return setSentimentData(points)
+      })
+      .then(()=> {
+        setLoading(false)
+      })
+  }, [])
+
+
+  if (loading) {
+    return (
+      <Container fluid>
+        <Spinner animation="border" />
+      </Container>
+    );
+  } else {
+    return (
+      <Container className="graphLayout">
+        <Row>
+          <div className="chartTitle">
+            <h2>Sentiment Data</h2>
+          </div>
+        </Row>
+        <Row>
+          <div className="chartContainer">
+            <FlexibleXYPlot
+                xDomain={[-1.0,1.0]}
+                yDomain={[0,1.0]}
+                color="red">
+              <XAxis />
+              <YAxis />
+              <HorizontalGridLines />
+              <VerticalGridLines />
+              <MarkSeries
+                data={sentimentData}
+                stroke="grey"
+                strokeWidth={2}
+                opacityType="category"
+                opacity="0.25"/>
+            </FlexibleXYPlot>
+          </div>
+        </Row>
+      </Container>
+    );
+  }
+}
+
+// Need separate functions for price/volume charts for cryptos
+
+export {
+  StockGraph,
+  SentimentGraph
+};
