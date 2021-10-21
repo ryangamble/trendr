@@ -150,7 +150,7 @@ def history():
 
 @assets.route('/twitter_sentiment', methods=['GET'])
 def twitter_sentiment():
-    results = twitter_connector.get_tweets_mentioning_asset("AAPL")
+    content = request.get_json()
     text = []
 
     for result in results:
