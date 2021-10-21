@@ -5,6 +5,8 @@ users = Blueprint("users", __name__, url_prefix="/users")
 
 @users.route("/", methods=["GET"])
 def get_users():
+    from trendr.connectors import Defi
+    
     pass
 
 
