@@ -5,15 +5,7 @@ from flask_wtf.csrf import CSRFProtect
 
 from trendr.extensions import db, security, mail, celery, migrate
 from trendr.mail_util import CeleryMailUtil
-from trendr.models import (
-    User,
-    Role,
-    Search,
-    RedditPost,
-    Tweet,
-    search_tweet_association,
-    search_reddit_post_association,
-)
+from trendr.models import *
 
 
 def create_app():
@@ -61,6 +53,8 @@ def init_celery(app=None):
     celery.conf.broker_url = app.config["CELERY_BROKER_URL"]
     celery.conf.result_backend = app.config["CELERY_RESULT_BACKEND"]
     celery.conf.timezone = "US/Eastern"
+    celery.conf.task_routes = {'trendr.tasks.social.*': {'queue':'social'}}
+    celery.conf.task_default_queue = 'general'
     celery.conf.update(app.config)
 
     class ContextTask(celery.Task):

@@ -25,6 +25,7 @@ services:
       - "5000:5000"
     env_file:
       - .env/.env_dev
+      - .env/.env_twitter
     environment:
       - FLASK_APP=trendr
     depends_on:
@@ -46,6 +47,22 @@ services:
     env_file:
       - .env/.env_dev
       - .env/.env_mail_secrets
+    environment:
+      - FLASK_APP=trendr
+    depends_on:
+      - rabbitmq
+    
+  celery_worker_social:
+    build:
+      context: .
+      dockerfile: ./compose/local/flask/Dockerfile
+    image: flask_celery_worker_social
+    command: /start-celeryworker-social
+    volumes:
+      - .:/app
+    env_file:
+      - .env/.env_dev
+      - .env/.env_twitter
     environment:
       - FLASK_APP=trendr
     depends_on:

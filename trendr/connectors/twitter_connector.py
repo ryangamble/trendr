@@ -21,7 +21,9 @@ def auth_to_api(consumer_key: str, consumer_secret: str) -> tweepy.API:
         auth = tweepy.AppAuthHandler(consumer_key, consumer_secret)
         return tweepy.API(auth)
     else:
-        raise ConnectorException("Could not authenticate to Twitter because the necessary secrets were not available.")
+        raise ConnectorException(
+            "Could not authenticate to Twitter because the necessary secrets were not available."
+        )
 
 
 def get_tweet_by_id(tweet_id: int, api: tweepy.API = None) -> tweepy.models.Status:
@@ -38,7 +40,7 @@ def get_tweet_by_id(tweet_id: int, api: tweepy.API = None) -> tweepy.models.Stat
 
 
 def get_tweets_mentioning_asset(
-        asset_identifier: str, since_id: str = None, api: tweepy.API = None
+    asset_identifier: str, since_id: str = None, api: tweepy.API = None
 ) -> tweepy.models.SearchResults:
     """
     Queries Twitter for tweets that mention an asset_identifier (AAPL, BTC) within the last 7 days, starting at the
@@ -51,4 +53,6 @@ def get_tweets_mentioning_asset(
     """
     if not api:
         api = auth_to_api(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
-    return api.search_tweets(q=asset_identifier, lang="en", result_type="popular", since_id=since_id)
+    return api.search_tweets(
+        q=asset_identifier, lang="en", result_type="popular", since_id=since_id
+    )

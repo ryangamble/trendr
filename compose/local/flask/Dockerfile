@@ -30,6 +30,10 @@ COPY ./compose/local/flask/celery/worker/general/start /start-celeryworker-gener
 RUN sed -i 's/\r$//g' /start-celeryworker-general
 RUN chmod +x /start-celeryworker-general
 
+COPY ./compose/local/flask/celery/worker/social/start /start-celeryworker-social
+RUN sed -i 's/\r$//g' /start-celeryworker-social
+RUN chmod +x /start-celeryworker-social
+
 COPY ./compose/local/flask/celery/beat/start /start-celerybeat
 RUN sed -i 's/\r$//g' /start-celerybeat
 RUN chmod +x /start-celerybeat

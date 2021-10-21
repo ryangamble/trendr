@@ -1,7 +1,7 @@
 from trendr.extensions import celery
 from trendr.tasks import *
 from celery.schedules import crontab
-
+# celery.conf.imports = celery.conf.imports + ("trendr.tasks",)
 
 # import general tasks
 # celery.conf.imports = celery.conf.imports + ("trendr.tasks",)

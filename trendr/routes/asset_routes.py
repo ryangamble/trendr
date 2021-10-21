@@ -8,7 +8,7 @@ import re
 import pmaw
 from trendr.connectors import twitter_connector
 from trendr.connectors import reddit_connector
-from trendr.tasks.reddit import *
+# from trendr.tasks.social import *
 from .helpers.json_response import json_response
 
 assets = Blueprint('assets', __name__, url_prefix="/assets")
@@ -77,8 +77,16 @@ def twitter_sentiment():
 
     return jsonify(text)
 
+from trendr.connectors import twitter_connector, db_interface
+
+@db_interface.store_in_db(api=None, wraps=twitter_connector.get_tweet_by_id)
+def store_tweet_by_id(*args, **kwargs):
+    return twitter_connector.get_tweet_by_id(*args, **kwargs)
+
 @assets.route('/reddit_sentiment', methods=['GET'])
 def reddit_sentiment_route():
-    res = reddit_sentiment.delay()
 
-    return json_response(res.get(timeout=30))
+    res = store_tweet_by_id(
+            id=1450846775221399566)
+
+    return json_response(res)
