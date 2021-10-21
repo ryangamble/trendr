@@ -16,11 +16,12 @@ import {
   HorizontalGridLines,
   VerticalGridLines,
   FlexibleXYPlot,
-  XYPlot,
   LineSeries,
   MarkSeries,
   Crosshair,
   Borders,
+  DiscreteColorLegend,
+  Hint,
 } from "react-vis";
 
 import axios from "axios";
@@ -210,6 +211,7 @@ function StockGraph(props) {
               {/* <VerticalGridLines/> */}
 
               <LineSeries
+                animation={true}
                 data={graphData[period]}
                 onNearestX={_onNearestX}
                 strokeWidth={2}
@@ -318,7 +320,8 @@ function StockGraph(props) {
 function SentimentGraph(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
-  const [sentimentData, setSentimentData] = useState(null);
+  const [twitterData, setTwitterData] = useState([]);
+  const [redditData, setRedditData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect (() => {
@@ -328,8 +331,24 @@ function SentimentGraph(props) {
       name: props.symbol,
     };
 
+    fetchTwitterData(requestBody)
+    fetchRedditData(requestBody)
+
+  }, [props])
+
+  function fetchRedditData(req) {
+    var data = new Array(10).fill(0).reduce((prev,curr) =>
+    [...prev, {
+      x: Math.random() * 2 - 1,
+      y: Math.random(),
+      size: 1
+    }], []);
+      setRedditData(data);
+  }
+
+  function fetchTwitterData(req) {
     axios
-      .post("http://localhost:5000/assets/twitter_sentiment", requestBody)
+      .post("http://localhost:5000/assets/twitter_sentiment", req)
       .then((res) => {
         // console.log(res.data)
         return JSON.parse(JSON.stringify(res.data));
@@ -345,17 +364,25 @@ function SentimentGraph(props) {
             size: 1,
           });
         }
-        // console.log(points)
+        console.log("twitter sentiment analysis points")
+        console.log(points)
         return points;
       })
       .then((points) => {
-        return setSentimentData(points)
+        return setTwitterData(points)
       })
       .then(()=> {
         setLoading(false)
       })
-  }, [])
+  }
 
+  const markSeriesProps = {
+    animation: true,
+    stroke: "grey",
+    strokeWidth: 1,
+    opacityType: "category",
+    opacity: "0.4",
+  }
 
   if (loading) {
     return (
@@ -371,25 +398,58 @@ function SentimentGraph(props) {
             <h2>Sentiment Data</h2>
           </div>
         </Row>
-        <Row>
-          <div className="chartContainer">
-            <FlexibleXYPlot
+        {twitterData.length > 0 || redditData.legnth > 0 ?
+          <Row>
+            <div className="chartContainer">
+              <FlexibleXYPlot
                 xDomain={[-1.0,1.0]}
                 yDomain={[0,1.0]}
-                color="red">
-              <XAxis />
-              <YAxis />
-              <HorizontalGridLines />
-              <VerticalGridLines />
-              <MarkSeries
-                data={sentimentData}
-                stroke="grey"
-                strokeWidth={2}
-                opacityType="category"
-                opacity="0.25"/>
-            </FlexibleXYPlot>
+              >
+
+                <HorizontalGridLines />
+                <VerticalGridLines />
+                <XAxis
+                  title="Polarity"
+                  style={{title: {fill: currentTheme.foreground}}}
+                />
+                <YAxis
+                  title="Subjectivity"
+                  style={{title: {fill: currentTheme.foreground}}}
+                />
+                <DiscreteColorLegend
+                  orientation="horizontal"
+                  style={{position: "absolute", right: "0%", top: "0%", backgroundColor: "rgba(108,117,125, 0.7)", borderRadius: "5px"}}
+                  items={[
+                    {
+                      title: "Twitter",
+                      color: "#0D6EFD",
+                      strokeWidth: 5,
+                    },
+                    {
+                      title: "Reddit",
+                      color: "red",
+                      strokeWidth: 5
+                    }
+                  ]}
+                />
+                <MarkSeries
+                  {...markSeriesProps}
+                  data={twitterData}
+                  color="#0D6EFD"
+                />
+                <MarkSeries
+                  {...markSeriesProps}
+                  data={redditData}
+                  color="red"
+                />
+              </FlexibleXYPlot>
+            </div>
+          </Row>
+        :
+          <div>
+            no data
           </div>
-        </Row>
+        }
       </Container>
     );
   }
