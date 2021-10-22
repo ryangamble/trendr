@@ -92,9 +92,11 @@ def history():
     return stock.history(period=p, interval=period_to_interval.get(p), prepost="True", actions="False").to_json()
 
 
-@assets.route('/twitter_sentiment', methods=['GET'])
+@assets.route('/twitter_sentiment', methods=['POST'])
 def twitter_sentiment():
-    results = twitter_connector.get_tweets_mentioning_asset("AAPL")
+    content = request.get_json()
+
+    results = twitter_connector.get_tweets_mentioning_asset(content['name'])
     text = []
 
     for result in results:

@@ -33,7 +33,6 @@ def test_get_post_by_id_positive(pmaw_api: pmaw.PushshiftAPI):
 
     :param pmaw_api: pushshift api object
     """
-
     submission_id = "ptacat"
     submissions = reddit_connector.gather_submissions_by_id(
         api=pmaw_api, ids=[submission_id]
@@ -58,7 +57,6 @@ def test_get_comment_by_id_positive(pmaw_api: pmaw.PushshiftAPI):
 
     https://www.reddit.com/r/undefined/comments/ptacat/comment/hdvagh1/?utm_source=share&utm_medium=web2x&context=3
     """
-
     comment_id = "hdvagh1"
     comments = reddit_connector.gather_comments_by_id(api=pmaw_api, ids=[comment_id])
 
@@ -116,7 +114,6 @@ def test_get_post_by_id(pmaw_api: pmaw.PushshiftAPI):
 
     :param pmaw_api: pushshift api object
     """
-
     submission_id = "lkjlkjoin"
     with pytest.warns(UserWarning, match="items were not found in Pushshift"):
         submissions = reddit_connector.gather_submissions_by_id(
@@ -131,7 +128,6 @@ def test_get_comment_by_id(pmaw_api: pmaw.PushshiftAPI):
 
     :param pmaw_api: pushshift api object
     """
-
     comment_id = "lkjlkjoin"
     with pytest.warns(UserWarning, match="items were not found in Pushshift"):
         comments = reddit_connector.gather_submissions_by_id(
