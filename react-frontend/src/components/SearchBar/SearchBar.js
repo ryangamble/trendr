@@ -19,7 +19,7 @@ function SearchBar() {
     console.log("firing search to backend...");
 
     if (suggestions[0]) {
-      history.push(`/result:${suggestions[0].symbol}`);
+      history.push(`/result:${suggestions[0].type}/${suggestions[0].id}`);
     } else {
       alert("No matching stocks or cryptos");
       return;
@@ -52,6 +52,7 @@ function SearchBar() {
             symbol: data[key].symbol,
             name: data[key].name,
             type: data[key].typeDisp,
+            id: data[key].typeDisp == "crypto" ? data[key].id : data[key].symbol
           });
           // console.log(data[key]);
         }
@@ -75,7 +76,7 @@ function SearchBar() {
       return;
     });
     setSuggestions([]);
-    history.push(`/result/${suggestions[i].type}/${suggestions[i].symbol}`);
+    history.push(`/result/${suggestions[i].type}/${suggestions[i].id}`);
   }
 
   return (
