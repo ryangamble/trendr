@@ -4,6 +4,7 @@ import yahooquery as yq
 from textblob import TextBlob
 from textblob.sentiments import NaiveBayesAnalyzer
 import re
+import os, json
 
 import pmaw
 from trendr.connectors import twitter_connector
@@ -37,10 +38,47 @@ def historicFearandGreedCrypto():
 @assets.route('/search', methods=['POST'])
 def search():
     content = request.get_json()
+    query = content['query']
 
-    data = yq.search(content['query'], news_count=0, quotes_count=10)
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    json_path = os.path.join(SITE_ROOT, '../connectors', 'CoinGeckoCoins.json')
+    crypto_list = json.loads(open(json_path).read())
 
-    return jsonify(data)
+    crypto_filtered = [
+        v for v in crypto_list
+        if query.lower() == v['symbol'].lower() or query.lower() == v['name'].lower()
+        or query.lower() in v['symbol'].lower() or query.lower() in v['name'].lower()
+    ]
+
+    # print(filtered[0:10])
+
+    stock_filtered = yq.search(query, news_count=0, quotes_count=10)
+
+    search_results = []
+    # print (data)
+    
+    for item in stock_filtered['quotes'][0:5]:
+        if item['typeDisp'] == 'Equity' or item['typeDisp'] == 'ETF':
+            item['typeDisp'] = item.pop('typeDisp').lower()
+            if 'shortname' in item:
+                item['name'] = item.pop('shortname')
+            if 'longname' in item:
+                item['name'] = item.pop('longname')
+            item.pop('isYahooFinance')
+            item.pop('quoteType')
+            item.pop('index')
+            item.pop('score')
+            search_results.append(item)
+    
+    for item in crypto_filtered[0:10]:
+        item['typeDisp'] = 'crypto'
+        item['symbol'] = item.pop('symbol').upper()
+        search_results.append(item)
+    
+    print('\n\nSearch Results for ' + query + ':\n')
+    print(search_results)
+
+    return jsonify(search_results)
 
 @assets.route('/SP500', methods=['GET'])
 def SP500():
