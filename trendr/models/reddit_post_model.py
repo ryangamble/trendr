@@ -2,6 +2,7 @@ import enum
 from sqlalchemy import Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import Integer, Text, DateTime, String
+
 from trendr.extensions import db
 from trendr.models.association_tables import search_reddit_post_association
 

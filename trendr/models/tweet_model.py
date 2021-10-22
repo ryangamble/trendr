@@ -1,5 +1,6 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import Integer, Text, DateTime
+
 from trendr.extensions import db
 from trendr.models.association_tables import search_tweet_association
 
