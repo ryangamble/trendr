@@ -2,12 +2,9 @@ from flask import Blueprint, request, jsonify
 import yfinance as yf
 import yahooquery as yq
 from textblob import TextBlob
-from textblob.sentiments import NaiveBayesAnalyzer
 import re
 
-import pmaw
 from trendr.connectors import twitter_connector
-from trendr.connectors import reddit_connector
 from trendr.tasks.reddit import *
 from .helpers.json_response import json_response
 
@@ -62,20 +59,21 @@ def twitter_sentiment():
     for result in results:
         print(result.text)
 
-        textClean = re.sub(r'@[A-Za-z0-9]+', '', result.text)
-        textClean = re.sub(r'#', '', textClean)
-        textClean = re.sub('\n', ' ', textClean)
+        text_clean = re.sub(r'@[A-Za-z0-9]+', '', result.text)
+        text_clean = re.sub(r'#', '', text_clean)
+        text_clean = re.sub('\n', ' ', text_clean)
 
         # using this will take a lot longer that TextBlobs default analyzer
         # blob = TextBlob(result.text, analyzer=NaiveBayesAnalyzer())
         
-        blob = TextBlob(textClean)
+        blob = TextBlob(text_clean)
 
         # first number: polarity (-1.0 = very negative, 0 = neutral, 1.0 = very positive)
         # second number: subjectivity (0.0 = objective, 1.0 = subjective)
-        text.append([textClean, blob.sentiment])
+        text.append([text_clean, blob.sentiment])
 
     return jsonify(text)
+
 
 @assets.route('/reddit_sentiment', methods=['GET'])
 def reddit_sentiment_route():
