@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import MyNavBar from "../NavBar/MyNavBar";
-import Graph from "./Graph";
+import {SentimentGraph, StockGraph} from "./Graph";
 import Statistics from "./Statistics";
 import { Container, Col, Row, Button, Spinner } from "react-bootstrap";
 import FollowBtn from "../FollowButton/FollowBtn";
@@ -52,7 +52,7 @@ function Results() {
           </Col>
           <Col xs={12} sm={12} md={12} lg={6}>
             {currency ? (
-              <Graph
+              <StockGraph
                 symbol={id.substring(1)}
                 currency={currency}
                 graphType="price"
@@ -67,7 +67,7 @@ function Results() {
           </Col>
           <Col xs={12} sm={12} md={12} lg={6}>
             {currency ? (
-              <Graph
+              <StockGraph
                 symbol={id.substring(1)}
                 graphType="volume"
                 color="orange"
@@ -77,6 +77,10 @@ function Results() {
                 <Spinner animation="border" />
               </Container>
             )}
+            <br />
+          </Col>
+          <Col xs={12} sm={12} md={12} lg={6}>
+            <SentimentGraph symbol={id.substring(1)}/>
             <br />
           </Col>
         </Row>
