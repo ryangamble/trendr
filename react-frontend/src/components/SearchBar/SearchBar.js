@@ -41,29 +41,24 @@ function SearchBar() {
     axios
       .post("http://localhost:5000/assets/search", requestBody)
       .then((res) => {
-        return JSON.parse(JSON.stringify(res.data.quotes));
+        // console.log(res.data)
+        return JSON.parse(JSON.stringify(res.data));
       })
       .then((data) => {
         var sg = [];
         console.log("autocomplete suggestions:");
         for (var key in data) {
-          if (
-            data[key].typeDisp === "Equity" ||
-            data[key].typeDisp === "Cryptocurrency" ||
-            data[key].typeDisp === "ETF"
-          ) {
-            sg.push({
-              symbol: data[key].symbol,
-              name: data[key].shortname,
-              exchange: data[key].exchange,
-              typeDisp: data[key].typeDisp,
-            });
-          }
-          console.log(data[key]);
+          sg.push({
+            symbol: data[key].symbol,
+            name: data[key].name,
+            type: data[key].typeDisp,
+          });
+          // console.log(data[key]);
         }
         return sg;
       })
       .then((sg) => {
+        console.log(sg)
         setSuggestions(sg);
       })
       .catch((error) => {
@@ -80,7 +75,7 @@ function SearchBar() {
       return;
     });
     setSuggestions([]);
-    history.push(`/result:${suggestions[i].symbol}`);
+    history.push(`/result/${suggestions[i].type}/${suggestions[i].symbol}`);
   }
 
   return (
