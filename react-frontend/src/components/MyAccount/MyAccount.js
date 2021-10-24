@@ -26,12 +26,16 @@ function MyAccount() {
   useEffect(() => {
     // get the user follow list
     if (currentUser.email !== "" || currentUser.username !== "") {
-      console.log("fetching user follow list....");
+      console.log("profile fetching user follow list....");
 
       //set the list
       setList(["APP", "DDOG", "GH"]);
     }
   }, []);
+
+  const unfollowCallback = (item) => {
+    setList(list.filter((x) => x !== item));
+  };
 
   return (
     <div
@@ -81,7 +85,7 @@ function MyAccount() {
                       action
                       href={`/result:${item}`}
                     >
-                      {item} <FollowBtn id={item} isFollow={true} />
+                      {item} <FollowBtn id={item} callback={unfollowCallback} />
                     </ListGroupItem>
                   ))}
                 </ListGroup>

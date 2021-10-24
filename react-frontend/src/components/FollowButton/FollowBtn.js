@@ -5,7 +5,7 @@ import { Button } from "react-bootstrap";
 
 // A reusable follow botton component that takes the stock/crypto id as props
 
-function FollowBtn({ id }) {
+function FollowBtn({ id, callback }) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   const currentUser = useSelector((state) => state.user);
 
@@ -19,13 +19,13 @@ function FollowBtn({ id }) {
       console.log("fetching user follow list");
 
       //some example results
-      const list = ["APP", "DDOG", "GH"];
+      var list = ["APP", "DDOG", "GH"];
 
       if (list.includes(id)) {
         setFollow(true);
       }
     }
-  }, []);
+  });
 
   const handleFollow = (e) => {
     e.preventDefault();
@@ -33,6 +33,11 @@ function FollowBtn({ id }) {
     //send follow/unfollow request to backend
     if (follow) {
       console.log("Unfollowing... ", id);
+
+      if (callback) {
+        console.log("calling cb...");
+        callback(id);
+      }
     } else {
       console.log("Following... ", id);
     }
