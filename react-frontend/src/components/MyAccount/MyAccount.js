@@ -84,6 +84,7 @@ function MyAccount() {
                       variant={currentTheme.name.toLowerCase()}
                       action
                       href={`/result:${item}`}
+                      key={item}
                     >
                       {item} <FollowBtn id={item} callback={unfollowCallback} />
                     </ListGroupItem>
