@@ -68,7 +68,7 @@ jobs:
       ECR_REPOSITORY: ecs-trendr-repository
       IMAGE_TAG: frontend-image-${{ github.sha }}
     run: |
-      docker buildx build -f ./react-frontend/Dockerfile --cache-from "type=local,src=$GITHUB_WORKSPACE/cache" --cache-to "type=local,dest=$GITHUB_WORKSPACE/cache" --output "type=image, name=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG,push=true" .
+      docker buildx build -f ./react-frontend/Dockerfile --output "type=image, name=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG,push=true" .
       echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
   - name: Build, tag, and push the backend image to Amazon ECR
@@ -78,7 +78,7 @@ jobs:
       ECR_REPOSITORY: ecs-trendr-repository
       IMAGE_TAG: backend-image-${{ github.sha }}
     run: |
-      docker buildx build -f ./compose/local/flask/Dockerfile --cache-from "type=local,src=$GITHUB_WORKSPACE/cache" --cache-to "type=local,dest=$GITHUB_WORKSPACE/cache" --output "type=image, name=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG,push=true" .
+      docker buildx build -f ./compose/local/flask/Dockerfile --output "type=image, name=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG,push=true" .
       echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
   - name: Render task definition of the client container
