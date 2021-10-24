@@ -61,14 +61,14 @@ jobs:
     id: login-ecr
     uses: aws-actions/amazon-ecr-login@v1
 
-  - name: Build, tag, and push the image to Amazon ECR
+  - name: Build, tag, and push the frontend image to Amazon ECR
     id: build-frontend-image
     env:
       ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       ECR_REPOSITORY: ecs-trendr-repository
       IMAGE_TAG: frontend-image-${{ github.sha }}
     run: |
-      docker buildx build -f ./react-frontend/Dockerfile --output "type=image, name=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG,push=true" .
+      docker build -f ./react-frontend/Dockerfile --output "type=image, name=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG,push=true" .
       echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
   - name: Build, tag, and push the backend image to Amazon ECR
