@@ -92,6 +92,7 @@
         },
         {
             "essential": true,
+            "image": "react_frontend",
             "mountPoints": [
                 {
                     "containerPath": "/usr/src/frontend/node_modules",
