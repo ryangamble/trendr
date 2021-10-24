@@ -173,24 +173,5 @@
     "family": "ecs-devops-task-definition",
     "taskRoleArn": "",
     "placementConstraints": [],
-    "volumes": [
-        {
-            "host": {
-                "sourcePath": "/usr/src/frontend/node_modules"
-            },
-            "name": "UsrSrcFrontendNode_Modules"
-        },
-        {
-            "host": {
-                "sourcePath": "./react-frontend"
-            },
-            "name": "_React-Frontend"
-        },
-        {
-            "host": {
-                "sourcePath": "."
-            },
-            "name": "_"
-        }
-    ]
+    "volumes": []
 }

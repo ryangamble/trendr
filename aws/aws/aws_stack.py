@@ -54,6 +54,7 @@ class AwsStack(core.Stack):
             "ecs-trendr-service",
             cluster=cluster,
             task_definition=task_definition,
-            service_name="ecs-trendr-service"
+            service_name="ecs-trendr-service",
+            assign_public_ip=True
         )
         log_group = aws_logs.LogGroup(self, "ecs-trendr-service-logs-groups", log_group_name="ecs-trendr-service-logs")
