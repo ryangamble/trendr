@@ -7,40 +7,44 @@ import { Button } from "react-bootstrap";
 
 function FollowBtn({ id }) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
-  //current user
   const currentUser = useSelector((state) => state.user);
-  // a followed flag to indicate whether the current user follows the stock/crypto
-  const [followed, setFollowed] = useState(false);
+
+  const [follow, setFollow] = useState(false);
+
+  useEffect(() => {
+    // fetch user follow list and determine to show follow/unfollow
+
+    // do this only if user is logged in
+    if (currentUser.email !== "" || currentUser.username !== "") {
+      console.log("fetching user follow list");
+
+      //some example results
+      const list = ["APP", "DDOG", "GH"];
+
+      if (list.includes(id)) {
+        setFollow(true);
+      }
+    }
+  }, []);
 
   const handleFollow = (e) => {
     e.preventDefault();
 
     //send follow/unfollow request to backend
-    if (followed) {
-      console.log("Unfollowing ", id);
+    if (follow) {
+      console.log("Unfollowing... ", id);
     } else {
-      console.log("Following ", id);
+      console.log("Following... ", id);
     }
 
     //toggle between follow/unfollow
-    setFollowed(!followed);
+    setFollow(!follow);
   };
-
-  useEffect(() => {
-    //If the user is not logged in, return
-    if (currentUser.username === "" && currentUser.email === "") return;
-
-    // First Page Initial Mount, fetch whether the user follows this stock/crypto
-    console.log(
-      "fetching from backend to see whether the user follows this stock...",
-      id
-    );
-  }, []);
 
   return (
     <div>
       <Button variant={currentTheme.variant} onClick={handleFollow}>
-        {followed ? "Unfollow" : "Follow"}
+        {follow ? "Unfollow" : "Follow"}
       </Button>
     </div>
   );

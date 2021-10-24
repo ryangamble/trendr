@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import MyNavBar from "../NavBar/MyNavBar";
-import {SentimentGraph, StockGraph} from "./Graph";
+import { SentimentGraph, StockGraph } from "./Graph";
 import Statistics from "./Statistics";
 import { Container, Col, Row, Button, Spinner } from "react-bootstrap";
 import FollowBtn from "../FollowButton/FollowBtn";
@@ -80,7 +80,7 @@ function Results() {
             <br />
           </Col>
           <Col xs={12} sm={12} md={12} lg={6}>
-            <SentimentGraph symbol={id.substring(1)}/>
+            <SentimentGraph symbol={id.substring(1)} />
             <br />
           </Col>
         </Row>
