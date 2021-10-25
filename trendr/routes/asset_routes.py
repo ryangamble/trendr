@@ -22,13 +22,50 @@ def search():
 
     return jsonify(data)
 
+@assets.route('/SP500', methods=['GET'])
+def SP500():
+    content = request.get_json()
+    print("\nfetching history market data for S&P500"  + "\n")
+
+    stock = yf.Ticker('GSPC')
+    p = content['period']
+
+    period_to_interval = {
+        "1d": "5m",
+        "5d": "30m",
+        "1mo": "1h",
+        "3mo": "1h",
+        "1y": "1d",
+        "5y": "5d"
+    }
+    return stock.history(period=p, interval=period_to_interval.get(p), prepost="True", actions="False").to_json()
+
+
+@assets.route('/GDOW', methods=['GET'])
+def GDOW():
+    content = request.get_json()
+    print("\nfetching history market data for The Global Dow"  + "\n")
+
+    stock = yf.Ticker('GDOW')
+    p = content['period']
+
+    period_to_interval = {
+        "1d": "5m",
+        "5d": "30m",
+        "1mo": "1h",
+        "3mo": "1h",
+        "1y": "1d",
+        "5y": "5d"
+    }
+    return stock.history(period=p, interval=period_to_interval.get(p), prepost="True", actions="False").to_json()
+
 
 @assets.route('/stats', methods=['POST'])
 def stats():
     content = request.get_json()
 
     print("\nfetching general stats for: " + content['name'] + "\n")
-    
+
     stock = yf.Ticker(content['name'])
     return jsonify(stock.info)
 
@@ -36,7 +73,7 @@ def stats():
 @assets.route('/history', methods=['POST'])
 def history():
     content = request.get_json()
-    
+
     print("\nfetching history market data for: " + content['name'] + "\n")
 
     stock = yf.Ticker(content['name'])
@@ -68,7 +105,7 @@ def twitter_sentiment():
 
         # using this will take a lot longer that TextBlobs default analyzer
         # blob = TextBlob(result.text, analyzer=NaiveBayesAnalyzer())
-        
+
         blob = TextBlob(textClean)
 
         # first number: polarity (-1.0 = very negative, 0 = neutral, 1.0 = very positive)
@@ -82,3 +119,4 @@ def reddit_sentiment_route():
     res = reddit_sentiment.delay()
 
     return json_response(res.get(timeout=30))
+

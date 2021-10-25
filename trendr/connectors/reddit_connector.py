@@ -53,8 +53,8 @@ def create_pmaw_api() -> pmaw.PushshiftAPI:
 def gather_items(
     api: pmaw.PushshiftAPI,
     item: RedditItem,
-    keywords: list[str],
-    subreddits: list[str] = None,
+    keywords: [str],
+    subreddits: [str] = None,
     **kwargs
 ) -> list:
     """
