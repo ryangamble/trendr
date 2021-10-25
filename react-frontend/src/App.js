@@ -9,6 +9,7 @@ import Login from "./components/Register/Login";
 import Result from "./components/Results/ResultsPage";
 import Reset from "./components/Register/Reset";
 import SetPassword from "./components/Register/SetPassword";
+import ConfirmEmail from "./components/Register/ConfirmEmail";
 import About from "./components/About/About";
 
 import { Provider } from "react-redux";
@@ -26,6 +27,7 @@ function App() {
             <Route path="/login" component={Login} />
             <Route path="/reset" component={Reset} />
             <Route path="/set-password:resetCode" component={SetPassword} />
+            <Route path="/confirm-email:confirmCode" component={ConfirmEmail} />
             <Route path="/result:id" component={Result} />
             <Route path="/myaccount" component={MyAccount} />
             <Route path="/about" component={About} />
