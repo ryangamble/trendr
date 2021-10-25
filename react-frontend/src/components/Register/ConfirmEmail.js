@@ -16,6 +16,7 @@ function ConfirmEmail() {
       alert(JSON.stringify(error.response.data.response.errors));
       history.push("/login");
     });
+  history.push("/login");
 
   return (<div><h1> </h1></div>);
 }
