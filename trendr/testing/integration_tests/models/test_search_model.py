@@ -1,7 +1,5 @@
-import pytest
 from trendr.models.search_model import Search
 from .test_data import new_searches_data
-from .fixtures import db_engine, db_tables, db_session
 
 
 def test_add_search(db_session):
@@ -10,8 +8,6 @@ def test_add_search(db_session):
 
     :param db_session: sqlalchemy database session
     """
-
-
     new_search = Search(**new_searches_data[0])
     db_session.add(new_search)
     db_session.commit()

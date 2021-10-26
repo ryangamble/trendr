@@ -1,7 +1,5 @@
-import pytest
 from trendr.models.reddit_model import RedditAuthor
 from .test_data import new_reddit_authors_data
-from .fixtures import db_engine, db_tables, db_session
 
 
 def test_add_reddit_author(db_session):
@@ -10,8 +8,6 @@ def test_add_reddit_author(db_session):
 
     :param db_session: sqlalchemy database session
     """
-
-
     new_reddit_author = RedditAuthor(**new_reddit_authors_data[0])
     db_session.add(new_reddit_author)
     db_session.commit()

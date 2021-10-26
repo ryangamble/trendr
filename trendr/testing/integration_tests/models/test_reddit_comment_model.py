@@ -1,7 +1,5 @@
-import pytest
 from trendr.models.reddit_model import RedditComment
 from .test_data import new_reddit_comments_data
-from .fixtures import db_engine, db_tables, db_session
 
 
 def test_add_reddit_comment(db_session):
@@ -10,8 +8,6 @@ def test_add_reddit_comment(db_session):
 
     :param db_session: sqlalchemy database session
     """
-
-
     new_reddit_comment = RedditComment(**new_reddit_comments_data[0])
     db_session.add(new_reddit_comment)
     db_session.commit()

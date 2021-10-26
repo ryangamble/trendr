@@ -6,6 +6,8 @@ new_user_data = {
     "username": "test_username",
     "email": "test@test.test",
     "password": "test_password",
+    "active": True,
+    "fs_uniquifier": "test",
 }
 new_role_data = {
     "name": "test_role",
@@ -13,7 +15,7 @@ new_role_data = {
 }
 
 new_searches_data = []
-for i in range(0,2):
+for i in range(0, 2):
     new_search_data = {
         "ran_at": datetime.datetime.now() + datetime.timedelta(hours=i),
         "search_string": string.ascii_lowercase[i]*4
@@ -21,7 +23,7 @@ for i in range(0,2):
     new_searches_data.append(new_search_data)
 
 new_tweets_data = []
-for i in range(0,2):
+for i in range(0, 2):
     new_tweet_data = {
         "tweet_id": int(str(i)*4),
         "text": f"This is test tweet {i}",

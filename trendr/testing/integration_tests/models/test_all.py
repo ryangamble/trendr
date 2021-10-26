@@ -1,4 +1,3 @@
-import pytest
 from trendr.models.user_model import Role, User
 from trendr.models.search_model import Search
 from trendr.models.tweet_model import Tweet
@@ -13,7 +12,6 @@ from .test_data import (
     new_reddit_authors_data,
     new_subreddits_data,
 )
-from .fixtures import db_engine, db_tables, db_session
 
 
 def test_add_user(db_session):
@@ -22,7 +20,6 @@ def test_add_user(db_session):
 
     :param db_session: sqlalchemy database session
     """
-
     # add role
     new_role = Role(**new_role_data)
     db_session.add(new_role)
@@ -109,7 +106,7 @@ def test_add_user(db_session):
         for new_reddit_comment_data in new_reddit_comments_data
     ]
     db_session.add_all(new_reddit_comments)
-    
+
     for comment in new_reddit_comments:
         comment.author = new_reddit_authors[1]
         comment.subreddit = new_subreddits[1]
@@ -130,7 +127,7 @@ def test_add_user(db_session):
         assert new_reddit_submission in new_reddit_authors[0].comments
         assert query_res.subreddit == new_subreddits[0]
         assert new_reddit_submission in new_subreddits[1].comments
-    
+
     for new_reddit_comment in new_reddit_comments:
         query_res = (
             db_session.query(RedditSubmission).filter_by(id=new_reddit_comment.id).first()

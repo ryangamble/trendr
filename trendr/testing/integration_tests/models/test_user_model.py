@@ -1,7 +1,5 @@
-import pytest
 from trendr.models.user_model import User, Role
 from .test_data import new_role_data, new_user_data
-from .fixtures import db_engine, db_tables, db_session
 
 
 def test_add_role(db_session):
@@ -10,8 +8,6 @@ def test_add_role(db_session):
 
     :param db_session: sqlalchemy database session
     """
-
-
     new_role = Role(**new_role_data)
     db_session.add(new_role)
     db_session.commit()
@@ -26,7 +22,6 @@ def test_add_user(db_session):
 
     :param db_session: sqlalchemy database session
     """
-
     new_user = User(**new_user_data)
     db_session.add(new_user)
     db_session.commit()
