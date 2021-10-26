@@ -67,7 +67,7 @@ class CoinGeckoHandler():
          include_24hr_vol='true', include_24hr_change='true', include_last_updated_at='true')
         if len(stats) == 0:
             return -1
-        print (stats)
+        # print (stats)
         coinStats = {'Name': coin}
         coinStats['Price'] = '$' + str(stats[coin]['usd'])
         coinStats['MarketCap'] = '${0:,.2f}'.format(stats[coin]['usd_market_cap'])
@@ -101,6 +101,9 @@ class CoinGeckoHandler():
                     return token['platforms']['ethereum']
         return None
 
+
+# cg = CoinGeckoAPI()
+# print(cg.get_global())
 
 # print(prices)
 # CoinGeckoHandler.converSymbolToId('rvp')

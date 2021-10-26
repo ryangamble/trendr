@@ -28,7 +28,7 @@ class FearGreed:
         return values
 
     @staticmethod
-    def getCryptoHistoricValues(days):
+    def getCryptoHistoricValues(days=365):
         '''
         days: how many days of crypto fear and index values are requested
         returns historic values of crypto fear and greed index up to 2018
@@ -65,8 +65,8 @@ class FearGreed:
 
 
 
-# print(FearGreed.getStockMarketValue())
-
+print(FearGreed.getStocksCurrentValue())
+print(FearGreed.getCryptoCurrentValue())
 # print(response.text)
 # print(FearGreed.getCurrentValue())
 # vals = FearGreed.getHistoricValues(5)

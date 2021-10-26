@@ -8,11 +8,31 @@ import re
 import pmaw
 from trendr.connectors import twitter_connector
 from trendr.connectors import reddit_connector
+from trendr.connectors.FearGreed import *
 from trendr.tasks.reddit import *
 from .helpers.json_response import json_response
 
 assets = Blueprint('assets', __name__, url_prefix="/assets")
 
+
+
+@assets.route('/FearGreed', methods=['GET'])
+def FearandGreed():
+    # content = request.get_json()
+    cryptoVals = FearGreed.getCryptoCurrentValue()
+    stockVals = FearGreed.getStocksCurrentValue()
+    data = {'cryptoVals': cryptoVals, 'stockVals': stockVals}
+    return jsonify(data)
+
+@assets.route('/HistoricFearGreed', methods=['GET'])
+def historicFearandGreedCrypto():
+    content = request.get_json()
+    if content and 'days' in content:
+        days = content['days']
+    else:
+        days = 365
+    vals = FearGreed.getCryptoHistoricValues(days)
+    return jsonify(vals)
 
 @assets.route('/search', methods=['POST'])
 def search():
@@ -58,7 +78,6 @@ def GDOW():
         "5y": "5d"
     }
     return stock.history(period=p, interval=period_to_interval.get(p), prepost="True", actions="False").to_json()
-
 
 @assets.route('/stats', methods=['POST'])
 def stats():

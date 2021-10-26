@@ -116,6 +116,3 @@ def twitter_accounts_mentioning_asset_summary(
     return {'followorsStats': followorsStats,'followingStats': followingStats , 'AccountsAgeStats' : AccountsAgeStats,
             'verifiedCount' :verifiedCount }
 
-tweep=auth_to_api(consumer_key= 'Z9O6ST99noLo6n4e1B5Gi1EL6', consumer_secret ='8XT3XvL6pWlX5pOnBxZGTOEPuxUXHRlg8ezIa0Hx1Kq9TlJc6c')
-res = twitter_accounts_mentioning_asset_summary('btc', api = tweep)
-print(res)
