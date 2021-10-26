@@ -1,7 +1,7 @@
 import pytest
 from trendr.models.tweet_model import Tweet
 from .test_data import new_tweets_data
-from .fixtures import *
+from .fixtures import db_engine, db_tables, db_session
 
 
 def test_add_search(db_session):

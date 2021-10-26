@@ -1,7 +1,7 @@
 import pytest
 from trendr.models.user_model import User, Role
 from .test_data import new_role_data, new_user_data
-from .fixtures import *
+from .fixtures import db_engine, db_tables, db_session
 
 
 def test_add_role(db_session):

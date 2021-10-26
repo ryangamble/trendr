@@ -27,7 +27,7 @@ services:
       - .env/.env_dev
       - .env/.env_twitter
     environment:
-      - FLASK_APP=trendr
+      - FLASK_APP=trendr.app
     depends_on:
       - rabbitmq
 
@@ -51,6 +51,7 @@ services:
       - FLASK_APP=trendr
     depends_on:
       - rabbitmq
+      - api
     
   celery_worker_social:
     build:
@@ -67,6 +68,7 @@ services:
       - FLASK_APP=trendr
     depends_on:
       - rabbitmq
+      - api
 
   celery_beat:
     build:

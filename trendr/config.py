@@ -90,6 +90,12 @@ if SQLALCHEMY_DATABASE_URI == defaults["SQLALCHEMY_DATABASE_URI"]:
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+"""
+Celery settings
+"""
+CELERY_TASK_ROUTES = {"trendr.tasks.social.*": {"queue": "social"}}
+CELERY_TASK_DEFAULT_QUEUE = "general"
+
 CELERY_BROKER_URL = fetch_config(
     "CELERY_BROKER_URL", default=defaults["CELERY_BROKER_URL"]
 )

@@ -10,7 +10,7 @@ from trendr.models.association_tables import (
 
 
 class Search(db.Model):
-    __tablename__ = "searches"
+    __tablename__ = "search"
 
     id = db.Column(Integer, primary_key=True, autoincrement="auto")
 
@@ -34,6 +34,6 @@ class Search(db.Model):
         back_populates="searches",
     )
 
-    user_id = db.Column(Integer, ForeignKey("users.id"))
+    user_id = db.Column(Integer, ForeignKey("user.id"))
     # There is a many-one relationship between search and user
     user = relationship("User", back_populates="searches")

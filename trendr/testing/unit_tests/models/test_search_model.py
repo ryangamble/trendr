@@ -1,7 +1,7 @@
 import pytest
 from trendr.models.search_model import Search
 from .test_data import new_searches_data
-from .fixtures import *
+from .fixtures import db_engine, db_tables, db_session
 
 
 def test_add_search(db_session):

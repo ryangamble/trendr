@@ -1,11 +1,9 @@
 import datetime
 import string
-from trendr.models.reddit_post_model import RedditPostType
+from trendr.models.reddit_model import RedditSubmissionType
 
 new_user_data = {
     "username": "test_username",
-    "first_name": "test firstname",
-    "last_name": "test_lastname",
     "email": "test@test.test",
     "password": "test_password",
 }
@@ -33,16 +31,46 @@ for i in range(0,2):
     }
     new_tweets_data.append(new_tweet_data)
 
-new_reddit_posts_data = []
+new_reddit_submissions_data = []
 for i in range(0,2):
     new_reddit_post_data = {
         "reddit_id": str(i)*4,
+        "permalink": f"This is test permalink {i}",
         "title": f"This is test title {i}",
         "text": f"This is test text {i}",
-        "type": RedditPostType.TEXT,
+        "type": RedditSubmissionType.TEXT,
         "posted_at": datetime.datetime.now() + datetime.timedelta(hours=i),
         "up_votes": i,
-        "down_votes": i
+        "down_votes": i,
+        "score": 0,
     }
-    new_reddit_posts_data.append(new_reddit_post_data)
+    new_reddit_submissions_data.append(new_reddit_post_data)
 
+
+new_reddit_comments_data = []
+for i in range(0,2):
+    new_reddit_comment_data = {
+        "reddit_id": str(i)*4,
+        "text": f"This is test text {i}",
+        "posted_at": datetime.datetime.now() + datetime.timedelta(hours=i),
+        "up_votes": i,
+        "down_votes": i,
+        "score": 0,
+    }
+    new_reddit_comments_data.append(new_reddit_comment_data)
+
+new_reddit_authors_data = []
+for i in range(0,2):
+    new_reddit_author_data = {
+        "username": str(i)*4
+    }
+    new_reddit_authors_data.append(new_reddit_author_data)
+
+new_subreddits_data = []
+for i in range(0,2):
+    new_subreddit_data = {
+        "reddit_id": str(i)*4,
+        "name": f"This is test name {i}",
+        "subscribers": i
+    }
+    new_subreddits_data.append(new_subreddit_data)

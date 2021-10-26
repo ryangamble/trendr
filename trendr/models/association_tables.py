@@ -3,20 +3,20 @@ from trendr.extensions import db
 
 # search associations
 search_tweet_association = Table(
-    "searches_tweets",
+    "search_tweet",
     db.metadata,
-    db.Column("search_id", db.Integer(), ForeignKey("searches.id")),
-    db.Column("tweet_id", db.Integer(), ForeignKey("tweets.id")),
+    db.Column("search_id", db.Integer(), ForeignKey("search.id")),
+    db.Column("tweet_id", db.Integer(), ForeignKey("tweet.id")),
 )
 search_reddit_submission_association = Table(
-    "searches_reddit_submission",
+    "search_reddit_submission",
     db.metadata,
-    db.Column("search_id", db.Integer(), ForeignKey("searches.id")),
-    db.Column("reddit_submission_id", db.Integer(), ForeignKey("reddit_submissions.id")),
+    db.Column("search_id", db.Integer(), ForeignKey("search.id")),
+    db.Column("reddit_submission_id", db.Integer(), ForeignKey("reddit_submission.id")),
 )
-search_reddit_comment_association =(
-    "searches_reddit_comment",
+search_reddit_comment_association = Table(
+    "search_reddit_comment",
     db.metadata,
-    db.Column("search_id", db.Integer(), ForeignKey("searches.id")),
-    db.Column("reddit_comment_id", db.Integer(), ForeignKey("reddit_comments.id")),
+    db.Column("search_id", db.Integer(), ForeignKey("search.id")),
+    db.Column("reddit_comment_id", db.Integer(), ForeignKey("reddit_comment.id")),
 )

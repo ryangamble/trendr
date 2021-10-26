@@ -1,5 +1,5 @@
-from trendr.app import create_app
-from trendr.extensions import celery
-from trendr.tasks.social import *
+from trendr.app import init_celery
+from trendr.tasks.social.reddit.gather import *
+from trendr.tasks.social.twitter.gather import *
 
-app = create_app()
+celery = init_celery()

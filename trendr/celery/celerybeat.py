@@ -1,10 +1,10 @@
-from trendr.extensions import celery
-from trendr.tasks import *
 from celery.schedules import crontab
-# celery.conf.imports = celery.conf.imports + ("trendr.tasks",)
+from trendr.app import init_celery
+from trendr.tasks.basic import *
+from trendr.tasks.mail import *
+from trendr.tasks import *
 
-# import general tasks
-# celery.conf.imports = celery.conf.imports + ("trendr.tasks",)
+celery = init_celery()
 
 
 @celery.on_after_configure.connect

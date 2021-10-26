@@ -1,42 +1,29 @@
 from trendr.extensions import celery
-from trendr.extensions import db
-from trendr.models import *
-from trendr.connectors import reddit_connector, db_interface
+from trendr.connectors import reddit_connector
+from trendr.controllers.social_controller.utils import store_in_db
+
+pmaw_api = reddit_connector.create_pmaw_api()
 
 
-# pmaw_api = reddit_connector.create_pmaw_api()
-
-# create_praw_pmaw_api = celery.task(reddit_connector.create_pmaw_api)
-# create_pmaw_api = celery.task(reddit_connector.create_pmaw_api)
-# gather_items = celery.task(reddit_connector.gather_items)
-# gather_submissions = celery.task(reddit_connector.gather_submissions)
-# gather_comments = celery.task(reddit_connector.gather_comments)
-# gather_items_by_id = celery.task(reddit_connector.gather_items_by_id)
-# gather_submissions_by_id = celery.task(reddit_connector.gather_submissions_by_id)
-# gather_comments_by_id = celery.task(reddit_connector.gather_comments_by_id)
-
-# @celery.task
-# @db_interface.store_tweet_in_db(overwrite=True)
+@celery.task
+@store_in_db(api=pmaw_api, wraps=reddit_connector.gather_submissions)
+def store_submissions(*args, **kwargs):
+    return reddit_connector.gather_submissions(*args, **kwargs)
 
 
-# @celery.task
-# def reddit_sentiment():
+@celery.task
+@store_in_db(api=pmaw_api, wraps=reddit_connector.gather_comments)
+def store_comments(*args, **kwargs):
+    return reddit_connector.gather_comments(*args, **kwargs)
 
-#     results = reddit_connector.gather_submissions(
-#         api=pmaw_api, keywords=["AAPL"], limit=5
-#     )
 
-#     ret_arr = []
+@celery.task
+@store_in_db(api=pmaw_api, wraps=reddit_connector.gather_submissions_by_id)
+def store_submissions_by_id(*args, **kwargs):
+    return reddit_connector.gather_submissions_by_id(*args, **kwargs)
 
-#     for result in results:
-#         ret_arr.append(
-#             {
-#                 "title": result["title"],
-#                 "selftext": result["selftext"],
-#                 "subreddit": result["subreddit"],
-#             }
-#         )
 
-#     print(ret_arr)
-
-#     return ret_arr
+@celery.task
+@store_in_db(api=pmaw_api, wraps=reddit_connector.gather_comments_by_id)
+def store_comments_by_id(*args, **kwargs):
+    return reddit_connector.gather_comments_by_id(*args, **kwargs)
