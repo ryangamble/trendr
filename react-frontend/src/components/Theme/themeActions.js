@@ -1,6 +1,3 @@
-const redux = require("redux");
-const createStore = redux.createStore;
-
 export const themes = {
   light: {
     name: "Light",
@@ -22,29 +19,7 @@ export const themes = {
   },
 };
 
-function saveToLocalStorage(store) {
-  try {
-    const serializedStore = JSON.stringify(store);
-    window.localStorage.setItem("store", serializedStore);
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-function loadFromLocalStorage() {
-  try {
-    const serializedStore = window.localStorage.getItem("store");
-    if (serializedStore === null) return undefined;
-    return JSON.parse(serializedStore);
-  } catch (e) {
-    console.log(e);
-    // return undefined;
-    window.localStorage.setItem("store", JSON.stringify(initialState));
-    return initialState;
-  }
-}
-
-const initialState = {
+export const initialThemeState = {
   currentTheme: themes.light,
 };
 
@@ -57,7 +32,7 @@ export const toggleTheme = () => {
   };
 };
 
-const reducer = (state = initialState, action) => {
+export const themeReducer = (state = initialThemeState, action) => {
   switch (action.type) {
     case TOGGLE_THEME:
       if (state.currentTheme === themes.light) {
@@ -78,13 +53,3 @@ const reducer = (state = initialState, action) => {
       };
   }
 };
-
-const persistedState = loadFromLocalStorage();
-
-export const store = createStore(reducer, persistedState);
-
-console.log("initial state", store.getState());
-
-store.subscribe(() => console.log("updated state", store.getState()));
-
-store.subscribe(() => saveToLocalStorage(store.getState()));

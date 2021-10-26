@@ -14,18 +14,24 @@ import {
   XAxis,
   YAxis,
   HorizontalGridLines,
+  VerticalGridLines,
   FlexibleXYPlot,
   LineSeries,
+  MarkSeries,
   Crosshair,
   Borders,
+  DiscreteColorLegend,
+  Hint,
 } from "react-vis";
+
 import axios from "axios";
 import "./Results.css";
 import "../../../node_modules/react-vis/dist/style.css";
 
 // Currently pass symbol as a prop, can be changed later
-function Graph(props) {
-  const currentTheme = useSelector((state) => state.currentTheme);
+// Used for both price and volume charts for stocks
+function StockGraph(props) {
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const [graphData, setgraphData] = useState([]);
 
@@ -96,6 +102,7 @@ function Graph(props) {
         return pd;
       })
       .then((pd) => {
+        // console.log(pd)
         var min = Number.MAX_VALUE;
         var max = 0;
         switch (timePeriod) {
@@ -204,6 +211,7 @@ function Graph(props) {
               {/* <VerticalGridLines/> */}
 
               <LineSeries
+                animation={true}
                 data={graphData[period]}
                 onNearestX={_onNearestX}
                 strokeWidth={2}
@@ -308,4 +316,148 @@ function Graph(props) {
   }
 }
 
-export default Graph;
+
+function SentimentGraph(props) {
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
+
+  const [twitterData, setTwitterData] = useState([]);
+  const [redditData, setRedditData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect (() => {
+    const requestBody = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      name: props.symbol,
+    };
+
+    fetchTwitterData(requestBody)
+    fetchRedditData(requestBody)
+
+  }, [props])
+
+  function fetchRedditData(req) {
+    var data = new Array(10).fill(0).reduce((prev,curr) =>
+    [...prev, {
+      x: Math.random() * 2 - 1,
+      y: Math.random(),
+      size: 1
+    }], []);
+      setRedditData(data);
+  }
+
+  function fetchTwitterData(req) {
+    axios
+      .post("http://localhost:5000/assets/twitter_sentiment", req)
+      .then((res) => {
+        // console.log(res.data)
+        return JSON.parse(JSON.stringify(res.data));
+      })
+      .then((data) => {
+        // console.log(data['0']['1']['1'])
+        var points = [];
+        for (var i = 0; i < data.length; i++) {
+          // console.log(data[i.toString()]['1'])
+          points.push({
+            x: parseFloat(data[i.toString()]['1']['0']),
+            y: parseFloat(data[i.toString()]['1']['1']),
+            size: 1,
+          });
+        }
+        console.log("twitter sentiment analysis points")
+        console.log(points)
+        return points;
+      })
+      .then((points) => {
+        return setTwitterData(points)
+      })
+      .then(()=> {
+        setLoading(false)
+      })
+  }
+
+  const markSeriesProps = {
+    animation: true,
+    stroke: "grey",
+    strokeWidth: 1,
+    opacityType: "category",
+    opacity: "0.4",
+  }
+
+  if (loading) {
+    return (
+      <Container fluid>
+        <Spinner animation="border" />
+      </Container>
+    );
+  } else {
+    return (
+      <Container className="graphLayout">
+        <Row>
+          <div className="chartTitle">
+            <h2>Sentiment Data</h2>
+          </div>
+        </Row>
+        {twitterData.length > 0 || redditData.legnth > 0 ?
+          <Row>
+            <div className="chartContainer">
+              <FlexibleXYPlot
+                xDomain={[-1.0,1.0]}
+                yDomain={[0,1.0]}
+              >
+
+                <HorizontalGridLines />
+                <VerticalGridLines />
+                <XAxis
+                  title="Polarity"
+                  style={{title: {fill: currentTheme.foreground}}}
+                />
+                <YAxis
+                  title="Subjectivity"
+                  style={{title: {fill: currentTheme.foreground}}}
+                />
+                <DiscreteColorLegend
+                  orientation="horizontal"
+                  style={{position: "absolute", right: "0%", top: "0%", backgroundColor: "rgba(108,117,125, 0.7)", borderRadius: "5px"}}
+                  items={[
+                    {
+                      title: "Twitter",
+                      color: "#0D6EFD",
+                      strokeWidth: 5,
+                    },
+                    {
+                      title: "Reddit",
+                      color: "red",
+                      strokeWidth: 5
+                    }
+                  ]}
+                />
+                <MarkSeries
+                  {...markSeriesProps}
+                  data={twitterData}
+                  color="#0D6EFD"
+                />
+                <MarkSeries
+                  {...markSeriesProps}
+                  data={redditData}
+                  color="red"
+                />
+              </FlexibleXYPlot>
+            </div>
+          </Row>
+        :
+          <div>
+            no data
+          </div>
+        }
+      </Container>
+    );
+  }
+}
+
+// Need separate functions for price/volume charts for cryptos
+
+export {
+  StockGraph,
+  SentimentGraph
+};
