@@ -8,7 +8,6 @@ from celery import Celery
 db = SQLAlchemy()
 fsqla.FsModels.set_db_info(db)
 migrate = Migrate()
-# security = Security(register_blueprint=False)
 security = Security()
 mail = Mail()
 celery = Celery()

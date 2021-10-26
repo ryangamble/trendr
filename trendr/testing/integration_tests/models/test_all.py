@@ -1,3 +1,4 @@
+from trendr.extensions import security
 from trendr.models.user_model import Role, User
 from trendr.models.search_model import Search
 from trendr.models.tweet_model import Tweet
@@ -14,24 +15,24 @@ from .test_data import (
 )
 
 
-def test_add_user(db_session):
+def test_all(db_session, app):
     """
-    Generate new user and make sure database can add it
+    Generate complex data and ensure database can handle it
+    and adds correctly
 
     :param db_session: sqlalchemy database session
     """
     # add role
-    new_role = Role(**new_role_data)
-    db_session.add(new_role)
+    new_role = security.datastore.create_role(**new_role_data)
     db_session.commit()
 
     query_res = db_session.query(Role).filter_by(name=new_role_data["name"]).first()
+    
     assert query_res is new_role
 
     # add user belonging to new_role
-    new_user = User(**new_user_data)
-    new_user.roles.append(new_role)
-    db_session.add(new_user)
+    new_user = security.datastore.create_user(**new_user_data)
+    security.datastore.add_role_to_user(new_user, new_role)
     db_session.commit()
 
     query_res = (
@@ -39,7 +40,6 @@ def test_add_user(db_session):
     )
     assert query_res is new_user
     assert new_role in new_user.roles
-    assert new_user in new_role.users
 
     # add twitter search belonging to new_user
     new_twitter_search = Search(**new_searches_data[0])

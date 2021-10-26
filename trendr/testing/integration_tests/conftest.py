@@ -1,8 +1,12 @@
 import pytest
 from sqlalchemy.orm import Session
+from trendr.app import create_app
 from trendr.extensions import db
 from sqlalchemy import create_engine
 
+@pytest.fixture
+def app():
+    return create_app()
 
 @pytest.fixture(scope='session')
 def db_engine():
