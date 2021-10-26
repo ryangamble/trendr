@@ -5,27 +5,20 @@ import { Button } from "react-bootstrap";
 
 // A reusable follow botton component that takes the stock/crypto id as props
 
-function FollowBtn({ id, callback }) {
+function FollowBtn({ id, isFollow, callback }) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   const currentUser = useSelector((state) => state.user);
 
   const [follow, setFollow] = useState(false);
 
   useEffect(() => {
-    // fetch user follow list and determine to show follow/unfollow
-
     // do this only if user is logged in
     if (currentUser.email !== "" || currentUser.username !== "") {
       console.log("fetching user follow list");
-
-      //some example results
-      var list = ["APP", "DDOG", "GH"];
-
-      if (list.includes(id)) {
-        setFollow(true);
-      }
+      setFollow(isFollow);
+      console.log("follwo is", follow);
     }
-  });
+  }, [isFollow]);
 
   const handleFollow = (e) => {
     e.preventDefault();

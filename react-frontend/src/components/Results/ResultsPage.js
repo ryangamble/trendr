@@ -14,11 +14,25 @@ function Results() {
 
   const { id } = useParams();
   const [currency, setCurrency] = useState(null);
+  const [isFollow, setIsFollow] = useState(false);
 
   const setCurrencyCallback = (curr) => {
     console.log("currency is " + curr);
     setCurrency(curr);
   };
+
+  useEffect(() => {
+    // do this only if user is logged in
+    if (currentUser.email !== "" || currentUser.username !== "") {
+      console.log("fetching user follow list");
+      const list = ["DDOG", "APP"];
+      // check if user follows this stock/crypto
+      if (list.includes(id.substring(1))) {
+        console.log("-----------------------");
+        setIsFollow(true);
+      }
+    }
+  }, []);
 
   return (
     <div
@@ -38,7 +52,7 @@ function Results() {
               Showing Results For: {id.substring(1)}
             </h3>
             {currentUser.username === "" && currentUser.email === "" ? null : (
-              <FollowBtn id={id.substring(1)} />
+              <FollowBtn id={id.substring(1)} isFollow={isFollow} />
             )}
           </Col>
         </Row>

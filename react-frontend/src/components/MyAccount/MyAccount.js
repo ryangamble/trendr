@@ -86,7 +86,12 @@ function MyAccount() {
                       href={`/result:${item}`}
                       key={item}
                     >
-                      {item} <FollowBtn id={item} callback={unfollowCallback} />
+                      {item}{" "}
+                      <FollowBtn
+                        id={item}
+                        isFollow={true}
+                        callback={unfollowCallback}
+                      />
                     </ListGroupItem>
                   ))}
                 </ListGroup>
