@@ -9,7 +9,6 @@ from trendr.routes.helpers.json_response import json_response
 
 users = Blueprint("users", __name__, url_prefix="/users")
 
-
 @users.route("/", methods=["GET"])
 def get_users():
     pass
@@ -82,3 +81,15 @@ def get_assets_followed_by_user(username):
     :return: JSON Response containing a list of asset identifiers
     """
     return json_response(payload={"assets": get_followed_assets(user=username)})
+@users.route("/settings", methods=["GET"])
+@auth_required()
+def get_settings():
+    json_response(current_user.get_settings())
+
+@users.route("/settings", methods=["PUT"])
+@auth_required()
+def set_settings():
+    content = request.get_json()
+    
+    current_user.set_settings(content)
+    return json_response({"success": "true"})
