@@ -28,7 +28,7 @@ def FearandGreed():
 def historicFearandGreedCrypto():
     content = request.get_json()
     if content and 'days' in content:
-        days = content['days']
+        days = int(content['days'])
     else:
         days = 365
     vals = FearGreed.getCryptoHistoricValues(days)
