@@ -30,6 +30,8 @@ def search():
         or query.lower() in v['symbol'].lower() or query.lower() in v['name'].lower()
     ]
 
+    short_list = sorted(crypto_filtered, key=lambda d: len(d['name']))
+
     # print(filtered[0:10])
 
     stock_filtered = yq.search(query, news_count=0, quotes_count=10)
@@ -50,7 +52,7 @@ def search():
             item.pop('score')
             search_results.append(item)
     
-    for item in crypto_filtered[0:10]:
+    for item in short_list[0:5]:
         item['typeDisp'] = 'crypto'
         item['symbol'] = item.pop('symbol').upper()
         search_results.append(item)
