@@ -3,7 +3,9 @@ from trendr.connectors import twitter_connector
 from trendr.controllers.social_controller.utils import store_in_db
 from trendr.config import TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET
 
-api = twitter_connector.auth_to_api(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
+api = twitter_connector.auth_to_api(
+    TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET
+)
 
 
 @celery.task

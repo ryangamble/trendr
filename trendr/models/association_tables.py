@@ -12,11 +12,15 @@ search_reddit_submission_association = Table(
     "search_reddit_submission",
     db.metadata,
     db.Column("search_id", db.Integer(), ForeignKey("search.id")),
-    db.Column("reddit_submission_id", db.Integer(), ForeignKey("reddit_submission.id")),
+    db.Column(
+        "reddit_submission_id", db.Integer(), ForeignKey("reddit_submission.id")
+    ),
 )
 search_reddit_comment_association = Table(
     "search_reddit_comment",
     db.metadata,
     db.Column("search_id", db.Integer(), ForeignKey("search.id")),
-    db.Column("reddit_comment_id", db.Integer(), ForeignKey("reddit_comment.id")),
+    db.Column(
+        "reddit_comment_id", db.Integer(), ForeignKey("reddit_comment.id")
+    ),
 )

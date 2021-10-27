@@ -110,7 +110,9 @@ def store_reddit_results(
         )
 
 
-def store_reddit_comments(comments: pmaw.Response, overwrite: bool = True) -> list[int]:
+def store_reddit_comments(
+    comments: pmaw.Response, overwrite: bool = True
+) -> list[int]:
     """
     Store reddit comments from a pmaw Response
 
@@ -143,7 +145,9 @@ def store_reddit_comments(comments: pmaw.Response, overwrite: bool = True) -> li
             new_comment = RedditComment(
                 reddit_id=result["id"],
                 text=result["body"],
-                posted_at=datetime.datetime.fromtimestamp(result["created_utc"]),
+                posted_at=datetime.datetime.fromtimestamp(
+                    result["created_utc"]
+                ),
                 score=result["score"],
             )
 
@@ -165,7 +169,9 @@ def store_reddit_comments(comments: pmaw.Response, overwrite: bool = True) -> li
             new_comment.subreddit = subreddit
 
             # update subscribers
-            if ("subreddit_subscribers" in result) and (subreddit.subscribers != result["subreddit_subscribers"]):
+            if ("subreddit_subscribers" in result) and (
+                subreddit.subscribers != result["subreddit_subscribers"]
+            ):
                 subreddit.subscribers = result["subreddit_subscribers"]
 
             to_add.append(new_comment)
@@ -198,7 +204,9 @@ def store_reddit_submissions(
 
     for result in submissions:
 
-        existing = RedditSubmission.query.filter_by(reddit_id=result["id"]).first()
+        existing = RedditSubmission.query.filter_by(
+            reddit_id=result["id"]
+        ).first()
         if existing:
             res_ids.append(existing.id)
 
@@ -221,7 +229,9 @@ def store_reddit_submissions(
                     if result["selftext"]
                     else RedditSubmissionType.OTHER
                 ),
-                posted_at=datetime.datetime.fromtimestamp(result["created_utc"]),
+                posted_at=datetime.datetime.fromtimestamp(
+                    result["created_utc"]
+                ),
                 score=result["score"],
             )
 

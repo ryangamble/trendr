@@ -26,7 +26,9 @@ def auth_to_api(consumer_key: str, consumer_secret: str) -> tweepy.API:
         )
 
 
-def get_tweet_by_id(tweet_id: int, api: tweepy.API = None) -> tweepy.models.Status:
+def get_tweet_by_id(
+    tweet_id: int, api: tweepy.API = None
+) -> tweepy.models.Status:
     """
     Gets all the information available for given tweet.
 
