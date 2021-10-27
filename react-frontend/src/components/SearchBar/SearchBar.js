@@ -19,7 +19,7 @@ function SearchBar() {
     console.log("firing search to backend...");
 
     if (suggestions[0]) {
-      history.push(`/result:${suggestions[0].type}/${suggestions[0].id}`);
+      history.push(`/result/${suggestions[0].type}/${suggestions[0].id}`);
     } else {
       alert("No matching stocks or cryptos");
       return;
@@ -116,7 +116,7 @@ function SearchBar() {
                         className="suggestName"
                         style={{ color: currentTheme.foreground }}
                       >
-                        {suggestion.name}{" "}
+                        {suggestion.name}{" - "}{suggestion.type.toUpperCase()}
                       </td>
                     </tr>
                   </tbody>

@@ -50,7 +50,7 @@ function Results() {
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
               {currency ? (
-                <Graph
+                <StockGraph
                   symbol={id}
                   currency={currency}
                   graphType="price"
@@ -65,7 +65,7 @@ function Results() {
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
               {currency ? (
-                <Graph
+                <StockGraph
                   symbol={id}
                   graphType="volume"
                   color="orange"
