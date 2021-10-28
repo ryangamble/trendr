@@ -30,48 +30,13 @@ def historic_fear_and_greed_crypto():
     values = fear_and_greed_connector.get_crypto_historic_values(days)
     return jsonify(values)
 
+
 @assets.route('/search', methods=['POST'])
 def search():
     content = request.get_json()
     data = yq.search(content['query'], news_count=0, quotes_count=10)
     return jsonify(data)
 
-@assets.route('/SP500', methods=['GET'])
-def SP500():
-    content = request.get_json()
-    print("\nfetching history market data for S&P500"  + "\n")
-
-    stock = yf.Ticker('GSPC')
-    p = content['period']
-
-    period_to_interval = {
-        "1d": "5m",
-        "5d": "30m",
-        "1mo": "1h",
-        "3mo": "1h",
-        "1y": "1d",
-        "5y": "5d"
-    }
-    return stock.history(period=p, interval=period_to_interval.get(p), prepost="True", actions="False").to_json()
-
-
-@assets.route('/GDOW', methods=['GET'])
-def GDOW():
-    content = request.get_json()
-    print("\nfetching history market data for The Global Dow"  + "\n")
-
-    stock = yf.Ticker('GDOW')
-    p = content['period']
-
-    period_to_interval = {
-        "1d": "5m",
-        "5d": "30m",
-        "1mo": "1h",
-        "3mo": "1h",
-        "1y": "1d",
-        "5y": "5d"
-    }
-    return stock.history(period=p, interval=period_to_interval.get(p), prepost="True", actions="False").to_json()
 
 @assets.route('/sp500', methods=['GET'])
 def sp_500():
