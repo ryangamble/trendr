@@ -12,5 +12,7 @@ def test_add_search(db_session):
     db_session.add(new_reddit_post)
     db_session.commit()
 
-    query_res = db_session.query(RedditPost).filter_by(id=new_reddit_post.id).first()
+    query_res = (
+        db_session.query(RedditPost).filter_by(id=new_reddit_post.id).first()
+    )
     assert query_res is new_reddit_post

@@ -1,6 +1,10 @@
-from flask import Blueprint
-
-from trendr.controllers.user_controller import get_followed_assets
+from flask import Blueprint, request
+from flask_security import current_user, auth_required
+from trendr.controllers.user_controller import (
+    get_followed_assets,
+    follow_asset,
+    unfollow_asset,
+)
 from trendr.routes.helpers.json_response import json_response
 
 users = Blueprint("users", __name__, url_prefix="/users")
@@ -26,6 +30,48 @@ def delete_user(user_id):
     pass
 
 
+@users.route("/follow-asset", methods=["POST"])
+@auth_required()
+def follow_asset_curr():
+    content = request.get_json()
+
+    asset = None
+    if "identifier" in content:
+        asset = content["identifier"]
+    elif "id" in content:
+        asset = content["id"]
+
+    if follow_asset(current_user, asset):
+        return json_response(status=200, payload={"success": True})
+    else:
+        return json_response(status=400, payload={"success": False})
+
+
+@users.route("/unfollow-asset", methods=["POST"])
+@auth_required()
+def unfollow_asset_curr():
+    content = request.get_json()
+
+    asset = None
+    if "identifier" in content:
+        asset = content["identifier"]
+    elif "id" in content:
+        asset = content["id"]
+
+    if unfollow_asset(current_user, asset):
+        return json_response(status=200, payload={"success": True})
+    else:
+        return json_response(status=400, payload={"success": False})
+
+
+@users.route("/assets-followed", methods=["GET"])
+@auth_required()
+def get_followed_assets_curr():
+    return json_response(
+        payload={"assets": get_followed_assets(current_user.id)}
+    )
+
+
 @users.route("/assets-followed/<user_id>", methods=["GET"])
 def get_assets_followed_by_user(user_id):
     """
@@ -33,8 +79,4 @@ def get_assets_followed_by_user(user_id):
     :param user_id: The database user id to check followed assets on
     :return: JSON Response containing a list of asset identifiers
     """
-    asset_associations = get_followed_assets(user_id)
-    followed_assets = []
-    for row in asset_associations:
-        followed_assets.append(row.identifer)  # TODO: After we can add followed assets, check this works
-    return json_response(status=200, payload={"assets": followed_assets})
+    return json_response(payload={"assets": get_followed_assets(user_id)})

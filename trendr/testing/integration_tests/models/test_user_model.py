@@ -12,7 +12,9 @@ def test_add_role(db_session):
     db_session.add(new_role)
     db_session.commit()
 
-    query_res = db_session.query(Role).filter_by(name=new_role_data["name"]).first()
+    query_res = (
+        db_session.query(Role).filter_by(name=new_role_data["name"]).first()
+    )
     assert query_res is new_role
 
 
@@ -27,6 +29,8 @@ def test_add_user(db_session):
     db_session.commit()
 
     query_res = (
-        db_session.query(User).filter_by(username=new_user_data["username"]).first()
+        db_session.query(User)
+        .filter_by(username=new_user_data["username"])
+        .first()
     )
     assert query_res is new_user
