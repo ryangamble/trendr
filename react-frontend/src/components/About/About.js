@@ -3,7 +3,7 @@ import MyNavBar from "../NavBar/MyNavBar";
 import { useSelector } from "react-redux";
 import { Container, Card, Row, Col } from "react-bootstrap";
 
-function Home() {
+function About() {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   return (
@@ -63,4 +63,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default About;
