@@ -137,3 +137,14 @@ def twitter_sentiment():
 def reddit_sentiment_route():
     res = reddit_sentiment.delay()
     return json_response(res.get(timeout=30))
+
+
+@assets.route('/tweet-summary/<asset_identifier>', methods=['GET'])
+def tweet_summary(asset_identifier):
+    """
+    Generates statistics related to the types of users tweeting about an asset
+    :param asset_identifier: The asset identifier (AAPL, BTC) to generate a tweet summary for
+    :return: JSON response containing tweet summary for the requested asset
+    """
+    summary_data = twitter_connector.twitter_accounts_mentioning_asset_summary(asset_identifier)
+    return json_response(summary_data, status=200)
