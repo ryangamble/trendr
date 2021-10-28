@@ -14,11 +14,13 @@ def create_parser():
     Parses arguments from the command line
     :return: argparse.ArgumentParser
     """
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('-u', action='store_true', default=False,
-                        help='Run unit tests')
-    parser.add_argument('-i', action='store_true', default=False,
-                        help='Run integration tests')
+    parser = argparse.ArgumentParser(description="Process some integers.")
+    parser.add_argument(
+        "-u", action="store_true", default=False, help="Run unit tests"
+    )
+    parser.add_argument(
+        "-i", action="store_true", default=False, help="Run integration tests"
+    )
     return parser
 
 

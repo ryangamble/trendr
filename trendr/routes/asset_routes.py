@@ -7,9 +7,19 @@ import re
 from trendr.connectors import twitter_connector
 from trendr.connectors import fear_and_greed_connector
 from trendr.tasks.reddit import reddit_sentiment
+from trendr.tasks.social.twitter.gather import (
+    store_tweets_mentioning_asset,
+    store_tweet_by_id,
+)
+from trendr.tasks.social.reddit.gather import (
+    store_comments,
+    store_submissions,
+    store_submissions_by_id,
+    store_comments_by_id,
+)
 from .helpers.json_response import json_response
 
-assets = Blueprint('assets', __name__, url_prefix="/assets")
+assets = Blueprint("assets", __name__, url_prefix="/assets")
 
 
 @assets.route('/fear-greed', methods=['GET'])
@@ -86,14 +96,14 @@ def stats():
     return jsonify(stock.info)
 
 
-@assets.route('/history', methods=['POST'])
+@assets.route("/history", methods=["POST"])
 def history():
     content = request.get_json()
 
-    print("\nfetching history market data for: " + content['name'] + "\n")
+    print("\nfetching history market data for: " + content["name"] + "\n")
 
-    stock = yf.Ticker(content['name'])
-    p = content['period']
+    stock = yf.Ticker(content["name"])
+    p = content["period"]
 
     period_to_interval = {
         "1d": "5m",
@@ -101,17 +111,22 @@ def history():
         "1mo": "1h",
         "3mo": "1h",
         "1y": "1d",
-        "5y": "5d"
+        "5y": "5d",
     }
 
-    return stock.history(period=p, interval=period_to_interval.get(p), prepost="True", actions="False").to_json()
+    return stock.history(
+        period=p,
+        interval=period_to_interval.get(p),
+        prepost="True",
+        actions="False",
+    ).to_json()
 
 
-@assets.route('/twitter_sentiment', methods=['POST'])
+@assets.route("/twitter_sentiment", methods=["POST"])
 def twitter_sentiment():
     content = request.get_json()
 
-    results = twitter_connector.get_tweets_mentioning_asset(content['name'])
+    results = twitter_connector.get_tweets_mentioning_asset(content["name"])
     text = []
 
     for result in results:
@@ -133,8 +148,14 @@ def twitter_sentiment():
     return jsonify(text)
 
 
-@assets.route('/reddit_sentiment', methods=['GET'])
+@assets.route("/reddit_sentiment", methods=["GET"])
 def reddit_sentiment_route():
-    res = reddit_sentiment.delay()
-    return json_response(res.get(timeout=30))
 
+    res = store_tweet_by_id.delay(tweet_id=1450846775221399566)
+
+    res_2 = store_submissions.delay(keywords=["apple"], limit=50)
+    res_3 = store_comments.delay(keywords=["apple"], limit=50)
+
+    return json_response(
+        [res.get(timeout=100), res_2.get(timeout=100), res_3.get(timeout=100)]
+    )

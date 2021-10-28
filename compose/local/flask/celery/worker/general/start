@@ -3,4 +3,4 @@
 set -o errexit
 set -o nounset
 
-celery -A trendr.celery.workers.general.celery worker --hostname=celery-general@%h --loglevel=info 
+celery -A trendr.celery.workers.general.celery worker --hostname=celery-general@%h --loglevel=info -Q general
