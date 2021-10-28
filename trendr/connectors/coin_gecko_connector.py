@@ -102,7 +102,8 @@ def get_coin_links(coinid):
     :param coinid: The ID of the coin, as stored in coin gecko coins json file
     :returns a dictionary with the available links for the passed coin
     '''
-    data = CoinGeckoHandler.cg.get_coin_by_id(coinID,
+    cg_api = CoinGeckoAPI()
+    data = cg_api.get_coin_by_id(coinid,
         localization=False, market_data=False, community_data=False)['links']
 
     links = {}
@@ -121,7 +122,3 @@ def get_coin_links(coinid):
         links['Telegram_URL'] = 'https://t.me/' + data['telegram_channel_identifier']
 
     return links
-    # print('\n\n')
-    # # if data['blockchain_site']
-    # print(links)
-    # print('\n\n')

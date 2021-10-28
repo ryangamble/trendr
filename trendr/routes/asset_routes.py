@@ -40,8 +40,7 @@ def StocksOfficialchannels():
 def CryptoOfficialchannels():
     content = request.get_json()
     coinID = content['name']
-    return jsonify(coin_gecko_connector.getCoinOfficialChannels(coinID))
-
+    return jsonify(coin_gecko_connector.get_coin_links(coinID))
 
 @assets.route('/historic-fear-greed', methods=['GET'])
 def historic_fear_and_greed_crypto():
