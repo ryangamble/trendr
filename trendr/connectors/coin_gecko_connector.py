@@ -97,8 +97,11 @@ def get_symbol_eth_address(symbol):
                 return token['platforms']['ethereum']
     return None
 
-def get_coin_links(coinID):
-
+def get_coin_links(coinid):
+    '''
+    :param coinid: The ID of the coin, as stored in coin gecko coins json file
+    :returns a dictionary with the available links for the passed coin
+    '''
     data = CoinGeckoHandler.cg.get_coin_by_id(coinID,
         localization=False, market_data=False, community_data=False)['links']
 
