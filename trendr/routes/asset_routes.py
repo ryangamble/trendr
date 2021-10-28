@@ -5,7 +5,7 @@ from textblob import TextBlob
 from textblob.sentiments import NaiveBayesAnalyzer
 import re
 import os, json
-
+from trendr.connectors.CoinGeckoHandler import *
 import pmaw
 from trendr.connectors import twitter_connector
 from trendr.connectors import reddit_connector
@@ -58,7 +58,7 @@ def search():
 
     search_results = []
     # print (data)
-    
+
     for item in stock_filtered['quotes'][0:5]:
         if item['typeDisp'] == 'Equity' or item['typeDisp'] == 'ETF':
             item['typeDisp'] = item.pop('typeDisp').lower()
@@ -71,12 +71,12 @@ def search():
             item.pop('index')
             item.pop('score')
             search_results.append(item)
-    
+
     for item in short_list[0:5]:
         item['typeDisp'] = 'crypto'
         item['symbol'] = item.pop('symbol').upper()
         search_results.append(item)
-    
+
     print('\n\nSearch Results for ' + query + ':\n')
     print(search_results)
 
@@ -127,6 +127,8 @@ def stats():
 
     stock = yf.Ticker(content['name'])
     return jsonify(stock.info)
+
+@assets.route('/crypto/stats', methods=['POST'])
 
 
 @assets.route('/history', methods=['POST'])
