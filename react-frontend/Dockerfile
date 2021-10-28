@@ -1,7 +1,6 @@
-FROM node as build-deps
+FROM node:lts as build-deps
 WORKDIR /usr/src/frontend
 COPY package.json yarn.lock ./
-RUN yarn add react-redux
 RUN yarn
 COPY . ./
 RUN yarn build
