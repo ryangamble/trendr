@@ -45,6 +45,33 @@ class CoinGeckoHandler():
             print (prices)
 
     @staticmethod
+    def getCoinOfficialChannels(coinID):
+
+        data = CoinGeckoHandler.cg.get_coin_by_id(coinID,
+         localization=False, market_data=False, community_data=False)['links']
+
+        links = {}
+        if len(data['homepage'][0]) > 0:
+            links['homepage'] =  data['homepage'][0]
+        if len(data['twitter_screen_name'])> 0:
+            links['twitter'] : "https://twitter.com/" + data['twitter_screen_name']
+
+        links['blockchain_links'] = []
+        for blockchainurl in data['blockchain_site']:
+            if len(blockchainurl) > 0:
+                links['blockchain_links'].append(blockchainurl)
+        if len(data['repos_url']['github']) > 0:
+            links['repos_link'] = (data['repos_url']['github'][0])
+        if len(data['telegram_channel_identifier']) > 0:
+            links['Telegram_URL'] = 'https://t.me/' + data['telegram_channel_identifier']
+
+        return links
+        # print('\n\n')
+        # # if data['blockchain_site']
+        # print(links)
+        # print('\n\n')
+
+    @staticmethod
     def getMarketCapHistory(coin, days):
         '''
         coin: The id of the coin as defined in the coingecko json file and API
@@ -103,5 +130,9 @@ class CoinGeckoHandler():
 
 
 # print(prices)
-# CoinGeckoHandler.converSymbolToId('rvp')
+# symb = CoinGeckoHandler.converSymbolToId('doge')
+# CoinGeckoHandler.getCoinOfficialChannels(symb)
+
+# symb = CoinGeckoHandler.converSymbolToId('rvp')
+# CoinGeckoHandler.getCoinOfficialChannels(symb)
 # print(handler.getCoinLiveStats('bitcoin'))
