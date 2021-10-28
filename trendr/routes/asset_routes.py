@@ -6,16 +6,10 @@ import re
 
 from trendr.connectors import twitter_connector
 from trendr.connectors import fear_and_greed_connector
-from trendr.tasks.reddit import reddit_sentiment
-from trendr.tasks.social.twitter.gather import (
-    store_tweets_mentioning_asset,
-    store_tweet_by_id,
-)
+from trendr.tasks.social.twitter.gather import store_tweet_by_id
 from trendr.tasks.social.reddit.gather import (
     store_comments,
-    store_submissions,
-    store_submissions_by_id,
-    store_comments_by_id,
+    store_submissions
 )
 from .helpers.json_response import json_response
 
