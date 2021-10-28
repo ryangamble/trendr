@@ -14,19 +14,23 @@ import {
   XAxis,
   YAxis,
   HorizontalGridLines,
+  VerticalGridLines,
   FlexibleXYPlot,
   LineSeries,
+  MarkSeries,
   Crosshair,
   Borders,
   DiscreteColorLegend,
   Hint,
 } from "react-vis";
+
 import axios from "axios";
 import "./Results.css";
 import "../../../node_modules/react-vis/dist/style.css";
 
 // Currently pass symbol as a prop, can be changed later
-function Graph(props) {
+// Used for both price and volume charts for stocks
+function StockGraph(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const [graphData, setgraphData] = useState([]);
@@ -98,6 +102,7 @@ function Graph(props) {
         return pd;
       })
       .then((pd) => {
+        // console.log(pd)
         var min = Number.MAX_VALUE;
         var max = 0;
         switch (timePeriod) {
@@ -311,9 +316,9 @@ function Graph(props) {
   }
 }
 
-<<<<<<< HEAD
+
 export default Graph;
-=======
+
 
 function SentimentGraph(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
@@ -459,4 +464,3 @@ export {
   StockGraph,
   SentimentGraph
 };
->>>>>>> fixed graph styling

@@ -26,7 +26,7 @@ function App() {
             <Route path="/login" component={Login} />
             <Route path="/reset" component={Reset} />
             <Route path="/set-password:resetCode" component={SetPassword} />
-            <Route path="/result/:type/:id" component={Result} />
+            <Route path="/result:id" component={Result} />
             <Route path="/myaccount" component={MyAccount} />
             <Route path="/about" component={About} />
             <Route path="*" component={Home} />
