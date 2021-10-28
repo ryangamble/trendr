@@ -77,7 +77,7 @@ def convert_symbol_to_id(symbol):
     :param symbol: The ticker of a coin/token
     :returns if this symbl exists, we return the corresponding ID used by coingecko API
     """
-    token_file = open('CoinGeckoCoins.json', encoding="utf8")
+    token_file = open('connectors/CoinGeckoCoins.json', encoding="utf8")
     tokens = json.load(token_file)
     for token in tokens:
         if token['symbol'] == symbol:
@@ -89,10 +89,36 @@ def get_symbol_eth_address(symbol):
     :param symbol: The ticker of a coin/token
     :returns the eth token contract address if it exists, or None of it's not an ETH token
     """
-    token_file = open('CoinGeckoCoins.json', encoding="utf8")
+    token_file = open('connectors/CoinGeckoCoins.json', encoding="utf8")
     tokens = json.load(token_file)
     for token in tokens:
         if token['symbol'] == symbol:
             if len(token['platforms']['ethereum']) > 0:
                 return token['platforms']['ethereum']
     return None
+
+def get_coin_links(coinID):
+
+    data = CoinGeckoHandler.cg.get_coin_by_id(coinID,
+        localization=False, market_data=False, community_data=False)['links']
+
+    links = {}
+    if len(data['homepage'][0]) > 0:
+        links['homepage'] =  data['homepage'][0]
+    if len(data['twitter_screen_name'])> 0:
+        links['twitter'] : "https://twitter.com/" + data['twitter_screen_name']
+
+    links['blockchain_links'] = []
+    for blockchainurl in data['blockchain_site']:
+        if len(blockchainurl) > 0:
+            links['blockchain_links'].append(blockchainurl)
+    if len(data['repos_url']['github']) > 0:
+        links['repos_link'] = (data['repos_url']['github'][0])
+    if len(data['telegram_channel_identifier']) > 0:
+        links['Telegram_URL'] = 'https://t.me/' + data['telegram_channel_identifier']
+
+    return links
+    # print('\n\n')
+    # # if data['blockchain_site']
+    # print(links)
+    # print('\n\n')

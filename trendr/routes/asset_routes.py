@@ -5,6 +5,7 @@ from textblob import TextBlob
 import re
 from trendr.connectors import twitter_connector
 from trendr.connectors import fear_and_greed_connector
+from trendr.connectors import coin_gecko_connector
 from trendr.tasks.reddit import reddit_sentiment
 from .helpers.json_response import json_response
 
@@ -18,6 +19,18 @@ def fear_and_greed():
     data = {'crypto_values': crypto_values, 'stock_values': stock_values}
     return jsonify(data)
 
+@assets.route('/stocks/officialchannels', methods=['GET'])
+def StocksOfficialchannels():
+    content = request.get_json()
+    req = yf.Ticker(content['name']).info
+    result = {'website': req['website']}
+    return jsonify(result)
+
+@assets.route('/crypto/officialchannels', methods=['GET'])
+def CryptoOfficialchannels():
+    content = request.get_json()
+    coinID = content['name']
+    return jsonify(coin_gecko_connector.getCoinOfficialChannels(coinID))
 
 @assets.route('/historic-fear-greed', methods=['GET'])
 def historic_fear_and_greed_crypto():
