@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+celery -A trendr.celery.workers.social.celery worker --hostname=celery-social@%h --loglevel=info -Q social
