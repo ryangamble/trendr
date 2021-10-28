@@ -57,7 +57,7 @@ def get_tweets_mentioning_asset(
         api = auth_to_api(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
     return api.search_tweets(q=asset_identifier, lang="en", result_type="popular", since_id=since_id)
 
-
+  
 def get_mixed_tweets_mentioning_asset(
         asset_identifier: str, since_id: str = None, api: tweepy.API = None
 ) -> tweepy.models.SearchResults:
@@ -134,4 +134,3 @@ def twitter_accounts_mentioning_asset_summary(asset_identifier: str, api: tweepy
         'accounts_age_stats': accounts_age_stats,
         'verified_count': verified_count
     }
-
