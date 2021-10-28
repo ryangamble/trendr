@@ -317,9 +317,6 @@ function StockGraph(props) {
 }
 
 
-export default Graph;
-
-
 function SentimentGraph(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
