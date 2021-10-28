@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { Container } from "react-bootstrap";
+import { Container, Spinner } from "react-bootstrap";
 import {
   XAxis,
   YAxis,
@@ -18,6 +18,7 @@ function FearGreed() {
   const [graphData, setgraphData] = useState([]);
   const [fearGreedData, setFearGreedData] = useState([]);
   const [crosshairValues, setCrosshairValues] = useState([]);
+  const [loading, setLoading] = useState(true);
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const _onMouseLeave = () => {
@@ -37,7 +38,7 @@ function FearGreed() {
     };
 
     axios
-      .get("/assets/HistoricFearGreed", requestBody)
+      .get("/assets/historic-fear-greed", requestBody)
       .then((res) => JSON.parse(JSON.stringify(res.data)))
       .then((data) => {
         // get the first 30 historic fear greed data
@@ -52,6 +53,7 @@ function FearGreed() {
         console.log(arr);
 
         setgraphData(arr);
+        setLoading(false);
       })
       .catch((err) => {
         alert(err);
@@ -60,35 +62,54 @@ function FearGreed() {
 
   return (
     <div>
-      <Container align="center">
-        <h3 style={{ color: currentTheme.foreground }}>
-          Latest Fear and Greed Trends
-        </h3>
-        <FlexibleXYPlot
-          onMouseLeave={_onMouseLeave}
-          height={300}
-          xType="ordinal"
-        >
-          <VerticalGridLines />
-          <HorizontalGridLines />
-          <XAxis hideTicks title="Latest 30 days" />
-          <YAxis title="Fear Greed Index" />
-          <LineSeries onNearestX={_onNearestX} data={graphData} color="blue" />
-          <Crosshair
-            values={crosshairValues}
-            titleFormat={(d) => {
-              console.log("d: ", d);
-              return { title: "Date", value: d[0].x };
-            }}
-            itemsFormat={(d) => {
-              console.log("d item: ", d);
-              return [
-                { title: "Index", value: d[0].y },
-                { title: "Fear/Greed", value: d[0].z },
-              ];
-            }}
-          />
-        </FlexibleXYPlot>
+      <Container
+        align="center"
+        style={{
+          background: currentTheme.background,
+          color: currentTheme.foreground,
+        }}
+      >
+        {loading ? (
+          <div>
+            <Spinner animation="border" />
+            <h4>Loading Fear and Greed Info...</h4>
+          </div>
+        ) : (
+          <div>
+            <h3 style={{ color: currentTheme.foreground }}>
+              Latest Fear and Greed Trends
+            </h3>
+            <FlexibleXYPlot
+              onMouseLeave={_onMouseLeave}
+              height={300}
+              xType="ordinal"
+            >
+              <VerticalGridLines />
+              <HorizontalGridLines />
+              <XAxis hideTicks title="Latest 30 days" />
+              <YAxis title="Fear Greed Index" />
+              <LineSeries
+                onNearestX={_onNearestX}
+                data={graphData}
+                color="blue"
+              />
+              <Crosshair
+                values={crosshairValues}
+                titleFormat={(d) => {
+                  console.log("d: ", d);
+                  return { title: "Date", value: d[0].x };
+                }}
+                itemsFormat={(d) => {
+                  console.log("d item: ", d);
+                  return [
+                    { title: "Index", value: d[0].y },
+                    { title: "Fear/Greed", value: d[0].z },
+                  ];
+                }}
+              />
+            </FlexibleXYPlot>
+          </div>
+        )}
       </Container>
     </div>
   );
