@@ -1,7 +1,11 @@
 import praw
 import pmaw
 from enum import Enum
-from trendr.config import REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USER_AGENT
+from trendr.config import (
+    REDDIT_CLIENT_ID,
+    REDDIT_CLIENT_SECRET,
+    REDDIT_USER_AGENT,
+)
 
 
 class RedditItem(Enum):
@@ -31,7 +35,9 @@ def create_praw_pmaw_api(
 
     if client_id and client_secret and user_agent:
         reddit = praw.Reddit(
-            client_id=client_id, client_secret=client_secret, user_agent=user_agent
+            client_id=client_id,
+            client_secret=client_secret,
+            user_agent=user_agent,
         )
         return pmaw.PushshiftAPI(praw=reddit)
     else:
@@ -133,7 +139,9 @@ def gather_comments(**kwargs) -> list:
     return gather_items(**kwargs)
 
 
-def gather_items_by_id(api: pmaw.PushshiftAPI, item: RedditItem, **kwargs) -> list:
+def gather_items_by_id(
+    api: pmaw.PushshiftAPI, item: RedditItem, **kwargs
+) -> list:
     """
     Gather all reddit comments/submissions by their ids
 
