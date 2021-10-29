@@ -58,13 +58,16 @@ def test_get_comment_by_id_positive(pmaw_api: pmaw.PushshiftAPI):
     https://www.reddit.com/r/undefined/comments/ptacat/comment/hdvagh1/?utm_source=share&utm_medium=web2x&context=3
     """
     comment_id = "hdvagh1"
-    comments = reddit_connector.gather_comments_by_id(api=pmaw_api, ids=[comment_id])
+    comments = reddit_connector.gather_comments_by_id(
+        api=pmaw_api, ids=[comment_id]
+    )
 
     assert len(comments) == 1
     comment = next(comments)
     assert comment["id"] == comment_id
     assert (
-        comment["body"] == "We aim to have a public website where users can view "
+        comment["body"]
+        == "We aim to have a public website where users can view "
         "sentiment graphs of stocks and cryptocurrencies!"
     )
 
@@ -75,7 +78,9 @@ def test_get_post_mentioning_asset_positive(pmaw_api: pmaw.PushshiftAPI):
 
     :param pmaw_api: pushshift api object
     """
-    after = int((datetime.datetime.now() - datetime.timedelta(days=7)).timestamp())
+    after = int(
+        (datetime.datetime.now() - datetime.timedelta(days=7)).timestamp()
+    )
     keyword = "apple"
     submissions = reddit_connector.gather_submissions(
         api=pmaw_api, keywords=[keyword], after=after, limit=1
@@ -94,7 +99,9 @@ def test_get_comment_mentioning_asset_positive(pmaw_api: pmaw.PushshiftAPI):
 
     :param pmaw_api: pushshift api object
     """
-    after = int((datetime.datetime.now() - datetime.timedelta(days=7)).timestamp())
+    after = int(
+        (datetime.datetime.now() - datetime.timedelta(days=7)).timestamp()
+    )
     keyword = "apple"
     comments = reddit_connector.gather_comments(
         api=pmaw_api, keywords=[keyword], after=after, limit=1
