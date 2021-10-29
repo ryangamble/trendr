@@ -79,7 +79,7 @@ def get_mixed_tweets_mentioning_asset(
     return api.search_tweets(q=asset_identifier, lang="en", result_type="mixed", since_id=since_id, count=300)
 
 
-def account_age_days(month: int, year: int):
+def account_age_days(month: int, year: int) -> int:
     """
     Gets the month and date, and returns the difference in days from the current date.
 
