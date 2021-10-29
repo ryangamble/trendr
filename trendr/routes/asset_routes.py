@@ -12,6 +12,7 @@ from trendr.tasks.social.reddit.gather import (
     store_comments,
     store_submissions
 )
+from trendr.connectors import coin_gecko_connector as cg
 from .helpers.json_response import json_response
 
 assets = Blueprint("assets", __name__, url_prefix="/assets")
@@ -122,8 +123,8 @@ def gdow():
     return stock.history(period=p, interval=period_to_interval.get(p), prepost="True", actions="False").to_json()
 
 
-@assets.route('/stats', methods=['POST'])
-def stats():
+@assets.route('/stock/stats', methods=['POST'])
+def stock_stats():
     content = request.get_json()
 
     print("\nfetching general stats for: " + content['name'] + "\n")
@@ -131,8 +132,15 @@ def stats():
     stock = yf.Ticker(content['name'])
     return jsonify(stock.info)
 
+@assets.route('/crypto/pricehistory', methods=['POST'])
+def crypto_stats():
+    content = request.get_json()
 
-@assets.route("/history", methods=["POST"])
+    print("\nfetching historic market data for: " + content["id"] + " for " + content["days"] + " days\n")
+    return jsonify(cg.get_historic_prices(content["id"], content["days"]))
+
+
+@assets.route("/stock/history", methods=["POST"])
 def history():
     content = request.get_json()
 

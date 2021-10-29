@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import MyNavBar from "../NavBar/MyNavBar";
-import {SentimentGraph, StockGraph} from "./Graph";
+import {SentimentGraph, StockGraph, CryptoGraph} from "./Graph";
 import Statistics from "./Statistics";
 import { Container, Col, Row, Button, Spinner } from "react-bootstrap";
 import FollowBtn from "../FollowButton/FollowBtn";
@@ -88,7 +88,25 @@ function Results() {
 
   function renderCryptoResults() {
     return(
-      <div>hello</div>
+      <div
+        className="resultsPage"
+        style={{
+          background: currentTheme.background,
+          color: currentTheme.foreground,
+        }}
+      >
+        <MyNavBar />
+          <br />
+          <br />
+          <Container className="resultsContainer">
+            <Row>
+              <Col xs={12} sm={12} md={12} lg={6}>
+                <CryptoGraph symbol={id} graphType="price"/>
+              </Col>
+            </Row>
+
+          </Container>
+      </div>
     );
   }
 }

@@ -21,12 +21,13 @@ import {
   Crosshair,
   Borders,
   DiscreteColorLegend,
-  Hint,
 } from "react-vis";
 
 import axios from "axios";
 import "./Results.css";
 import "../../../node_modules/react-vis/dist/style.css";
+
+
 
 // Currently pass symbol as a prop, can be changed later
 // Used for both price and volume charts for stocks
@@ -71,7 +72,7 @@ function StockGraph(props) {
     };
 
     axios
-      .post("http://localhost:5000/assets/history", requestBody)
+      .post("http://localhost:5000/assets/stock/history", requestBody)
       .then((res) => {
         return JSON.parse(JSON.stringify(res.data));
       })
@@ -83,18 +84,23 @@ function StockGraph(props) {
         } else {
           tableCol = "Volume";
         }
+        // console.log(data[tableCol])
         for (var key in data[tableCol]) {
           // console.log(key)
           // console.log(data['Close'][key].toFixed(2))
-          var value = data[tableCol][key];
+          var value = data[tableCol][parseInt(key)];
+          if (typeof(value) != "number") {
+            continue;
+          }
+
           if (props.graphType === "price") {
             pd.push({
-              x: new Date(parseInt(key)),
-              y: value,
+              x: unixToUTC(key),
+              y: value.toFixed(2),
             });
           } else if (value > 0) {
             pd.push({
-              x: new Date(parseInt(key)),
+              x: unixToUTC(key),
               y: value,
             });
           }
@@ -102,7 +108,7 @@ function StockGraph(props) {
         return pd;
       })
       .then((pd) => {
-        // console.log(pd)
+        console.log(pd)
         var min = Number.MAX_VALUE;
         var max = 0;
         switch (timePeriod) {
@@ -152,18 +158,10 @@ function StockGraph(props) {
     // console.log(min);
   }
 
-  function formatPrice(num) {
-    const options = {
-      style: "currency",
-      currency: props.currency,
-    };
-    return num.toLocaleString("en-US", options);
-  }
-
   const _onMouseLeave = () => {
     setCrosshairValues([]);
   };
-
+  
   const _onNearestX = (value) => {
     var x = value.x.toString();
     value.x = x;
@@ -173,10 +171,24 @@ function StockGraph(props) {
   const itemsFormatPrice = (data) => {
     return [{ title: "price", value: formatPrice(data[0].y) }];
   };
-
+  
   const itemsFormatVol = (data) => {
     return [{ title: "volume", value: data[0].y.toLocaleString("en-US") }];
   };
+
+  const unixToUTC = (unix) => {
+    var date = new Date(parseInt(unix)).toString();
+    date = date.replace(" ", ", ");
+    return date.substring(0, date.indexOf("-"));
+  }
+
+  const formatPrice = (num) => {
+    const options = {
+      style: "currency",
+      currency: props.currency
+    };
+    return num.toLocaleString("en-US", options);
+  }
 
   if (loadedCount < 5) {
     return (
@@ -318,6 +330,7 @@ function StockGraph(props) {
 
 
 function SentimentGraph(props) {
+  
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const [twitterData, setTwitterData] = useState([]);
@@ -455,9 +468,262 @@ function SentimentGraph(props) {
   }
 }
 
-// Need separate functions for price/volume charts for cryptos
+function CryptoGraph(props) {
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
+
+  const [graphData, setgraphData] = useState([]);
+
+  const [min, setMin] = useState(0);
+  const [max, setMax] = useState(0);
+  const [loadedCount, setLoadedCount] = useState(0);
+  const [crosshairValues, setCrosshairValues] = useState([]);
+  const [period, setPeriod] = useState("1");
+
+  const periodDisplay = {
+    "1": "Past Day",
+    "5": "Past 5 Days",
+    "30": "Past Month",
+    "90": "Past 3 Months",
+    "365": "Past Year",
+  };
+
+  useEffect(() => {
+    setLoadedCount(0);
+    for (var key in periodDisplay) {
+      console.log("fetching " + props.graphType + " data for " + key + "...");
+      fetchDataPoints(key);
+    }
+  }, []);
+
+  useEffect(() => {
+    getMinMax();
+    console.log("changing " + props.graphType + " period to " + period);
+  }, [period, loadedCount]);
+
+  async function fetchDataPoints(timePeriod) {
+    const requestBody = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      id: props.symbol,
+      days: timePeriod,
+    };
+
+    axios
+      .post("http://localhost:5000/assets/crypto/pricehistory", requestBody)
+      .then((res) => {
+        return JSON.parse(JSON.stringify(res.data));
+      })
+      .then((data) => {
+        var pd = []
+        for (var i = 0; i < data.length; i++) {
+          pd.push({
+            x: data[i.toString()]['0'],
+            y: parseFloat(data[i.toString()]['1'])
+          })
+        }
+        return pd
+      })
+      .then((pd) => {
+        console.log(pd)
+        var min = Number.MAX_VALUE;
+        var max = 0;
+        switch (timePeriod) {
+          case "1":
+            setgraphData((prev) => ({ ...prev, "1": pd }));
+            break;
+          case "5":
+            setgraphData((prev) => ({ ...prev, "5": pd }));
+            break;
+          case "30":
+            setgraphData((prev) => ({ ...prev, "30": pd }));
+            break;
+          case "90":
+            setgraphData((prev) => ({ ...prev, "90": pd }));
+            break;
+          case "365":
+            setgraphData((prev) => ({ ...prev, "365": pd }));
+            break;
+          default:
+            setgraphData((prev) => ({ ...prev, "1": pd }));
+        }
+        return [min, max];
+      })
+      .then(() => {
+        console.log(props.graphType + " data loaded for " + requestBody.period);
+        setLoadedCount((prevCount) => prevCount + 1);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  function getMinMax() {
+    var min = Number.MAX_VALUE;
+    var max = 0;
+    for (var key in graphData[period]) {
+      var val = graphData[period][key].y;
+      if (val > max) {
+        max = val;
+      }
+      if (val < min) {
+        min = val;
+      }
+    }
+    setMin(min);
+    setMax(max);
+    // console.log(min);
+  }
+
+  const _onMouseLeave = () => {
+    setCrosshairValues([]);
+  };
+  
+  const _onNearestX = (value) => {
+    var x = value.x.toString();
+    value.x = x;
+    setCrosshairValues([value]);
+  };
+
+  const itemsFormatPrice = (data) => {
+    return [{ title: "price", value: formatPrice(data[0].y) }];
+  };
+
+  const formatPrice = (num) => {
+    const options = {
+      style: "currency",
+      currency: "usd"
+    };
+    return num.toLocaleString("en-US", options);
+  }
+
+  if (loadedCount < 5) {
+    return (
+      <Container fluid>
+        <Spinner animation="border" />
+      </Container>
+    );
+  } else {
+    return (
+      <Container className="graphLayout">
+        <Row>
+          <div className="chartTitle">
+              <h2>Price history</h2>
+          </div>
+        </Row>
+        <Row>
+          <div className="chartContainer">
+            <FlexibleXYPlot
+              onMouseLeave={_onMouseLeave}
+              xType="ordinal"
+              yDomain={[0.98 * min, 1.02 * max]}
+            >
+              <HorizontalGridLines />
+              {/* <VerticalGridLines/> */}
+
+              <LineSeries
+                animation={true}
+                data={graphData[period]}
+                onNearestX={_onNearestX}
+                strokeWidth={2}
+                opacity={1}
+                color="#0D6EFD"
+              />
+              <Borders
+                style={{
+                  bottom: { fill: currentTheme.fill },
+                  left: { fill: currentTheme.fill },
+                  right: { fill: currentTheme.fill },
+                  top: { fill: currentTheme.fill },
+                }}
+              />
+
+              <YAxis />
+              <XAxis hideTicks />
+
+              <Crosshair
+                values={crosshairValues}
+                itemsFormat={itemsFormatPrice}
+              />
+            </FlexibleXYPlot>
+          </div>
+        </Row>
+        <Row>
+          <Col>
+            <ButtonGroup size="sm">
+              <Button
+                variant="secondary"
+                className={props.graphType + "PeriodToggle"}
+                onClick={() => {
+                  setPeriod("1");
+                }}
+              >
+                1D
+              </Button>
+              <Button
+                variant="secondary"
+                className={props.graphType + "PeriodToggle"}
+                onClick={() => setPeriod("5")}
+              >
+                5D
+              </Button>
+              <Button
+                variant="secondary"
+                className={props.graphType + "PeriodToggle"}
+                onClick={() => setPeriod("30")}
+              >
+                1M
+              </Button>
+              <Button
+                variant="secondary"
+                className={props.graphType + "PeriodToggle"}
+                onClick={() => setPeriod("90")}
+              >
+                3M
+              </Button>
+              <Button
+                variant="secondary"
+                className={props.graphType + "PeriodToggle"}
+                onClick={() => setPeriod("365")}
+              >
+                1Y
+              </Button>
+            </ButtonGroup>
+          </Col>
+          {props.graphType === "price" ? (
+            <Col>
+              {graphData[period][graphData[period].length - 1].y -
+                graphData[period][0].y >
+              0 ? (
+                <div className="priceUp">
+                  Up{" "}
+                  {formatPrice(
+                    graphData[period][graphData[period].length - 1].y -
+                      graphData[period][0].y
+                  )}{" "}
+                  {periodDisplay[period]}
+                </div>
+              ) : (
+                <div className="priceDown">
+                  Down{" "}
+                  {formatPrice(
+                    graphData[period][graphData[period].length - 1].y -
+                      graphData[period][0].y
+                  )}{" "}
+                  {periodDisplay[period]}
+                </div>
+              )}
+            </Col>
+          ) : (
+            <Col></Col>
+          )}
+        </Row>
+      </Container>
+    );
+  }
+}
 
 export {
   StockGraph,
+  CryptoGraph,
   SentimentGraph
 };
