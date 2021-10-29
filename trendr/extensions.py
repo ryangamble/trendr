@@ -6,9 +6,8 @@ from flask_mail import Mail
 from celery import Celery
 
 db = SQLAlchemy()
-fsqla.FsModels.set_db_info(db, user_table_name="users", role_table_name="roles")
+fsqla.FsModels.set_db_info(db)
 migrate = Migrate()
-# security = Security(register_blueprint=False)
 security = Security()
 mail = Mail()
 celery = Celery()

@@ -6,7 +6,7 @@ from trendr.models.association_tables import search_tweet_association
 
 
 class Tweet(db.Model):
-    __tablename__ = "tweets"
+    __tablename__ = "tweet"
 
     id = db.Column(Integer, primary_key=True, autoincrement="auto")
     tweet_id = db.Column(Integer, nullable=False, unique=True)

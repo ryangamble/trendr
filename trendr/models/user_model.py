@@ -6,11 +6,11 @@ from trendr.models.association_tables import user_asset_association
 
 
 class Role(db.Model, fsqla.FsRoleMixin):
-    __tablename__ = "roles"
+    __tablename__ = "role"
 
 
 class User(db.Model, fsqla.FsUserMixin):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
     # There is a one-many relationship between users and searches
     searches = relationship("Search", back_populates="user")

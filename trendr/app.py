@@ -5,25 +5,30 @@ from flask_wtf.csrf import CSRFProtect
 
 from trendr.extensions import db, security, mail, celery, migrate
 from trendr.mail_util import CeleryMailUtil
-from trendr.models import (
-    User,
-    Role,
-    Search,
-    RedditPost,
-    Tweet,
+from trendr.models.association_tables import (
     search_tweet_association,
-    search_reddit_post_association,
+    search_reddit_submission_association,
+    search_reddit_comment_association,
 )
+from trendr.models.reddit_model import (
+    RedditSubmissionType,
+    RedditSubmission,
+    RedditComment,
+)
+from trendr.models.tweet_model import Tweet
+from trendr.models.search_model import Search
+from trendr.models.user_model import User, Role
 
 
-def create_app():
+def create_app(for_celery=False):
     app = Flask(__name__)
-    CORS(app)
     app.config.from_object("trendr.config")
 
     configure_extensions(app)
-    register_blueprints(app)
-    init_celery(app)
+    if not for_celery:
+        CORS(app)
+        register_blueprints(app)
+        init_celery(app)
 
     with app.app_context():
         db.create_all()
@@ -57,10 +62,12 @@ def register_blueprints(app):
 
 
 def init_celery(app=None):
-    app = app or create_app()
+    app = app or create_app(for_celery=True)
     celery.conf.broker_url = app.config["CELERY_BROKER_URL"]
     celery.conf.result_backend = app.config["CELERY_RESULT_BACKEND"]
     celery.conf.timezone = "US/Eastern"
+    celery.conf.task_routes = app.config["CELERY_TASK_ROUTES"]
+    celery.conf.task_default_queue = app.config["CELERY_TASK_DEFAULT_QUEUE"]
     celery.conf.update(app.config)
 
     class ContextTask(celery.Task):
