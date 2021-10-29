@@ -57,6 +57,7 @@ praw==7.4.0
 prawcore==2.3.0
 prometheus-client==0.11.0
 prompt-toolkit==3.0.20
+pycoingecko===2.2.0
 py==1.10.0
 pycparser==2.20
 pyparsing==2.4.7
