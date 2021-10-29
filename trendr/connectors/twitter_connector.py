@@ -79,13 +79,13 @@ def get_mixed_tweets_mentioning_asset(
     return api.search_tweets(q=asset_identifier, lang="en", result_type="mixed", since_id=since_id, count=300)
 
 
-def account_age_days(month: int, year: int):
+def account_age_days(month: int, year: int) -> int:
     """
     Gets the month and date, and returns the difference in days from the current date.
 
     :param month: Integer identifier of the month to
     :param year: Integer identifier of the year
-    returns integer with the difference of days from today.
+    :return: difference of days from today.
     """
     start_date = date(year, month, 1)
     return abs(datetime.datetime.now().date() - start_date).days
@@ -95,7 +95,7 @@ def twitter_accounts_mentioning_asset_summary(asset_identifier: str, api: tweepy
     """
     Queries Twitter for up to 300 tweets that mention an asset_identifier (AAPL, BTC) within the last 7 days, then
     checks meta data about the posters of those tweets.
-
+    
     :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
     :param api: An optional tweepy.API object, if one is not provided it will be created
     :return: a Python dictionary with relevant stats
