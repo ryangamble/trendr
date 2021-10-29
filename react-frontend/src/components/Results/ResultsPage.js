@@ -12,7 +12,7 @@ function Results() {
   //current user
   const currentUser = useSelector((state) => state.user);
 
-  const { id, type } = useParams();
+  const { id } = useParams();
   const [currency, setCurrency] = useState(null);
 
   const setCurrencyCallback = (curr) => {

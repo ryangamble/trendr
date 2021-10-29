@@ -19,7 +19,7 @@ function SearchBar() {
     console.log("firing search to backend...");
 
     if (suggestions[0]) {
-      history.push(`/result/${suggestions[0].type}/${suggestions[0].id}`);
+      history.push(`/result:${suggestions[0].symbol}`);
     } else {
       alert("No matching stocks or cryptos");
       return;
@@ -41,25 +41,29 @@ function SearchBar() {
     axios
       .post("http://localhost:5000/assets/search", requestBody)
       .then((res) => {
-        // console.log(res.data)
-        return JSON.parse(JSON.stringify(res.data));
+        return JSON.parse(JSON.stringify(res.data.quotes));
       })
       .then((data) => {
         var sg = [];
         console.log("autocomplete suggestions:");
         for (var key in data) {
-          sg.push({
-            symbol: data[key].symbol,
-            name: data[key].name,
-            type: data[key].typeDisp,
-            id: data[key].typeDisp == "crypto" ? data[key].id : data[key].symbol
-          });
-          // console.log(data[key]);
+          if (
+            data[key].typeDisp === "Equity" ||
+            data[key].typeDisp === "Cryptocurrency" ||
+            data[key].typeDisp === "ETF"
+          ) {
+            sg.push({
+              symbol: data[key].symbol,
+              name: data[key].shortname,
+              exchange: data[key].exchange,
+              typeDisp: data[key].typeDisp,
+            });
+          }
+          console.log(data[key]);
         }
         return sg;
       })
       .then((sg) => {
-        console.log(sg)
         setSuggestions(sg);
       })
       .catch((error) => {
@@ -76,7 +80,7 @@ function SearchBar() {
       return;
     });
     setSuggestions([]);
-    history.push(`/result/${suggestions[i].type}/${suggestions[i].id}`);
+    history.push(`/result:${suggestions[i].symbol}`);
   }
 
   return (
@@ -116,7 +120,7 @@ function SearchBar() {
                         className="suggestName"
                         style={{ color: currentTheme.foreground }}
                       >
-                        {suggestion.name}{" - "}{suggestion.type.toUpperCase()}
+                        {suggestion.name}{" "}
                       </td>
                     </tr>
                   </tbody>
