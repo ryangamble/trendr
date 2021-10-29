@@ -1,11 +1,15 @@
-from flask import Blueprint, request, jsonify
+import re
+import os
+import json
 import yfinance as yf
 import yahooquery as yq
+
+from flask import Blueprint, request, jsonify
 from textblob import TextBlob
-import re
 
 from trendr.connectors import twitter_connector
 from trendr.connectors import fear_and_greed_connector
+from trendr.connectors import coin_gecko_connector
 from trendr.tasks.social.twitter.gather import store_tweet_by_id
 from trendr.tasks.social.reddit.gather import (
     store_comments,
@@ -24,6 +28,21 @@ def fear_and_greed():
     return jsonify(data)
 
 
+@assets.route('/stocks/official-channels', methods=['GET'])
+def stock_official_channels():
+    content = request.get_json()
+    req = yf.Ticker(content['name']).info
+    result = {'website': req['website']}
+    return jsonify(result)
+
+
+@assets.route('/crypto/official-channels', methods=['GET'])
+def crypto_official_channels():
+    content = request.get_json()
+    coin_id = content['name']
+    return jsonify(coin_gecko_connector.get_coin_links(coin_id))
+
+
 @assets.route('/historic-fear-greed', methods=['GET'])
 def historic_fear_and_greed_crypto():
     content = request.get_json()
@@ -38,8 +57,49 @@ def historic_fear_and_greed_crypto():
 @assets.route('/search', methods=['POST'])
 def search():
     content = request.get_json()
-    data = yq.search(content['query'], news_count=0, quotes_count=10)
-    return jsonify(data)
+    query = content['query']
+
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    json_path = os.path.join(SITE_ROOT, '../connectors', 'CoinGeckoCoins.json')
+    crypto_list = json.loads(open(json_path).read())
+
+    crypto_filtered = [
+        v for v in crypto_list
+        if query.lower() == v['symbol'].lower() or query.lower() == v['name'].lower()
+        or query.lower() in v['symbol'].lower() or query.lower() in v['name'].lower()
+    ]
+
+    short_list = sorted(crypto_filtered, key=lambda d: len(d['name']))
+
+    # print(filtered[0:10])
+
+    stock_filtered = yq.search(query, news_count=0, quotes_count=10)
+
+    search_results = []
+    # print (data)
+
+    for item in stock_filtered['quotes'][0:5]:
+        if item['typeDisp'] == 'Equity' or item['typeDisp'] == 'ETF':
+            item['typeDisp'] = item.pop('typeDisp').lower()
+            if 'shortname' in item:
+                item['name'] = item.pop('shortname')
+            if 'longname' in item:
+                item['name'] = item.pop('longname')
+            item.pop('isYahooFinance')
+            item.pop('quoteType')
+            item.pop('index')
+            item.pop('score')
+            search_results.append(item)
+
+    for item in short_list[0:5]:
+        item['typeDisp'] = 'crypto'
+        item['symbol'] = item.pop('symbol').upper()
+        search_results.append(item)
+
+    print('\n\nSearch Results for ' + query + ':\n')
+    print(search_results)
+
+    return jsonify(search_results)
 
 
 @assets.route('/sp500', methods=['GET'])
@@ -80,7 +140,7 @@ def gdow():
     return stock.history(period=p, interval=period_to_interval.get(p), prepost="True", actions="False").to_json()
 
 
-@assets.route('/stats', methods=['POST'])
+@assets.route("/stats", methods=["POST"])
 def stats():
     content = request.get_json()
 
