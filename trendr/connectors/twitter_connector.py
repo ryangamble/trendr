@@ -79,13 +79,13 @@ def get_mixed_tweets_mentioning_asset(
     return api.search_tweets(q=asset_identifier, lang="en", result_type="mixed", since_id=since_id, count=300)
 
 
-def account_age_days(month: int, year: int):
+def account_age_days(month: int, year: int) -> int:
     """
     Gets the month and date, and returns the difference in days from the current date.
 
     :param month: Integer identifier of the month to
     :param year: Integer identifier of the year
-    returns integer with the difference of days from today.
+    :return: difference of days from today.
     """
     start_date = date(year, month, 1)
     return abs(datetime.datetime.now().date() - start_date).days
