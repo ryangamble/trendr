@@ -28,19 +28,20 @@ def fear_and_greed():
     return jsonify(data)
 
 
-@assets.route('/stocks/officialchannels', methods=['GET'])
-def StocksOfficialchannels():
+@assets.route('/stocks/official-channels', methods=['GET'])
+def stock_official_channels():
     content = request.get_json()
     req = yf.Ticker(content['name']).info
     result = {'website': req['website']}
     return jsonify(result)
 
 
-@assets.route('/crypto/officialchannels', methods=['GET'])
-def CryptoOfficialchannels():
+@assets.route('/crypto/official-channels', methods=['GET'])
+def crypto_official_channels():
     content = request.get_json()
-    coinID = content['name']
-    return jsonify(coin_gecko_connector.get_coin_links(coinID))
+    coin_id = content['name']
+    return jsonify(coin_gecko_connector.get_coin_links(coin_id))
+
 
 @assets.route('/historic-fear-greed', methods=['GET'])
 def historic_fear_and_greed_crypto():
