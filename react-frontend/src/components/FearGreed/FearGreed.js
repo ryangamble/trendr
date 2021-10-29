@@ -16,7 +16,6 @@ import {
 
 function FearGreed() {
   const [graphData, setgraphData] = useState([]);
-  const [fearGreedData, setFearGreedData] = useState([]);
   const [crosshairValues, setCrosshairValues] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentTheme = useSelector((state) => state.theme.currentTheme);
@@ -32,17 +31,12 @@ function FearGreed() {
   };
 
   useEffect(() => {
-    const requestBody = {
-      method: "get",
-      headers: { "Content-Type": "application/json" },
-    };
-
     axios
-      .get("/assets/historic-fear-greed", requestBody)
+      .get("http://localhost:5000/assets/historic-fear-greed")
       .then((res) => JSON.parse(JSON.stringify(res.data)))
       .then((data) => {
         // get the first 30 historic fear greed data
-        console.log(data);
+
         const arr = data.slice(0, 30).map((d) => {
           return {
             x: d.timestamp,
@@ -50,7 +44,6 @@ function FearGreed() {
             z: d.value_classification,
           };
         });
-        console.log(arr);
 
         setgraphData(arr);
         setLoading(false);
