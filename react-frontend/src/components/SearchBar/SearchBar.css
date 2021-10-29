@@ -2,12 +2,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 5%;
+  height: 100vh;
 }
 
 .searchbar__title {
   opacity: 0.7;
-  margin-bottom: 1em;
+  margin-bottom: 3em;
 }
 
 .searchbar__input {
