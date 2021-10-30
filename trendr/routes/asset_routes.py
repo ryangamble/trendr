@@ -1,12 +1,17 @@
-from flask import Blueprint, request, jsonify
+import json
+import os
+import re
 import yfinance as yf
 import yahooquery as yq
+
+from flask import Blueprint, request
 from textblob import TextBlob
 import re
 import os, json
 
 from trendr.connectors import twitter_connector
 from trendr.connectors import fear_and_greed_connector
+from trendr.connectors import coin_gecko_connector
 from trendr.tasks.social.twitter.gather import store_tweet_by_id
 from trendr.tasks.social.reddit.gather import (
     store_comments,
@@ -14,32 +19,38 @@ from trendr.tasks.social.reddit.gather import (
 )
 from trendr.connectors import coin_gecko_connector as cg
 from trendr.connectors import defi_connector as df
-from .helpers.json_response import json_response
+from trendr.routes.helpers.json_response import json_response
 
 assets = Blueprint("assets", __name__, url_prefix="/assets")
 
 
 @assets.route('/fear-greed', methods=['GET'])
-def fear_and_greed():
+def fear_greed():
+    """
+    Gets the current fear and greed values for stocks and cryptos
+    :return: JSON response containing fear and greed values
+    """
     crypto_values = fear_and_greed_connector.get_current_crypto_fear_and_greed()
     stock_values = fear_and_greed_connector.get_current_stock_fear_and_greed()
-    data = {'crypto_values': crypto_values, 'stock_values': stock_values}
-    return jsonify(data)
+
+    response_body = {
+        'crypto_values': crypto_values,
+        'stock_values': stock_values
+    }
+    return json_response(response_body, status=200)
 
 
-@assets.route('/historic-fear-greed', methods=['GET'])
-def historic_fear_and_greed_crypto():
-    content = request.get_json()
-    if content and 'days' in content:
-        days = int(content['days'])
-    else:
-        days = 365
-    values = fear_and_greed_connector.get_crypto_historic_values(days)
-    return jsonify(values)
-
-
-@assets.route('/search', methods=['POST'])
+assets.route('/search', methods=['GET'])
 def search():
+    """
+    Searches for assets (stocks and cryptos) matching a query
+    :return: JSON response containing basic asset info (symbol, name, etc.)
+    """
+    query = request.args.get("query")
+    if not query:
+        return json_response({"error": "Parameter 'query' is required"}, status=400)
+
+    response_body = []
     content = request.get_json()
     query = content['query']
 
@@ -59,7 +70,7 @@ def search():
 
     stock_filtered = yq.search(query, news_count=0, quotes_count=10)
 
-    search_results = []
+    response_body = []
     # print (data)
     
     for item in stock_filtered['quotes'][0:5]:
@@ -73,55 +84,67 @@ def search():
             item.pop('quoteType')
             item.pop('index')
             item.pop('score')
-            search_results.append(item)
+            response_body.append(item)
     
     for item in short_list[0:5]:
         item['typeDisp'] = 'crypto'
         item['symbol'] = item.pop('symbol').upper()
-        search_results.append(item)
+        response_body.append(item)
     
     print('\n\nSearch Results for ' + query + ':\n')
-    print(search_results)
+    print(response_body)
 
-    return jsonify(search_results)
+    return json_response(response_body, status=200)
 
+@assets.route('/historic-fear-greed', methods=['GET'])
+def historic_fear_greed():
+    """
+    Gets historic fear and greed values for stocks and cryptos
+    :return: JSON response containing fear and greed values
+    """
+    days = request.args.get('days', default=365, type=int)
 
-@assets.route('/sp500', methods=['GET'])
-def sp_500():
-    content = request.get_json()
-    print("\nfetching history market data for S&P500" + "\n")
-
-    stock = yf.Ticker('GSPC')
-    p = content['period']
-
-    period_to_interval = {
-        "1d": "5m",
-        "5d": "30m",
-        "1mo": "1h",
-        "3mo": "1h",
-        "1y": "1d",
-        "5y": "5d"
+    # TODO: Figure out a way to get historic stock values
+    crypto_values = fear_and_greed_connector.get_crypto_historic_values(days)
+    response_body = {
+        'crypto_values': crypto_values,
+        'stock_values': []
     }
-    return stock.history(period=p, interval=period_to_interval.get(p), prepost="True", actions="False").to_json()
+    return json_response(response_body, status=200)
 
 
-@assets.route('/gdow', methods=['GET'])
-def gdow():
-    content = request.get_json()
-    print("\nfetching history market data for The Global Dow" + "\n")
+@assets.route('/stocks/official-channels', methods=['GET'])
+def stock_official_channels():
+    """
+    Gets the official channels (website) of a stock
+    :return: JSON response containing official channels
+    """
+    symbol = request.args.get('symbol')
+    if not symbol:
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
 
-    stock = yf.Ticker('GDOW')
-    p = content['period']
+    asset_ticker = yf.Ticker(symbol)
+    if not asset_ticker or not hasattr(asset_ticker, "info") or "website" not in asset_ticker.info:
+        return json_response({"error": "Couldn't retrieve official channels"}, status=500)
 
-    period_to_interval = {
-        "1d": "5m",
-        "5d": "30m",
-        "1mo": "1h",
-        "3mo": "1h",
-        "1y": "1d",
-        "5y": "5d"
+    response_body = {
+        'website': asset_ticker.info['website']
     }
-    return stock.history(period=p, interval=period_to_interval.get(p), prepost="True", actions="False").to_json()
+    return json_response(response_body, status=200)
+
+
+@assets.route('/cryptos/official-channels', methods=['GET'])
+def cryptos_official_channels():
+    """
+    Gets the official channels (homepage, socials, etc.) of a crypto
+    :return: JSON response containing official channels
+    """
+    name = request.args.get('name')
+    if not name:
+        return json_response({"error": "Parameter 'name' is required"}, status=400)
+
+    response_body = coin_gecko_connector.get_coin_links(name)
+    return json_response(response_body, status=200)
 
 
 @assets.route('/crypto/stats', methods=['POST'])
@@ -133,14 +156,23 @@ def crypto_stats():
     return jsonify(cg.get_coin_live_stats(content['id']))
 
 
-@assets.route('/stock/stats', methods=['POST'])
+
+@assets.route("/stock/stats", methods=["GET"])
 def stock_stats():
-    content = request.get_json()
+    """
+    Gets general statistics for an asset (stock or crypto)
+    :return: JSON response containing asset statistics
+    """
+    symbol = request.args.get('symbol')
+    if not symbol:
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
 
-    print("\nfetching general stats for: " + content['name'] + "\n")
+    asset_ticker = yf.Ticker(symbol)
+    if not asset_ticker or not hasattr(asset_ticker, "info"):
+        return json_response({"error": "Couldn't retrieve statistics"}, status=500)
 
-    stock = yf.Ticker(content['name'])
-    return jsonify(stock.info)
+    response_body = asset_ticker.info
+    return json_response(response_body, status=200)
 
 
 @assets.route('/crypto/eth_address', methods=['POST'])
@@ -177,66 +209,76 @@ def crypto_volume_history():
     return jsonify(cg.get_historic_volumes(content["id"], content["days"]))
 
 
-@assets.route("/stock/history", methods=["POST"])
+@assets.route("/stock/history", methods=["GET"])
 def stock_history():
-    content = request.get_json()
+    """
+    Gets historical data for an asset (stock or crypto)
+    :return: JSON response containing historical data
+    """
+    period = request.args.get('period')
+    symbol = request.args.get('symbol')
+    if not period:
+        return json_response({"error": "Parameter 'period' is required"}, status=400)
+    if not symbol:
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
 
-    print("\nfetching history market data for: " + content["name"] + "\n")
-
-    stock = yf.Ticker(content["name"])
-    p = content["period"]
-
-    period_to_interval = {
+    period_to_interval_map = {
         "1d": "5m",
         "5d": "30m",
         "1mo": "1h",
         "3mo": "1h",
         "1y": "1d",
-        "5y": "5d",
+        "5y": "5d"
     }
 
-    return stock.history(
-        period=p,
-        interval=period_to_interval.get(p),
-        prepost="True",
-        actions="False",
+    asset_ticker = yf.Ticker(symbol)
+    if not asset_ticker:
+        return json_response({"error": "Couldn't retrieve history"}, status=500)
+
+    # TODO: Figure out how to return this like the other endpoints w/o breaking the frontend
+    return asset_ticker.history(
+        period=period, interval=period_to_interval_map.get(period), prepost="True", actions="False"
     ).to_json()
 
 
-@assets.route("/twitter_sentiment", methods=["POST"])
+@assets.route("/twitter_sentiment", methods=["GET"])
 def twitter_sentiment():
-    content = request.get_json()
+    """
+    Gets twitter sentiment for an asset (stock or crypto)
+    :return: JSON response containing twitter sentiment
+    """
+    symbol = request.args.get('symbol')
+    if not symbol:
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
 
-    results = twitter_connector.get_tweets_mentioning_asset(content["name"])
-    text = []
-
+    response_body = []
+    results = twitter_connector.get_tweets_mentioning_asset(symbol)
     for result in results:
-        print(result.text)
-
         text_clean = re.sub(r'@[A-Za-z0-9]+', '', result.text)
         text_clean = re.sub(r'#', '', text_clean)
         text_clean = re.sub('\n', ' ', text_clean)
 
-        # using this will take a lot longer that TextBlobs default analyzer
+        # using this will take a lot longer than TextBlob's default analyzer
         # blob = TextBlob(result.text, analyzer=NaiveBayesAnalyzer())
 
         blob = TextBlob(text_clean)
 
         # first number: polarity (-1.0 = very negative, 0 = neutral, 1.0 = very positive)
         # second number: subjectivity (0.0 = objective, 1.0 = subjective)
-        text.append([text_clean, blob.sentiment])
+        response_body.append([text_clean, blob.sentiment])
 
-    return jsonify(text)
+    return json_response(response_body, status=200)
 
 
 @assets.route("/reddit_sentiment", methods=["GET"])
 def reddit_sentiment_route():
-
-    res = store_tweet_by_id.delay(tweet_id=1450846775221399566)
-
+    """
+    Gets reddit sentiment for an asset (stock or crypto)
+    :return: JSON response containing reddit sentiment
+    """
+    res_1 = store_tweet_by_id.delay(tweet_id=1450846775221399566)
     res_2 = store_submissions.delay(keywords=["apple"], limit=50)
     res_3 = store_comments.delay(keywords=["apple"], limit=50)
 
-    return json_response(
-        [res.get(timeout=100), res_2.get(timeout=100), res_3.get(timeout=100)]
-    )
+    response_body = [res_1.get(timeout=100), res_2.get(timeout=100), res_3.get(timeout=100)]
+    return json_response(response_body, status=200)

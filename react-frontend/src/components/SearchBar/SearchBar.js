@@ -16,13 +16,11 @@ function SearchBar() {
       alert("Search field can not be empty!");
       return;
     }
-    console.log("firing search to backend...");
 
     if (suggestions[0]) {
       history.push(`/result/${suggestions[0].type}/${suggestions[0].id}`);
     } else {
       alert("No matching stocks or cryptos");
-      return;
     }
   };
 
@@ -32,19 +30,15 @@ function SearchBar() {
       return;
     }
 
-    const requestBody = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      query: keyword,
-    };
-
     axios
-      .post("http://localhost:5000/assets/search", requestBody)
-      .then((res) => {
-        // console.log(res.data)
-        return JSON.parse(JSON.stringify(res.data));
+      .get("http://localhost:5000/assets/search", {
+        method: "GET",
+        params: {
+          query: keyword
+        }
       })
-      .then((data) => {
+      .then((res) => {
+        let data = JSON.parse(JSON.stringify(res.data));
         var sg = [];
         console.log("autocomplete suggestions:");
         for (var key in data) {
@@ -65,15 +59,12 @@ function SearchBar() {
       .catch((error) => {
         console.log(error);
       });
-
-    console.log("search keyword is:" + keyword);
   }, [keyword]);
 
   async function onSuggestionHandler(i) {
     console.log(suggestions[i].symbol);
     await (() => {
       setKeyword(suggestions[i].symbol);
-      return;
     });
     setSuggestions([]);
     history.push(`/result/${suggestions[i].type}/${suggestions[i].id}`);
@@ -110,7 +101,7 @@ function SearchBar() {
                         className="suggestSymbol"
                         style={{ color: currentTheme.foreground }}
                       >
-                        {suggestion.symbol}
+                        ({suggestion.typeDisp}) {suggestion.symbol}
                       </td>
                       <td
                         className="suggestName"

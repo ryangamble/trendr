@@ -14,9 +14,9 @@ import {
 } from "./Statistics";
 import { Container, Col, Row, Button, Spinner } from "react-bootstrap";
 import FollowBtn from "../FollowButton/FollowBtn";
-import axios from "axios";
 
-function Results() {
+
+function Results(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   //current user
   const currentUser = useSelector((state) => state.user);
@@ -26,7 +26,6 @@ function Results() {
   const [tokenAddr, setTokenAddr] = useState(null);
 
   const setCurrencyCallback = (curr) => {
-    console.log("currency is " + curr);
     setCurrency(curr);
   };
 
@@ -34,12 +33,6 @@ function Results() {
     console.log("token address is " + addr)
     setTokenAddr(addr);
   }
-
-  const requestBody = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    id: id,
-  };
 
   if (type == "crypto") {
     return renderCryptoResults()
@@ -61,6 +54,16 @@ function Results() {
         <br />
         <br />
         <Container className="resultsContainer">
+          <Row>
+            <Col xs={12} className="resultsHeader">
+              <h3 style={{ marginRight: 10 }}>
+                Showing Results For: {id}
+              </h3>
+              {currentUser.username === "" && currentUser.email === "" ? null : (
+                <FollowBtn id={id} />
+              )}
+            </Col>
+          </Row>
           <Row>
             <Col xs={12} sm={12} md={12} lg={6}>
               <StockStatistics

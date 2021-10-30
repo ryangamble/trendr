@@ -68,15 +68,15 @@ function StockGraph(props) {
   }, [period, loadedCount]);
 
   async function fetchDataPoints(timePeriod) {
-    const requestBody = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      name: props.symbol,
-      period: timePeriod,
-    };
 
     axios
-      .post("http://localhost:5000/assets/stock/history", requestBody)
+      .get("http://localhost:5000/assets/stock/history", {
+        method: "GET",
+        params: {
+          symbol: props.symbol,
+          period: timePeriod
+        }
+      })
       .then((res) => {
         return JSON.parse(JSON.stringify(res.data));
       })
@@ -341,17 +341,12 @@ function SentimentGraph(props) {
   const [loading, setLoading] = useState(true);
 
   useEffect (() => {
-    const requestBody = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      name: props.symbol,
-    };
-
-    fetchTwitterData(requestBody)
-    fetchRedditData(requestBody)
+    fetchTwitterData()
+    fetchRedditData()
 
   }, [props])
 
+  // TODO: Make this fetch actual data
   function fetchRedditData(req) {
     var data = new Array(10).fill(0).reduce((prev,curr) =>
     [...prev, {
@@ -362,9 +357,14 @@ function SentimentGraph(props) {
       setRedditData(data);
   }
 
-  function fetchTwitterData(req) {
+  function fetchTwitterData() {
     axios
-      .post("http://localhost:5000/assets/twitter_sentiment", req)
+      .get("http://localhost:5000/assets/twitter_sentiment", {
+        method: "GET",
+        params: {
+          symbol: props.symbol,
+        }
+      })
       .then((res) => {
         // console.log(res.data)
         return JSON.parse(JSON.stringify(res.data));

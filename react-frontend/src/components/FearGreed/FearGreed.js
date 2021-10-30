@@ -9,8 +9,6 @@ import {
   FlexibleXYPlot,
   LineSeries,
   Crosshair,
-  Borders,
-  XYPlot,
   VerticalGridLines,
 } from "react-vis";
 
@@ -25,19 +23,18 @@ function FearGreed() {
   };
 
   const _onNearestX = (value) => {
-    var x = value.x.toString();
-    value.x = x;
+    value.x = value.x.toString();
     setCrosshairValues([value]);
   };
 
   useEffect(() => {
     axios
       .get("http://localhost:5000/assets/historic-fear-greed")
-      .then((res) => JSON.parse(JSON.stringify(res.data)))
-      .then((data) => {
-        // get the first 30 historic fear greed data
+      .then((res) => {
+        let data = JSON.parse(JSON.stringify(res.data));
 
-        const arr = data.slice(0, 30).map((d) => {
+        // get the first 30 historic fear and greed values
+        const arr = data["crypto_values"].slice(0, 30).map((d) => {
           return {
             x: d.timestamp,
             y: d.value,
@@ -48,8 +45,8 @@ function FearGreed() {
         setgraphData(arr);
         setLoading(false);
       })
-      .catch((err) => {
-        alert(err);
+      .catch((error) => {
+        console.log(`ERROR: ${error}`);
       });
   }, []);
 
@@ -65,12 +62,12 @@ function FearGreed() {
         {loading ? (
           <div>
             <Spinner animation="border" />
-            <h4>Loading Fear and Greed Info...</h4>
+            <h4>Loading Crypto Fear and Greed Info...</h4>
           </div>
         ) : (
           <div>
             <h3 style={{ color: currentTheme.foreground }}>
-              Latest Fear and Greed Trends
+              Latest Crypto Fear and Greed Trends
             </h3>
             <FlexibleXYPlot
               onMouseLeave={_onMouseLeave}
@@ -89,11 +86,9 @@ function FearGreed() {
               <Crosshair
                 values={crosshairValues}
                 titleFormat={(d) => {
-                  console.log("d: ", d);
                   return { title: "Date", value: d[0].x };
                 }}
                 itemsFormat={(d) => {
-                  console.log("d item: ", d);
                   return [
                     { title: "Index", value: d[0].y },
                     { title: "Fear/Greed", value: d[0].z },
