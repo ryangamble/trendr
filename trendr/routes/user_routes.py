@@ -31,7 +31,6 @@ def delete_user(user_id):
 
 
 @users.route("/follow-asset", methods=["POST"])
-@auth_required()
 def follow_asset_curr():
     content = request.get_json()
 
@@ -49,7 +48,6 @@ def follow_asset_curr():
 
 
 @users.route("/unfollow-asset", methods=["POST"])
-@auth_required()
 def unfollow_asset_curr():
     content = request.get_json()
 
@@ -68,7 +66,6 @@ def unfollow_asset_curr():
 
 
 @users.route("/assets-followed", methods=["GET"])
-@auth_required()
 def get_followed_assets_curr():
     return json_response(
         payload={"assets": get_followed_assets(user_id=current_user.id)}
