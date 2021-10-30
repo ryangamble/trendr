@@ -332,146 +332,6 @@ function StockGraph(props) {
   }
 }
 
-function SentimentGraph(props) {
-  
-  const currentTheme = useSelector((state) => state.theme.currentTheme);
-
-  const [twitterData, setTwitterData] = useState([]);
-  const [redditData, setRedditData] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect (() => {
-    fetchTwitterData()
-    fetchRedditData()
-
-  }, [props])
-
-  // TODO: Make this fetch actual data
-  function fetchRedditData(req) {
-    var data = new Array(10).fill(0).reduce((prev,curr) =>
-    [...prev, {
-      x: Math.random() * 2 - 1,
-      y: Math.random(),
-      size: 1
-    }], []);
-      setRedditData(data);
-  }
-
-  function fetchTwitterData() {
-    axios
-      .get("http://localhost:5000/assets/twitter_sentiment", {
-        method: "GET",
-        params: {
-          symbol: props.symbol,
-        }
-      })
-      .then((res) => {
-        // console.log(res.data)
-        return JSON.parse(JSON.stringify(res.data));
-      })
-      .then((data) => {
-        // console.log(data['0']['1']['1'])
-        var points = [];
-        for (var i = 0; i < data.length; i++) {
-          // console.log(data[i.toString()]['1'])
-          points.push({
-            x: parseFloat(data[i.toString()]['1']['0']),
-            y: parseFloat(data[i.toString()]['1']['1']),
-            size: 1,
-          });
-        }
-        console.log("twitter sentiment analysis points")
-        console.log(points)
-        return points;
-      })
-      .then((points) => {
-        return setTwitterData(points)
-      })
-      .then(()=> {
-        setLoading(false)
-      })
-  }
-
-  const markSeriesProps = {
-    animation: true,
-    stroke: "grey",
-    strokeWidth: 1,
-    opacityType: "category",
-    opacity: "0.4",
-  }
-
-  if (loading) {
-    return (
-      <Container fluid>
-        <Spinner animation="border" />
-      </Container>
-    );
-  } else {
-    return (
-      <Container className="graphLayout">
-        <Row>
-          <div className="chartTitle">
-            <h2>Sentiment Data</h2>
-          </div>
-        </Row>
-        {twitterData.length > 0 || redditData.legnth > 0 ?
-          <Row>
-            <div className="chartContainer">
-              <FlexibleXYPlot
-                xDomain={[-1.0,1.0]}
-                yDomain={[0,1.0]}
-              >
-
-                <HorizontalGridLines />
-                <VerticalGridLines />
-                <XAxis
-                  title="Polarity"
-                  style={{title: {fill: currentTheme.foreground}}}
-                />
-                <YAxis
-                  title="Subjectivity"
-                  style={{title: {fill: currentTheme.foreground}}}
-                />
-                <DiscreteColorLegend
-                  orientation="horizontal"
-                  style={{position: "absolute", right: "0%", top: "0%", backgroundColor: "rgba(108,117,125, 0.7)", borderRadius: "5px"}}
-                  items={[
-                    {
-                      title: "Twitter",
-                      color: "#0D6EFD",
-                      strokeWidth: 5,
-                    },
-                    {
-                      title: "Reddit",
-                      color: "red",
-                      strokeWidth: 5
-                    }
-                  ]}
-                />
-                <MarkSeries
-                  {...markSeriesProps}
-                  data={twitterData}
-                  color="#0D6EFD"
-                />
-                <MarkSeries
-                  {...markSeriesProps}
-                  data={redditData}
-                  color="red"
-                />
-              </FlexibleXYPlot>
-            </div>
-          </Row>
-        :
-          <div>
-            no data
-          </div>
-        }
-      </Container>
-    );
-  }
-}
-
-// Used for both price and volume charts for cryptos
 function CryptoGraph(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
@@ -501,7 +361,7 @@ function CryptoGraph(props) {
 
   useEffect(() => {
     getMinMax();
-    console.log("changing " + props.graphType + " period to " + period);
+    console.log("changing " + props.graphType + " period to " + period + " days");
   }, [period, loadedCount]);
 
   async function fetchDataPoints(timePeriod) {
@@ -513,7 +373,7 @@ function CryptoGraph(props) {
     };
 
     var api = "";
-    if (props.graphType == "price") {
+    if (props.graphType === "price") {
       api = "http://localhost:5000/assets/crypto/pricehistory";
     } else {
       api = "http://localhost:5000/assets/crypto/volumehistory";
@@ -560,7 +420,7 @@ function CryptoGraph(props) {
         return [min, max];
       })
       .then(() => {
-        console.log(props.graphType + " data loaded for " + requestBody.period);
+        console.log(props.graphType + " data loaded for " + timePeriod + " days");
         setLoadedCount((prevCount) => prevCount + 1);
       })
       .catch((error) => {
@@ -748,6 +608,145 @@ function CryptoGraph(props) {
   }
 }
 
+function SentimentGraph(props) {
+  
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
+
+  const [twitterData, setTwitterData] = useState([]);
+  const [redditData, setRedditData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect (() => {
+    fetchTwitterData()
+    fetchRedditData()
+
+  }, [props])
+
+  // TODO: Make this fetch actual data
+  function fetchRedditData(req) {
+    var data = new Array(10).fill(0).reduce((prev,curr) =>
+    [...prev, {
+      x: Math.random() * 2 - 1,
+      y: Math.random(),
+      size: 1
+    }], []);
+      setRedditData(data);
+  }
+
+  function fetchTwitterData() {
+    axios
+      .get("http://localhost:5000/assets/twitter_sentiment", {
+        method: "GET",
+        params: {
+          symbol: props.symbol,
+        }
+      })
+      .then((res) => {
+        // console.log(res.data)
+        return JSON.parse(JSON.stringify(res.data));
+      })
+      .then((data) => {
+        // console.log(data['0']['1']['1'])
+        var points = [];
+        for (var i = 0; i < data.length; i++) {
+          // console.log(data[i.toString()]['1'])
+          points.push({
+            x: parseFloat(data[i.toString()]['1']['0']),
+            y: parseFloat(data[i.toString()]['1']['1']),
+            size: 1,
+          });
+        }
+        console.log("twitter sentiment analysis points")
+        console.log(points)
+        return points;
+      })
+      .then((points) => {
+        return setTwitterData(points)
+      })
+      .then(()=> {
+        setLoading(false)
+      })
+  }
+
+  const markSeriesProps = {
+    animation: true,
+    stroke: "grey",
+    strokeWidth: 1,
+    opacityType: "category",
+    opacity: "0.4",
+  }
+
+  if (loading) {
+    return (
+      <Container fluid>
+        <Spinner animation="border" />
+      </Container>
+    );
+  } else {
+    return (
+      <Container className="graphLayout">
+        <Row>
+          <div className="chartTitle">
+            <h2>Sentiment Data</h2>
+          </div>
+        </Row>
+        {twitterData.length > 0 || redditData.legnth > 0 ?
+          <Row>
+            <div className="chartContainer">
+              <FlexibleXYPlot
+                xDomain={[-1.0,1.0]}
+                yDomain={[0,1.0]}
+              >
+
+                <HorizontalGridLines />
+                <VerticalGridLines />
+                <XAxis
+                  title="Polarity"
+                  style={{title: {fill: currentTheme.foreground}}}
+                />
+                <YAxis
+                  title="Subjectivity"
+                  style={{title: {fill: currentTheme.foreground}}}
+                />
+                <DiscreteColorLegend
+                  orientation="horizontal"
+                  style={{position: "absolute", right: "0%", top: "0%", backgroundColor: "rgba(108,117,125, 0.7)", borderRadius: "5px"}}
+                  items={[
+                    {
+                      title: "Twitter",
+                      color: "#0D6EFD",
+                      strokeWidth: 5,
+                    },
+                    {
+                      title: "Reddit",
+                      color: "red",
+                      strokeWidth: 5
+                    }
+                  ]}
+                />
+                <MarkSeries
+                  {...markSeriesProps}
+                  data={twitterData}
+                  color="#0D6EFD"
+                />
+                <MarkSeries
+                  {...markSeriesProps}
+                  data={redditData}
+                  color="red"
+                />
+              </FlexibleXYPlot>
+            </div>
+          </Row>
+        :
+          <div>
+            no data
+          </div>
+        }
+      </Container>
+    );
+  }
+}
+
 function TopTokenHolders(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
@@ -774,14 +773,14 @@ function TopTokenHolders(props) {
         var totalShare = 0;
         for (var i = 0; i < data.length; i++) {
           pd.push({
-            angle: data[i.toString()]['share'] * 3.6 / 1.8 * Math.PI,
+            theta: data[i.toString()]['share'] * 3.6 / 1.8 * Math.PI,
             label: data[i.toString()]['address'],
             subLabel: (data[i.toString()]['balance'] + " " + data[i.toString()]['share'] + "%")
           })
           totalShare += data[i.toString()]['share'];
         }
         pd.push({
-          angle: (100 - totalShare) * 3.6 / 1.8 * Math.PI,
+          theta: (100 - totalShare) * 3.6 / 1.8 * Math.PI,
           label: "Others",
           subLabel: ("N/A " + (100 - totalShare).toFixed(2) + "%"),
         })
@@ -799,9 +798,12 @@ function TopTokenHolders(props) {
 
   }, []);
 
-  const _onNearestXY = (value) => {
-    console.log(value)
-    setValue(value);
+  const onNearestValue = (value) => {
+    setValue({
+      address: value.label,
+      balance: value.subLabel.substring(0, value.subLabel.toString().indexOf(" ")),
+      share: value.subLabel.substring(value.subLabel.toString().indexOf(" "), value.subLabel.toString().length)
+    });
   }
   if (loading) {
     return (
@@ -820,30 +822,34 @@ function TopTokenHolders(props) {
         <Row>
           <div className="chartContainer">
             <FlexRadialChart
-              animation
+              className="pie-chart"
+              innerRadius={40}
+              radius={140}
+              getAngle={d => d.theta}
               data={graphData}
-              onValueMouseOver={_onNearestXY}
-            />
+              onValueMouseOver={onNearestValue}
+              onSeriesMouseOut={() => setValue(false)}
+              padAngle={0.04}
+            >
+            </FlexRadialChart>
           </div>
         </Row>
         <Col>
           <Table size="sm" style={{ color: currentTheme.foreground }}>
-          {value &&
             <tbody>
               <tr>
                 <td className="statName">Address:</td>
-                <td className="statValue">{value.label}</td>
+                <td className="statValue">{value.address}</td>
               </tr>
               <tr>
                 <td className="statName">Balance:</td>
-              <td className="statValue">{value.subLabel.substring(0, value.subLabel.toString().indexOf(" "))}</td>
+              <td className="statValue">{value.balance}</td>
               </tr>
               <tr>
                 <td className="statName">Share:</td>
-                <td className="statValue">{value.subLabel.substring(value.subLabel.toString().indexOf(" "), value.subLabel.toString().length)}</td>
+                <td className="statValue">{value.share}</td>
               </tr>
             </tbody>
-          }
           </Table>
         </Col>
       </Container>
@@ -851,9 +857,109 @@ function TopTokenHolders(props) {
   }
 }
 
+function FearGreed() {
+  const [graphData, setgraphData] = useState([]);
+  const [crosshairValues, setCrosshairValues] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
+
+  const _onMouseLeave = () => {
+    setCrosshairValues([]);
+  };
+
+  const _onNearestX = (value) => {
+    value.x = value.x.toString();
+    setCrosshairValues([value]);
+  };
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/assets/historic-fear-greed")
+      .then((res) => {
+        let data = JSON.parse(JSON.stringify(res.data));
+
+        // get the first 30 historic fear and greed values
+        const arr = data["crypto_values"].slice(0, 30).map((d) => {
+          return {
+            x: d.timestamp,
+            y: d.value,
+            z: d.value_classification,
+          };
+        });
+
+        setgraphData(arr);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(`ERROR: ${error}`);
+      });
+  }, []);
+
+  return (
+    <div>
+      <Container
+        align="center"
+        style={{
+          background: currentTheme.background,
+          color: currentTheme.foreground,
+        }}
+      >
+        {loading ? (
+          <div>
+            <Spinner animation="border" />
+            <h4>Loading Crypto Fear and Greed Info...</h4>
+          </div>
+        ) : (
+          <div>
+            <h3 style={{ color: currentTheme.foreground }}>
+              Latest Crypto Fear and Greed Trends
+            </h3>
+            <FlexibleXYPlot
+              onMouseLeave={_onMouseLeave}
+              height={300}
+              xType="ordinal"
+            >
+              <VerticalGridLines />
+              <HorizontalGridLines />
+              <XAxis
+                hideTicks
+                title="Latest 30 days"
+                style={{title: {fill: currentTheme.foreground}}}
+              />
+              <YAxis
+                title="Fear Greed Index"
+                style={{title: {fill: currentTheme.foreground}}}
+              />
+              <LineSeries
+                onNearestX={_onNearestX}
+                data={graphData}
+                color="blue"
+              />
+              <Crosshair
+                values={crosshairValues}
+                titleFormat={(d) => {
+                  return { title: "Date", value: d[0].x };
+                }}
+                itemsFormat={(d) => {
+                  return [
+                    { title: "Index", value: d[0].y },
+                    { title: "Fear/Greed", value: d[0].z },
+                  ];
+                }}
+              />
+            </FlexibleXYPlot>
+          </div>
+        )}
+      </Container>
+    </div>
+  );
+}
+
+
 export {
   StockGraph,
   CryptoGraph,
   SentimentGraph,
-  TopTokenHolders
+  TopTokenHolders,
+  FearGreed
 };

@@ -44,7 +44,7 @@ function SearchBar() {
         
         for (var key in data) {
           var ethAddr = "";
-          if (data[key].typeDisp == "crypto") {
+          if (data[key].typeDisp === "crypto") {
             if (typeof(data[key]['platforms']['ethereum']) != undefined) {
               ethAddr = data[key]['platforms']['ethereum']
             } else {
@@ -55,7 +55,7 @@ function SearchBar() {
             symbol: data[key].symbol,
             name: data[key].name,
             type: data[key].typeDisp,
-            id: data[key].typeDisp == "crypto" ? data[key].id : data[key].symbol,
+            id: data[key].typeDisp === "crypto" ? data[key].id : data[key].symbol,
             addr: ethAddr
           });
           // console.log(data[key]);
