@@ -24,17 +24,17 @@ def create_user(email, password, roles=None, **kwargs):
     return new_user
 
 
-def follow_asset(user: Union[User, int], asset: Union[Asset, str, int]) -> bool:
+def follow_asset(email: str, asset: Union[Asset, str, int]) -> bool:
     """
     Follows asset for user
 
-    :param user: user or user.id
+    :param email: user email
     :param asset: asset or asset.identifier or asset.id
     :return: success
     """
-
-    if type(user) == int:
-        user = User.query.filter_by(id=user).first()
+    # TODO: Undo email changes in favor of id when frontend can handle it
+    # if type(user) == int:
+    user = User.query.filter_by(email=email).first()
 
     if type(asset) == str:
         asset = Asset.query.filter_by(identifier=asset).first()
@@ -51,19 +51,17 @@ def follow_asset(user: Union[User, int], asset: Union[Asset, str, int]) -> bool:
     return False
 
 
-def unfollow_asset(
-    user: Union[User, int], asset: Union[Asset, str, int]
-) -> bool:
+def unfollow_asset(email: str, asset: Union[Asset, str, int]) -> bool:
     """
     Unfollows asset for user
 
-    :param user: user or user.id
+    :param email: user email
     :param asset: asset or asset.identifier or asset.id
     :return: success
     """
-
-    if type(user) == int:
-        user = User.query.filter_by(id=user).first()
+    # TODO: Undo email changes in favor of id when frontend can handle it
+    # if type(user) == int:
+    user = User.query.filter_by(email=email).first()
 
     if type(asset) == str:
         asset = Asset.query.filter_by(identifier=asset).first()
@@ -89,6 +87,7 @@ def get_followed_assets(user: User = None, user_id: int = None, email: str = Non
     :return: list of asset identifiers
     :raises: Exception if user_id is not found
     """
+    # TODO: Undo email changes in favor of id when frontend can handle it
     if user_id:
         user = User.query.filter_by(id=user).first()
     elif email:

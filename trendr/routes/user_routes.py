@@ -40,8 +40,10 @@ def follow_asset_curr():
         asset = content["identifier"]
     elif "id" in content:
         asset = content["id"]
+    email = content["email"]
 
-    if follow_asset(current_user, asset):
+    # TODO: Get current user workflow working (requires frontend changes)
+    if follow_asset(email, asset):
         return json_response(status=200, payload={"success": True})
     else:
         return json_response(status=400, payload={"success": False})
@@ -52,13 +54,15 @@ def follow_asset_curr():
 def unfollow_asset_curr():
     content = request.get_json()
 
+    # TODO: Get current user workflow working (requires frontend changes)
     asset = None
     if "identifier" in content:
         asset = content["identifier"]
     elif "id" in content:
         asset = content["id"]
+    email = content["email"]
 
-    if unfollow_asset(current_user, asset):
+    if unfollow_asset(email, asset):
         return json_response(status=200, payload={"success": True})
     else:
         return json_response(status=400, payload={"success": False})
@@ -79,4 +83,5 @@ def get_assets_followed_by_user(email):
     :param email: The email of the user to check followed assets on
     :return: JSON Response containing a list of asset identifiers
     """
+    # TODO: Get user id working (requires returning user_id to frontend)
     return json_response(payload={"assets": get_followed_assets(email=email)})
