@@ -14,9 +14,16 @@ def get_users():
     pass
 
 
+
+
 @users.route("/<user_id>", methods=["GET"])
 def get_users_by_id(user_id):
     pass
+
+@users.route("/test", methods=["GET"])
+def get_users_by_id():
+    return jsonify({"light" : True})
+
 
 
 @users.route("/<user_id>", methods=["PUT"])
@@ -90,6 +97,6 @@ def get_settings():
 @auth_required()
 def set_settings():
     content = request.get_json()
-    
+
     current_user.set_settings(content)
     return json_response({"success": "true"})

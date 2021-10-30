@@ -85,6 +85,9 @@ function MyNavBar() {
               <Nav.Link as={Link} to="/myaccount">
                 MyAccount
               </Nav.Link>
+              <Nav.Link as={Link} to="/settings">
+                Settings
+              </Nav.Link>
               <Nav.Link as={Link} to="/report">
                 MyReport
               </Nav.Link>

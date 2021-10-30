@@ -202,7 +202,6 @@ def token_top_holders():
     response_body = df.get_top_token_holders(address, 20)
     return json_response(response_body, status=200)
 
-
 @assets.route('/crypto/price-history', methods=['GET'])
 def crypto_price_history():
     id = request.args.get('id')
