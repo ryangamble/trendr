@@ -13,6 +13,7 @@ from trendr.tasks.social.reddit.gather import (
     store_submissions
 )
 from trendr.connectors import coin_gecko_connector as cg
+from trendr.connectors import defi_connector as df
 from .helpers.json_response import json_response
 
 assets = Blueprint("assets", __name__, url_prefix="/assets")
@@ -123,6 +124,15 @@ def gdow():
     return stock.history(period=p, interval=period_to_interval.get(p), prepost="True", actions="False").to_json()
 
 
+@assets.route('/crypto/stats', methods=['POST'])
+def crypto_stats():
+    content = request.get_json()
+
+    print("\nfetching general stats for: " + content['id'] + "\n")
+
+    return jsonify(cg.get_coin_live_stats(content['id']))
+
+
 @assets.route('/stock/stats', methods=['POST'])
 def stock_stats():
     content = request.get_json()
@@ -132,16 +142,43 @@ def stock_stats():
     stock = yf.Ticker(content['name'])
     return jsonify(stock.info)
 
+
+@assets.route('/crypto/eth_address', methods=['POST'])
+def crypto_eth_address():
+    content = request.get_json()
+    return cg.get_id_eth_address(content['id'])
+
+
+@assets.route('/token/info', methods=['POST'])
+def token_info():
+    content = request.get_json()
+    # print (content['addr'])
+    return df.get_token_info(content['addr'])
+
+
+@assets.route('/token/topholders', methods=['POST'])
+def token_top_holders():
+    content = request.get_json()
+    return jsonify(df.get_top_token_holders(content['addr'], 20))
+
+
 @assets.route('/crypto/pricehistory', methods=['POST'])
-def crypto_stats():
+def crypto_price_history():
     content = request.get_json()
 
-    print("\nfetching historic market data for: " + content["id"] + " for " + content["days"] + " days\n")
+    print("\nfetching historic price data for: " + content["id"] + " for " + content["days"] + " days\n")
     return jsonify(cg.get_historic_prices(content["id"], content["days"]))
+
+@assets.route('/crypto/volumehistory', methods=['POST'])
+def crypto_volume_history():
+    content = request.get_json()
+
+    print("\nfetching historic volume data for: " + content["id"] + " for " + content["days"] + " days\n")
+    return jsonify(cg.get_historic_volumes(content["id"], content["days"]))
 
 
 @assets.route("/stock/history", methods=["POST"])
-def history():
+def stock_history():
     content = request.get_json()
 
     print("\nfetching history market data for: " + content["name"] + "\n")

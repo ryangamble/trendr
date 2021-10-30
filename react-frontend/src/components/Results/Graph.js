@@ -6,6 +6,7 @@ import {
   Col,
   ButtonGroup,
   Button,
+  Table
 } from "react-bootstrap";
 
 import { useSelector } from "react-redux";
@@ -16,18 +17,21 @@ import {
   HorizontalGridLines,
   VerticalGridLines,
   FlexibleXYPlot,
+  RadialChart,
   LineSeries,
   MarkSeries,
   Crosshair,
   Borders,
   DiscreteColorLegend,
+  makeVisFlexible,
+  Hint
 } from "react-vis";
 
 import axios from "axios";
 import "./Results.css";
 import "../../../node_modules/react-vis/dist/style.css";
 
-
+const FlexRadialChart = makeVisFlexible(RadialChart)
 
 // Currently pass symbol as a prop, can be changed later
 // Used for both price and volume charts for stocks
@@ -328,7 +332,6 @@ function StockGraph(props) {
   }
 }
 
-
 function SentimentGraph(props) {
   
   const currentTheme = useSelector((state) => state.theme.currentTheme);
@@ -468,6 +471,7 @@ function SentimentGraph(props) {
   }
 }
 
+// Used for both price and volume charts for cryptos
 function CryptoGraph(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
@@ -508,8 +512,15 @@ function CryptoGraph(props) {
       days: timePeriod,
     };
 
+    var api = "";
+    if (props.graphType == "price") {
+      api = "http://localhost:5000/assets/crypto/pricehistory";
+    } else {
+      api = "http://localhost:5000/assets/crypto/volumehistory";
+    }
+
     axios
-      .post("http://localhost:5000/assets/crypto/pricehistory", requestBody)
+      .post(api, requestBody)
       .then((res) => {
         return JSON.parse(JSON.stringify(res.data));
       })
@@ -588,6 +599,10 @@ function CryptoGraph(props) {
     return [{ title: "price", value: formatPrice(data[0].y) }];
   };
 
+  const itemsFormatVol = (data) => {
+    return [{ title: "volume", value: data[0].y.toLocaleString("en-US") }];
+  };
+
   const formatPrice = (num) => {
     const options = {
       style: "currency",
@@ -607,7 +622,11 @@ function CryptoGraph(props) {
       <Container className="graphLayout">
         <Row>
           <div className="chartTitle">
+            {props.graphType === "price" ? (
               <h2>Price history</h2>
+            ) : (
+              <h2>Volume history</h2>
+            )}
           </div>
         </Row>
         <Row>
@@ -615,7 +634,11 @@ function CryptoGraph(props) {
             <FlexibleXYPlot
               onMouseLeave={_onMouseLeave}
               xType="ordinal"
-              yDomain={[0.98 * min, 1.02 * max]}
+              yDomain={
+                props.graphType === "price"
+                  ? [0.98 * min, 1.02 * max]
+                  : [0.9 * min, 1.2 * max]
+              }
             >
               <HorizontalGridLines />
               {/* <VerticalGridLines/> */}
@@ -626,7 +649,7 @@ function CryptoGraph(props) {
                 onNearestX={_onNearestX}
                 strokeWidth={2}
                 opacity={1}
-                color="#0D6EFD"
+                color={props.color}
               />
               <Borders
                 style={{
@@ -642,7 +665,10 @@ function CryptoGraph(props) {
 
               <Crosshair
                 values={crosshairValues}
-                itemsFormat={itemsFormatPrice}
+                itemsFormat={props.graphType === "price"
+                ? itemsFormatPrice
+                : itemsFormatVol
+                }
               />
             </FlexibleXYPlot>
           </div>
@@ -722,8 +748,106 @@ function CryptoGraph(props) {
   }
 }
 
+function TopTokenHolders(props) {
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
+
+  const [graphData, setgraphData] = useState([]);
+  const [value, setValue] = useState(false);
+
+  useEffect(() => {
+    const requestBody = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      addr: props.addr,
+    };
+
+    axios
+      .post("http://localhost:5000/assets/token/topholders", requestBody)
+      .then((res) => {
+        return JSON.parse(JSON.stringify(res.data));
+      })
+      .then((data) => {
+        var pd = []
+        var totalShare = 0;
+        for (var i = 0; i < data.length; i++) {
+          pd.push({
+            angle: data[i.toString()]['share'] * 3.6 / 1.8 * Math.PI,
+            label: data[i.toString()]['address'],
+            subLabel: (data[i.toString()]['balance'] + " " + data[i.toString()]['share'] + "%")
+          })
+          totalShare += data[i.toString()]['share'];
+        }
+        pd.push({
+          angle: (100 - totalShare) * 3.6 / 1.8 * Math.PI,
+          label: "Others",
+          subLabel: ("N/A " + (100 - totalShare).toFixed(2) + "%"),
+        })
+        return pd;
+      })
+      .then((pd) => {
+        setgraphData(pd);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+  }, []);
+
+  const _onNearestXY = (value) => {
+    console.log(value)
+    setValue(value);
+  }
+
+  const getValue = (val) => {
+    return {
+      x: val.label,
+      y: val.subLabe
+    }
+  }
+
+  return (
+    <Container className="graphLayout">
+      <Row>
+        <div className="chartTitle">
+          <h2>Top Token Holders</h2>
+        </div>
+      </Row>
+      <Row>
+        <div className="chartContainer">
+          <FlexRadialChart
+            animation
+            data={graphData}
+            onValueMouseOver={_onNearestXY}
+          />
+        </div>
+      </Row>
+      <Col>
+        <Table size="sm" style={{ color: currentTheme.foreground }}>
+        {value &&
+          <tbody>
+            <tr>
+              <td className="statName">Address:</td>
+              <td className="statValue">{value.label}</td>
+            </tr>
+            <tr>
+              <td className="statName">Balance:</td>
+            <td className="statValue">{value.subLabel.substring(0, value.subLabel.toString().indexOf(" "))}</td>
+            </tr>
+            <tr>
+              <td className="statName">Share:</td>
+              <td className="statValue">{value.subLabel.substring(value.subLabel.toString().indexOf(" "), value.subLabel.toString().length)}</td>
+            </tr>
+          </tbody>
+        }
+        </Table>
+      </Col>
+    </Container>
+  );
+}
+
 export {
   StockGraph,
   CryptoGraph,
-  SentimentGraph
+  SentimentGraph,
+  TopTokenHolders
 };

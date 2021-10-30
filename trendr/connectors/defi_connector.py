@@ -39,8 +39,8 @@ def get_token_info(token_address):
     :param token_address: Contract address of the token on the eth chain
     :returns a json of token data from ethplorer API
     """
-    path = "getTokenInfo/"
-    response = requests.get(ETHPLORER_URL + path + token_address + "?apiKey=" + ETHPLORERE_KEY)
+    path = ETHPLORER_URL + "getTokenInfo/" + str(token_address) + "?apiKey=" + ETHPLORERE_KEY
+    response = requests.get(path)
     return response.json()
 
 

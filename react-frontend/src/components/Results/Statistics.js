@@ -4,7 +4,21 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import "./Results.css";
 
-function Statistics(props) {
+const getNumberUnit = (num) => {
+  if (num < 1000000) {
+    return num;
+  }
+  var units = ["M", "B", "T"];
+  var unit = Math.floor((num / 1.0e1).toFixed(0).toString().length);
+  var r = unit % 3;
+  var x = Math.abs(Number(num)) / Number("1.0e+" + (unit - r)).toFixed(2);
+  if (units[Math.floor(unit / 3) - 2] == undefined) {
+    return Number.parseInt(num).toExponential(4);
+  }
+  return x.toFixed(2) + " " + units[Math.floor(unit / 3) - 2];
+}
+
+function StockStatistics(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const [stock, setStock] = useState([]);
@@ -64,14 +78,6 @@ function Statistics(props) {
       currency: stock.currency,
     };
     return num.toLocaleString("en-US", options);
-  }
-
-  function getNumberUnit(num) {
-    var units = ["M", "B", "T", "Q"];
-    var unit = Math.floor((num / 1.0e1).toFixed(0).toString().length);
-    var r = unit % 3;
-    var x = Math.abs(Number(num)) / Number("1.0e+" + (unit - r)).toFixed(2);
-    return x.toFixed(2) + units[Math.floor(unit / 3) - 2];
   }
 
   if (loading) {
@@ -150,4 +156,183 @@ function Statistics(props) {
   }
 }
 
-export default Statistics;
+function CoinStatistics(props) {
+
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
+
+  const [crypto, setCrypto] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const requestBody = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    id: props.id,
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    axios
+      .post("http://localhost:5000/assets/crypto/stats", requestBody)
+      .then((res) => {
+        setLoading(true);
+        return JSON.parse(JSON.stringify(res.data));
+      })
+      .then((data) => {
+        console.log(data);
+        setCrypto(data);
+        if (data["Address"]["ethereum"]) {
+          props.addrCallback(data["Address"]["ethereum"]);
+        } else {
+          props.addrCallback("none");
+        }
+      })
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  function formatPrice(num) {
+    const options = {
+      style: "currency",
+      currency: "usd",
+    };
+    return num.toLocaleString("en-US", options);
+  }
+
+  if (loading) {
+    return (
+      <Container fluid>
+        <Spinner animation="border" />
+      </Container>
+    );
+  } else {
+    return(
+      <Container fluid>
+        <Col>
+        <Col>
+          <Image src={crypto.Image} rounded />
+          <h2>{crypto.Name}</h2>
+          <p>{crypto.Symbol.toUpperCase()}</p>
+        </Col>
+        </Col>
+        <Col>
+          <Table size="sm" style={{ color: currentTheme.foreground }}>
+            <tbody>
+              <tr>
+                <td className="statName">Price</td>
+                <td className="statValue">{formatPrice(crypto.Price)}</td>
+              </tr>
+              <tr>
+                <td className="statName">Day High</td>
+                <td className="statValue">{formatPrice(crypto['DayHigh'])}</td>
+              </tr>
+              <tr>
+                <td className="statName">Day Low</td>
+                <td className="statValue">{formatPrice(crypto['DayLow'])}</td>
+              </tr>
+              <tr>
+                <td className="statName">Market Cap Rank</td>
+                <td className="statValue">{crypto['MarketCapRank'] ? crypto['MarketCapRank'] : "N/A"}</td>
+              </tr>
+              <tr>
+                <td className="statName">24 Hour Volume</td>
+                <td className="statValue">{crypto['24HrVolume']}</td>
+              </tr>
+              <tr>
+                <td className="statName">24 Hour Change</td>
+                <td className="statValue">{crypto['24HrChange']}</td>
+              </tr>
+              <tr>
+                <td className="statName">Market Cap</td>
+                <td className="statValue">{crypto.MarketCap}</td>
+              </tr>
+            </tbody>
+          </Table>
+        </Col>
+      </Container>
+    );
+  }
+}
+
+function TokenStatistics(props) {
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
+
+  const [token, setToken] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const requestBody = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    addr: props.addr,
+  };
+
+  useEffect(() => {
+    console.log(props.addr)
+    setLoading(true);
+    axios
+      .post("http://localhost:5000/assets/token/info", requestBody)
+      .then((res) => {
+        setLoading(true);
+        return JSON.parse(JSON.stringify(res.data));
+      })
+      .then((data) => {
+        console.log(data);
+        setToken(data);
+      })
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <Container fluid>
+        <Spinner animation="border" />
+      </Container>
+    );
+  } else {
+    return(
+      <Container fluid>
+        <Col>
+          <h2 style={{textAlign: "left"}}>Token Info</h2>
+          <Table size="sm" style={{ color: currentTheme.foreground }}>
+            <tbody>
+              <tr>
+                <td className="statName">Address</td>
+                <td className="statValue">{token.address}</td>
+              </tr>
+              <tr>
+                <td className="statName">Total Holders</td>
+                <td className="statValue">{token.holdersCount}</td>
+              </tr>
+              <tr>
+                <td className="statName">Total Supply</td>
+                <td className="statValue">{getNumberUnit(token.totalSupply)}</td>
+              </tr>
+              <tr>
+                <td className="statName">Price</td>
+                <td className="statValue">{token.price.rate}</td>
+              </tr>
+              <tr>
+                <td className="statName">Total Operations</td>
+                <td className="statValue">{token.countOps}</td>
+              </tr>
+            </tbody>
+          </Table>
+        </Col>
+      </Container>
+    );
+  }
+}
+
+export {
+  StockStatistics,
+  CoinStatistics,
+  TokenStatistics
+};
