@@ -175,10 +175,10 @@ def history():
     if not asset_ticker:
         return json_response({"error": "Couldn't retrieve history"}, status=500)
 
-    response_body = asset_ticker.history(
+    # TODO: Figure out how to return this like the other endpoints w/o breaking the frontend
+    return asset_ticker.history(
         period=period, interval=period_to_interval_map.get(period), prepost="True", actions="False"
     ).to_json()
-    return json_response(response_body, status=200)
 
 
 @assets.route("/twitter_sentiment", methods=["GET"])

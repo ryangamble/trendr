@@ -110,8 +110,8 @@ function Statistics(props) {
           <h2>{asset.companyName}</h2>
           <p>{asset.symbol}</p>
           { link ?
-              (<p>{link}</p>) :
-              (<p> </p>)
+              (<a href={link} target="_blank">Homepage</a>) :
+              null
           }
         </Col>
         <Col>
