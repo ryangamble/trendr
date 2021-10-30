@@ -36,15 +36,20 @@ def fear_greed():
     return json_response(response_body, status=200)
 
 
-@assets.route('/cryptos/historic-fear-greed', methods=['GET'])
-def cryptos_historic_fear_greed():
+@assets.route('/historic-fear-greed', methods=['GET'])
+def historic_fear_greed():
     """
-    Gets historic fear and greed values for cryptos
+    Gets historic fear and greed values for stocks and cryptos
     :return: JSON response containing fear and greed values
     """
     days = request.args.get('days', default=365, type=int)
 
-    response_body = fear_and_greed_connector.get_crypto_historic_values(days)
+    # TODO: Figure out a way to get historic stock values
+    crypto_values = fear_and_greed_connector.get_crypto_historic_values(days)
+    response_body = {
+        'crypto_values': crypto_values,
+        'stock_values': []
+    }
     return json_response(response_body, status=200)
 
 
