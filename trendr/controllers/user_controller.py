@@ -80,15 +80,19 @@ def unfollow_asset(
     return False
 
 
-def get_followed_assets(user: Union[User, int]) -> list[str]:
+def get_followed_assets(user: User = None, user_id: int = None, email: str = None) -> list[str]:
     """
     Gets a list of the asset identifiers that a user follows
-    :param user: user or user.id
+    :param user: user
+    :param user_id: user.id
+    :param email: user email
     :return: list of asset identifiers
     :raises: Exception if user_id is not found
     """
-    if type(user) == int:
+    if user_id:
         user = User.query.filter_by(id=user).first()
+    elif email:
+        user = User.query.filter_by(email=email).first()
 
     if user and isinstance(user, User):
         return [asset.identifier for asset in user.assets]

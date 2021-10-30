@@ -68,15 +68,15 @@ def unfollow_asset_curr():
 @auth_required()
 def get_followed_assets_curr():
     return json_response(
-        payload={"assets": get_followed_assets(current_user.id)}
+        payload={"assets": get_followed_assets(user_id=current_user.id)}
     )
 
 
-@users.route("/assets-followed/<user_id>", methods=["GET"])
-def get_assets_followed_by_user(user_id):
+@users.route("/assets-followed/<email>", methods=["GET"])
+def get_assets_followed_by_user(email):
     """
     Gets a list of the asset identifiers that a user follows
-    :param user_id: The database user id to check followed assets on
+    :param email: The email of the user to check followed assets on
     :return: JSON Response containing a list of asset identifiers
     """
-    return json_response(payload={"assets": get_followed_assets(user_id)})
+    return json_response(payload={"assets": get_followed_assets(email=email)})
