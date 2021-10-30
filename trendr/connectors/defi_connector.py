@@ -16,7 +16,7 @@ def get_top_token_holders(token_address, number):
     """
     :param token_address: Contract address of the token on the eth chain
     :param number: How many of the top holders are returned(max is 100)
-    :returns the top holders in a dictionary
+    :return: the top holders in a dictionary
     """
     path = ETHPLORER_URL + "getTopTokenHolders/" + str(token_address) \
         + "?apiKey=" + ETHPLORERE_KEY + "&limit=" + str(number)
@@ -27,7 +27,7 @@ def get_top_token_holders(token_address, number):
 def volume_history(token_address):
     """
     :param token_address: Contract address of the token on the eth chain
-    :returns the volume of the token across available data
+    :return: the volume of the token across available data
     """
     path = ETHPLORER_URL + "getTokenPriceHistoryGrouped/" + str(token_address) + "?apiKey=" + ETHPLORERE_KEY
     response = requests.get(path)
@@ -37,7 +37,7 @@ def volume_history(token_address):
 def get_token_info(token_address):
     """
     :param token_address: Contract address of the token on the eth chain
-    :returns a json of token data from ethplorer API
+    :return: a json of token data from ethplorer API
     """
     path = "getTokenInfo/"
     response = requests.get(ETHPLORER_URL + path + token_address + "?apiKey=" + ETHPLORERE_KEY)
@@ -47,7 +47,7 @@ def get_token_info(token_address):
 def get_symbol_address(symbol):
     """
     :param symbol: ticker of the token
-    :returns the eth address of a token. If not available, returns None
+    :return: the eth address of a token. If not available, returns None
     """
     address = get_symbol_eth_address(symbol)
     return address if address else None
@@ -110,7 +110,7 @@ class TokenInfo:
         """
         :param token_address: The ETH address of the token
         :param number: How many of the top holders are returned(max is 100)
-        :returns two values, a list of lists, where each list has the number of tokens of holder,
+        :return: two values, a list of lists, where each list has the number of tokens of holder,
         and the total ownership of the total supply. The second value is how many of the total supply
         this number of holders own.
         """

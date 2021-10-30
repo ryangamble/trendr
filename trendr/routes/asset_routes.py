@@ -99,6 +99,20 @@ def search():
 
     response_body = []
 
+    stock_filtered = yq.search(query, news_count=0, quotes_count=10)
+    for item in stock_filtered['quotes'][0:5]:
+        if item['typeDisp'] == 'Equity' or item['typeDisp'] == 'ETF':
+            item['typeDisp'] = item.pop('typeDisp').lower()
+            if 'shortname' in item:
+                item['name'] = item.pop('shortname')
+            if 'longname' in item:
+                item['name'] = item.pop('longname')
+            item.pop('isYahooFinance')
+            item.pop('quoteType')
+            item.pop('index')
+            item.pop('score')
+            response_body.append(item)
+
     # TODO: Load valid coins from the assets table and delete CoinGeckoCoins.json
     base_path = os.path.realpath(os.path.dirname(__file__))
     json_path = os.path.join(base_path, '../connectors', 'CoinGeckoCoins.json')
@@ -113,20 +127,6 @@ def search():
         item['typeDisp'] = 'crypto'
         item['symbol'] = item.pop('symbol').upper()
         response_body.append(item)
-
-    stock_filtered = yq.search(query, news_count=0, quotes_count=10)
-    for item in stock_filtered['quotes'][0:5]:
-        if item['typeDisp'] == 'Equity' or item['typeDisp'] == 'ETF':
-            item['typeDisp'] = item.pop('typeDisp').lower()
-            if 'shortname' in item:
-                item['name'] = item.pop('shortname')
-            if 'longname' in item:
-                item['name'] = item.pop('longname')
-            item.pop('isYahooFinance')
-            item.pop('quoteType')
-            item.pop('index')
-            item.pop('score')
-            response_body.append(item)
 
     return json_response(response_body, status=200)
 

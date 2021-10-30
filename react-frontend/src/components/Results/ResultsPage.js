@@ -7,7 +7,7 @@ import Statistics from "./Statistics";
 import { Container, Col, Row, Button, Spinner } from "react-bootstrap";
 import FollowBtn from "../FollowButton/FollowBtn";
 
-function Results() {
+function Results(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   //current user
   const currentUser = useSelector((state) => state.user);
@@ -16,7 +16,6 @@ function Results() {
   const [currency, setCurrency] = useState(null);
 
   const setCurrencyCallback = (curr) => {
-    console.log("currency is " + curr);
     setCurrency(curr);
   };
 
@@ -46,6 +45,7 @@ function Results() {
           <Col xs={12} sm={12} md={12} lg={6}>
             <Statistics
               symbol={id.substring(1)}
+              typeDisp={props.location.state.typeDisp}
               currencyCallback={setCurrencyCallback}
             />
             <br />

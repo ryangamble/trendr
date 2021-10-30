@@ -16,13 +16,11 @@ function SearchBar() {
       alert("Search field can not be empty!");
       return;
     }
-    console.log("firing search to backend...");
 
     if (suggestions[0]) {
-      history.push(`/result:${suggestions[0].symbol}`);
+      history.push(`/result:${suggestions[0].symbol}`, {typeDisp: suggestions[0].typeDisp});
     } else {
       alert("No matching stocks or cryptos");
-      return;
     }
   };
 
@@ -32,55 +30,44 @@ function SearchBar() {
       return;
     }
 
-    const requestBody = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      query: keyword,
-    };
-
     axios
-      .post("http://localhost:5000/assets/search", requestBody)
-      .then((res) => {
-        return JSON.parse(JSON.stringify(res.data.quotes));
+      .get("http://localhost:5000/assets/search", {
+        method: "GET",
+        params: {
+          query: keyword
+        }
       })
-      .then((data) => {
-        var sg = [];
-        console.log("autocomplete suggestions:");
-        for (var key in data) {
+      .then((res) => {
+        let data = JSON.parse(JSON.stringify(res.data));
+        let sg = [];
+        for (let key in data) {
           if (
-            data[key].typeDisp === "Equity" ||
-            data[key].typeDisp === "Cryptocurrency" ||
-            data[key].typeDisp === "ETF"
+            data[key].typeDisp === "equity" ||
+            data[key].typeDisp === "crypto" ||
+            data[key].typeDisp === "etf"
           ) {
             sg.push({
               symbol: data[key].symbol,
-              name: data[key].shortname,
+              name: data[key].name,
               exchange: data[key].exchange,
               typeDisp: data[key].typeDisp,
             });
           }
-          console.log(data[key]);
         }
-        return sg;
-      })
-      .then((sg) => {
         setSuggestions(sg);
       })
       .catch((error) => {
         console.log(error);
       });
-
-    console.log("search keyword is:" + keyword);
   }, [keyword]);
 
   async function onSuggestionHandler(i) {
     console.log(suggestions[i].symbol);
     await (() => {
       setKeyword(suggestions[i].symbol);
-      return;
     });
     setSuggestions([]);
-    history.push(`/result:${suggestions[i].symbol}`);
+    history.push(`/result:${suggestions[i].symbol}`, {typeDisp: suggestions[i].typeDisp});
   }
 
   return (
@@ -114,7 +101,7 @@ function SearchBar() {
                         className="suggestSymbol"
                         style={{ color: currentTheme.foreground }}
                       >
-                        {suggestion.symbol}
+                        ({suggestion.typeDisp}) {suggestion.symbol}
                       </td>
                       <td
                         className="suggestName"

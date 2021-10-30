@@ -6,14 +6,14 @@ def convert_time(unix_time) -> datetime:
     """
     Returns a datetime object from a unix timestamp
     :param unix_time: time unix_time format
-    :returns time as a datetime object
+    :return: time as a datetime object
     """
     return datetime.utcfromtimestamp(unix_time)
 
 
 def get_current_crypto_fear_and_greed():
     """
-    :returns the current value of the fear and greed index with its representation
+    :return: the current value of the fear and greed index with its representation
     """
     response = requests.get("https://api.alternative.me/fng/?limit=1")
     values = {
@@ -26,7 +26,7 @@ def get_current_crypto_fear_and_greed():
 
 def get_current_stock_fear_and_greed():
     """
-    :returns the stock market current fear and greed index value
+    :return: the stock market current fear and greed index value
     """
     url = "https://fear-and-greed-index.p.rapidapi.com/v1/fgi"
     headers = {
@@ -40,7 +40,7 @@ def get_current_stock_fear_and_greed():
 def get_crypto_historic_values(days: int = 365):
     """
     :param days: how many days of crypto fear and index values are requested
-    :returns historic values of crypto fear and greed index up to 2018
+    :return: historic values of crypto fear and greed index up to 2018
     """
     if days == 0:
         days = 1
@@ -50,7 +50,7 @@ def get_crypto_historic_values(days: int = 365):
         values = {
             'value': stamp['value'],
             'value_classification': stamp['value_classification'],
-            'timestamp': convert_time(float(stamp['timestamp']))
+            'timestamp': convert_time(float(stamp['timestamp'])).strftime('%a, %d %b %Y %H:%M:%S GMT')
         }
         value_list.append(values)
 
