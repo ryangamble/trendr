@@ -6,7 +6,7 @@ from trendr.models.association_tables import user_asset_association
 
 
 class Asset(db.Model):
-    __tablename__ = "assets"
+    __tablename__ = "asset"
 
     id = db.Column(Integer, primary_key=True, autoincrement="auto")
     identifier = db.Column(String, nullable=False, unique=True)
@@ -15,5 +15,5 @@ class Asset(db.Model):
     users = relationship(
         "User",
         secondary=user_asset_association,
-        back_populates="assets",
+        back_populates="asset",
     )

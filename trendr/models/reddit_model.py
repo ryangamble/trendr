@@ -2,7 +2,6 @@ import enum
 from sqlalchemy import Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
-from sqlalchemy.sql.sqltypes import Float
 from sqlalchemy.types import Integer, Text, DateTime, String
 from trendr.extensions import db
 from trendr.models.association_tables import (
@@ -33,23 +32,23 @@ class RedditSubmission(db.Model):
 
     # There is a one-many relationship between subreddits and reddit_submissions
     subreddit_id = db.Column(Integer, ForeignKey("subreddit.id"))
-    subreddit = relationship("Subreddit", back_populates="submissions")
+    subreddit = relationship("Subreddit", back_populates="reddit_submission")
 
     # There is a one-many relationship between reddit posts and reddit comments
-    comments = relationship("RedditComment", back_populates="submission")
+    comments = relationship("RedditComment", back_populates="reddit_submission")
 
     # There is a many-many relationship between searches and reddit posts
     searches = relationship(
         "Search",
         secondary=search_reddit_submission_association,
-        back_populates="reddit_submissions",
+        back_populates="reddit_submission",
     )
 
     # There is a one-many relationship between authors and reddit_submissions
     author_id = db.Column(Integer, ForeignKey("reddit_author.id"))
     author = relationship(
         "RedditAuthor",
-        back_populates="submissions",
+        back_populates="reddit_submission",
     )
 
 
@@ -67,24 +66,24 @@ class RedditComment(db.Model):
 
     # There is a one-many relationship between reddit posts and reddit comments
     submission_id = db.Column(Integer, ForeignKey("reddit_submission.id"))
-    submission = relationship("RedditSubmission", back_populates="comments")
+    submission = relationship("RedditSubmission", back_populates="reddit_comment")
 
     # There is a one-many relationship between subreddits and reddit_comments
     subreddit_id = db.Column(Integer, ForeignKey("subreddit.id"))
-    subreddit = relationship("Subreddit", back_populates="comments")
+    subreddit = relationship("Subreddit", back_populates="reddit_comment")
 
     # There is a many-many relationship between searches and reddit posts
     searches = relationship(
         "Search",
         secondary=search_reddit_comment_association,
-        back_populates="reddit_comments",
+        back_populates="reddit_comment",
     )
 
     # There is a one-many relationship between authors and reddit_comments
     author_id = db.Column(Integer, ForeignKey("reddit_author.id"))
     author = relationship(
         "RedditAuthor",
-        back_populates="comments",
+        back_populates="reddit_comment",
     )
 
 
@@ -112,11 +111,11 @@ class RedditAuthor(db.Model):
     # There is a many-many relationship between authors and reddit_submissions
     submissions = relationship(
         "RedditSubmission",
-        back_populates="author",
+        back_populates="reddit_author",
     )
 
     # There is a many-many relationship between authors and reddit_comments
     comments = relationship(
         "RedditComment",
-        back_populates="author",
+        back_populates="reddit_author",
     )

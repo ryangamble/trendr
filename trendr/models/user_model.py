@@ -19,7 +19,7 @@ class User(db.Model, fsqla.FsUserMixin):
     assets = relationship(
         "Asset",
         secondary=user_asset_association,
-        back_populates="users",
+        back_populates="user",
     )
 
     def __repr__(self):
