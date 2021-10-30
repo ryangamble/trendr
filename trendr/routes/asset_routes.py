@@ -93,6 +93,7 @@ def search():
 
     return json_response(response_body, status=200)
 
+
 @assets.route('/historic-fear-greed', methods=['GET'])
 def historic_fear_greed():
     """
