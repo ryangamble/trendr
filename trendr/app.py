@@ -22,11 +22,11 @@ from trendr.models.user_model import User, Role
 
 def create_app(for_celery=False):
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object("trendr.config")
 
     configure_extensions(app)
     if not for_celery:
-        CORS(app, resources={r"/*": {"origins": "*"}})
         register_blueprints(app)
         init_celery(app)
 
