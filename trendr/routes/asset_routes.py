@@ -4,21 +4,20 @@ import re
 import yfinance as yf
 import yahooquery as yq
 
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from textblob import TextBlob
 import re
 import os, json
 
 from trendr.connectors import twitter_connector
 from trendr.connectors import fear_and_greed_connector
-from trendr.connectors import coin_gecko_connector
+from trendr.connectors import coin_gecko_connector as cg
+from trendr.connectors import defi_connector as df
 from trendr.tasks.social.twitter.gather import store_tweet_by_id
 from trendr.tasks.social.reddit.gather import (
     store_comments,
     store_submissions
 )
-from trendr.connectors import coin_gecko_connector as cg
-from trendr.connectors import defi_connector as df
 from trendr.routes.helpers.json_response import json_response
 
 assets = Blueprint("assets", __name__, url_prefix="/assets")
@@ -40,7 +39,7 @@ def fear_greed():
     return json_response(response_body, status=200)
 
 
-assets.route('/search', methods=['GET'])
+@assets.route('/search', methods=['GET'])
 def search():
     """
     Searches for assets (stocks and cryptos) matching a query
@@ -51,8 +50,6 @@ def search():
         return json_response({"error": "Parameter 'query' is required"}, status=400)
 
     response_body = []
-    content = request.get_json()
-    query = content['query']
 
     SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
     json_path = os.path.join(SITE_ROOT, '../connectors', 'CoinGeckoCoins.json')
@@ -139,29 +136,33 @@ def cryptos_official_channels():
     Gets the official channels (homepage, socials, etc.) of a crypto
     :return: JSON response containing official channels
     """
-    name = request.args.get('name')
-    if not name:
+    id = request.args.get('id')
+    if not id:
         return json_response({"error": "Parameter 'name' is required"}, status=400)
 
-    response_body = coin_gecko_connector.get_coin_links(name)
+    response_body = cg.get_coin_links(id)
     return json_response(response_body, status=200)
 
 
-@assets.route('/crypto/stats', methods=['POST'])
+@assets.route('/crypto/stats', methods=['GET'])
 def crypto_stats():
-    content = request.get_json()
+    """
+    Gets general statistics for cryptos
+    :return: JSON response containing crypto statistics
+    """
+    id = request.args.get('id')
+    if not id:
+        return json_response({"error": "Parameter 'id' is required"}, status=400)
 
-    print("\nfetching general stats for: " + content['id'] + "\n")
-
-    return jsonify(cg.get_coin_live_stats(content['id']))
+    return json_response(cg.get_coin_live_stats(id))
 
 
 
 @assets.route("/stock/stats", methods=["GET"])
 def stock_stats():
     """
-    Gets general statistics for an asset (stock or crypto)
-    :return: JSON response containing asset statistics
+    Gets general statistics for stocks and etf
+    :return: JSON response containing stock/etf statistics
     """
     symbol = request.args.get('symbol')
     if not symbol:
@@ -191,7 +192,7 @@ def token_info():
 @assets.route('/token/topholders', methods=['POST'])
 def token_top_holders():
     content = request.get_json()
-    return jsonify(df.get_top_token_holders(content['addr'], 20))
+    return json_response(df.get_top_token_holders(content['addr'], 20))
 
 
 @assets.route('/crypto/pricehistory', methods=['POST'])
@@ -200,6 +201,7 @@ def crypto_price_history():
 
     print("\nfetching historic price data for: " + content["id"] + " for " + content["days"] + " days\n")
     return jsonify(cg.get_historic_prices(content["id"], content["days"]))
+
 
 @assets.route('/crypto/volumehistory', methods=['POST'])
 def crypto_volume_history():

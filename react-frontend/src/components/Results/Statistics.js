@@ -28,7 +28,7 @@ function StockStatistics(props) {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:5000/assets/stats", {
+      .get("http://localhost:5000/assets/stock/stats", {
         method: "GET",
         params: {
           symbol: props.symbol
@@ -58,35 +58,19 @@ function StockStatistics(props) {
         });
         props.currencyCallback(data["currency"]);
 
-        if (props.typeDisp === "etf" || props.typeDisp === "equity") {
-          axios
-            .get(`http://localhost:5000/assets/stocks/official-channels`, {
-              method: "GET",
-              params: {
-                symbol: data["symbol"]
-              }
-            })
-            .then((res) => {
-              setLink(res.data["website"]);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        } else {
-          axios
-            .get(`http://localhost:5000/assets/cryptos/official-channels`, {
-              method: "GET",
-              params: {
-                name: data["shortName"]
-              }
-            })
-            .then((res) => {
-              setLink(res.data["homepage"]);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        }
+        axios
+          .get(`http://localhost:5000/assets/stocks/official-channels`, {
+            method: "GET",
+            params: {
+              symbol: props.symbol
+            }
+          })
+          .then((res) => {
+            setLink(res.data["website"]);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
         setLoading(false);
       })
       .catch((error) => {
@@ -187,30 +171,36 @@ function CoinStatistics(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const [crypto, setCrypto] = useState([]);
+  const [link, setLink] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const requestBody = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    id: props.id,
-  };
 
   useEffect(() => {
     setLoading(true);
     axios
-      .post("http://localhost:5000/assets/crypto/stats", requestBody)
-      .then((res) => {
-        setLoading(true);
-        return JSON.parse(JSON.stringify(res.data));
+      .get("http://localhost:5000/assets/crypto/stats", {
+        method: "GET",
+        params: {
+          id: props.id
+        }
       })
-      .then((data) => {
+      .then((res) => {
+        let data = res.data;
         console.log(data);
         setCrypto(data);
-        if (data["Address"]["ethereum"]) {
-          props.addrCallback(data["Address"]["ethereum"]);
-        } else {
-          props.addrCallback("none");
-        }
+        axios
+          .get(`http://localhost:5000/assets/cryptos/official-channels`, {
+            method: "GET",
+            params: {
+              id: props.id
+            }
+          })
+          .then((res) => {
+            setLink(res.data["homepage"]);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       })
       .then(() => {
         setLoading(false);
@@ -242,6 +232,10 @@ function CoinStatistics(props) {
           <Image src={crypto.Image} rounded />
           <h2>{crypto.Name}</h2>
           <p>{crypto.Symbol.toUpperCase()}</p>
+          { link ?
+              (<a href={link} target="_blank">Homepage</a>) :
+              null
+          }
         </Col>
         </Col>
         <Col>
@@ -273,7 +267,7 @@ function CoinStatistics(props) {
               </tr>
               <tr>
                 <td className="statName">Market Cap</td>
-                <td className="statValue">{crypto.MarketCap}</td>
+                <td className="statValue">{formatPrice(crypto.MarketCap)}</td>
               </tr>
             </tbody>
           </Table>
@@ -296,7 +290,7 @@ function TokenStatistics(props) {
   };
 
   useEffect(() => {
-    console.log(props.addr)
+    // console.log(props.addr)
     setLoading(true);
     axios
       .post("http://localhost:5000/assets/token/info", requestBody)

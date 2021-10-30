@@ -85,7 +85,7 @@ def get_coin_live_stats(coin):
         'DayHigh': info['market_data']['high_24h']['usd'],
         'DayLow': info['market_data']['low_24h']['usd'],
         'Price': stats[coin]['usd'],
-        'MarketCap': '${0:,.2f}'.format(stats[coin]['usd_market_cap']),
+        'MarketCap': stats[coin]['usd_market_cap'],
         '24HrVolume': '${0:,.2f}'.format(stats[coin]['usd_24h_vol']),
         '24HrChange': "%{:.2f}".format(stats[coin]['usd_24h_change'])
     }

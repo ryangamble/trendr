@@ -137,7 +137,7 @@ function StockGraph(props) {
         return [min, max];
       })
       .then(() => {
-        console.log(props.graphType + " data loaded for " + requestBody.period);
+        console.log(props.graphType + " data loaded for " + timePeriod);
         setLoadedCount((prevCount) => prevCount + 1);
       })
       .catch((error) => {
@@ -641,7 +641,7 @@ function CryptoGraph(props) {
               }
             >
               <HorizontalGridLines />
-              {/* <VerticalGridLines/> */}
+              {/* <VerticalGridLines /> */}
 
               <LineSeries
                 animation={true}
@@ -661,7 +661,7 @@ function CryptoGraph(props) {
               />
 
               <YAxis />
-              <XAxis hideTicks />
+              <XAxis hideTicks/>
 
               <Crosshair
                 values={crosshairValues}
@@ -753,8 +753,11 @@ function TopTokenHolders(props) {
 
   const [graphData, setgraphData] = useState([]);
   const [value, setValue] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
+
     const requestBody = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -787,6 +790,9 @@ function TopTokenHolders(props) {
       .then((pd) => {
         setgraphData(pd);
       })
+      .then(() => {
+        setLoading(false);
+      })
       .catch((error) => {
         console.log(error);
       });
@@ -797,52 +803,52 @@ function TopTokenHolders(props) {
     console.log(value)
     setValue(value);
   }
-
-  const getValue = (val) => {
-    return {
-      x: val.label,
-      y: val.subLabe
-    }
+  if (loading) {
+    return (
+      <Container fluid>
+        <Spinner animation="border" />
+      </Container>
+    );
+  } else {
+    return (
+      <Container className="graphLayout">
+        <Row>
+          <div className="chartTitle">
+            <h2>Top Token Holders</h2>
+          </div>
+        </Row>
+        <Row>
+          <div className="chartContainer">
+            <FlexRadialChart
+              animation
+              data={graphData}
+              onValueMouseOver={_onNearestXY}
+            />
+          </div>
+        </Row>
+        <Col>
+          <Table size="sm" style={{ color: currentTheme.foreground }}>
+          {value &&
+            <tbody>
+              <tr>
+                <td className="statName">Address:</td>
+                <td className="statValue">{value.label}</td>
+              </tr>
+              <tr>
+                <td className="statName">Balance:</td>
+              <td className="statValue">{value.subLabel.substring(0, value.subLabel.toString().indexOf(" "))}</td>
+              </tr>
+              <tr>
+                <td className="statName">Share:</td>
+                <td className="statValue">{value.subLabel.substring(value.subLabel.toString().indexOf(" "), value.subLabel.toString().length)}</td>
+              </tr>
+            </tbody>
+          }
+          </Table>
+        </Col>
+      </Container>
+    );
   }
-
-  return (
-    <Container className="graphLayout">
-      <Row>
-        <div className="chartTitle">
-          <h2>Top Token Holders</h2>
-        </div>
-      </Row>
-      <Row>
-        <div className="chartContainer">
-          <FlexRadialChart
-            animation
-            data={graphData}
-            onValueMouseOver={_onNearestXY}
-          />
-        </div>
-      </Row>
-      <Col>
-        <Table size="sm" style={{ color: currentTheme.foreground }}>
-        {value &&
-          <tbody>
-            <tr>
-              <td className="statName">Address:</td>
-              <td className="statValue">{value.label}</td>
-            </tr>
-            <tr>
-              <td className="statName">Balance:</td>
-            <td className="statValue">{value.subLabel.substring(0, value.subLabel.toString().indexOf(" "))}</td>
-            </tr>
-            <tr>
-              <td className="statName">Share:</td>
-              <td className="statValue">{value.subLabel.substring(value.subLabel.toString().indexOf(" "), value.subLabel.toString().length)}</td>
-            </tr>
-          </tbody>
-        }
-        </Table>
-      </Col>
-    </Container>
-  );
 }
 
 export {

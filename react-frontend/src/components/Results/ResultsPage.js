@@ -29,11 +29,6 @@ function Results(props) {
     setCurrency(curr);
   };
 
-  const setTokenAddrCallback = (addr) => {
-    console.log("token address is " + addr)
-    setTokenAddr(addr);
-  }
-
   if (type == "crypto") {
     return renderCryptoResults()
   } else {
@@ -57,13 +52,14 @@ function Results(props) {
           <Row>
             <Col xs={12} className="resultsHeader">
               <h3 style={{ marginRight: 10 }}>
-                Showing Results For: {id}
+                Showing Results For: {props.location.state.symbol}
               </h3>
               {currentUser.username === "" && currentUser.email === "" ? null : (
                 <FollowBtn id={id} />
               )}
             </Col>
           </Row>
+          <br />
           <Row>
             <Col xs={12} sm={12} md={12} lg={6}>
               <StockStatistics
@@ -124,10 +120,20 @@ function Results(props) {
           <br />
           <Container className="resultsContainer">
             <Row>
+              <Col xs={12} className="resultsHeader">
+                <h3 style={{ marginRight: 10 }}>
+                  Showing Results For: {props.location.state.symbol}
+                </h3>
+                {currentUser.username === "" && currentUser.email === "" ? null : (
+                  <FollowBtn id={id} />
+                )}
+              </Col>
+            </Row>
+            <br />
+            <Row>
               <Col xs={12} sm={12} md={12} lg={6}>
                 <CoinStatistics
                   id={id}
-                  addrCallback={setTokenAddrCallback}
                 />
                 <br />
               </Col>
@@ -148,29 +154,15 @@ function Results(props) {
                 <br />
               </Col>
               <Col xs={12} sm={12} md={12} lg={6}>
-                {tokenAddr == "none" ? (
-                  null
-                ) : (tokenAddr == null ? (
-                  <Container fluid>
-                    <Spinner animation="border" />
-                  </Container>
-                ) : (
-                  <TokenStatistics addr={tokenAddr}/>
-                )
-                )}
+                {props.location.state.addr &&
+                  <TokenStatistics addr={props.location.state.addr}/>
+                }
                 <br/>
               </Col>
               <Col xs={12} sm={12} md={12} lg={6}>
-                {tokenAddr == "none" ? (
-                  null
-                ) : (tokenAddr == null ? (
-                  <Container fluid>
-                    <Spinner animation="border" />
-                  </Container>
-                ) : (
-                  <TopTokenHolders addr={tokenAddr}/>
-                )
-                )}
+                {props.location.state.addr &&
+                  <TopTokenHolders addr={props.location.state.addr}/>
+                }
                 <br/>
               </Col>
             </Row>
