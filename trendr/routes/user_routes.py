@@ -35,15 +35,14 @@ def delete_user(user_id):
 def follow_asset_curr():
     content = request.get_json()
 
-    asset = None
     if "identifier" in content:
-        asset = content["identifier"]
-    elif "id" in content:
-        asset = content["id"]
+        asset_identifier = content["identifier"]
+    else:
+        asset_identifier = content["id"]
     email = content["email"]
 
     # TODO: Get current user workflow working (requires frontend changes)
-    if follow_asset(email, asset):
+    if follow_asset(email, asset_identifier):
         return json_response(status=200, payload={"success": True})
     else:
         return json_response(status=400, payload={"success": False})

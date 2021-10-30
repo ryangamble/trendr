@@ -24,22 +24,26 @@ def create_user(email, password, roles=None, **kwargs):
     return new_user
 
 
-def follow_asset(email: str, asset: Union[Asset, str, int]) -> bool:
+def follow_asset(email: str, asset_identifier) -> bool:
     """
     Follows asset for user
 
     :param email: user email
-    :param asset: asset or asset.identifier or asset.id
+    :param asset_identifier: asset identifier
     :return: success
     """
-    # TODO: Undo email changes in favor of id when frontend can handle it
+    # TODO: Re-implement user.id and asset.id when frontend can handle it
     # if type(user) == int:
     user = User.query.filter_by(email=email).first()
 
-    if type(asset) == str:
-        asset = Asset.query.filter_by(identifier=asset).first()
-    elif type(asset) == int:
-        asset = Asset.query.filter_by(id=asset).first()
+    asset = None
+    if type(asset_identifier) == str:
+        asset = Asset.query.filter_by(identifier=asset_identifier).first()
+    # elif type(asset) == int:
+    #     asset = Asset.query.filter_by(id=asset).first()
+
+    if not asset:
+        asset = Asset(identifier=asset_identifier)
 
     if (user and isinstance(user, User)) and (
         asset and isinstance(asset, Asset)
