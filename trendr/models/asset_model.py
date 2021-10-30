@@ -15,5 +15,5 @@ class Asset(db.Model):
     users = relationship(
         "User",
         secondary=user_asset_association,
-        back_populates="asset",
+        back_populates="assets",
     )

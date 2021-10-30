@@ -22,19 +22,19 @@ class Search(db.Model):
     tweets = relationship(
         "Tweet",
         secondary=search_tweet_association,
-        back_populates="search",
+        back_populates="searches",
     )
     reddit_submissions = relationship(
         "RedditSubmission",
         secondary=search_reddit_submission_association,
-        back_populates="search",
+        back_populates="searches",
     )
     reddit_comments = relationship(
         "RedditComment",
         secondary=search_reddit_comment_association,
-        back_populates="search",
+        back_populates="searches",
     )
 
     user_id = db.Column(Integer, ForeignKey("user.id"))
     # There is a many-one relationship between search and user
-    user = relationship("User", back_populates="search")
+    user = relationship("User", back_populates="searches")

@@ -20,5 +20,5 @@ class Tweet(db.Model):
     searches = relationship(
         "Search",
         secondary=search_tweet_association,
-        back_populates="tweet",
+        back_populates="tweets",
     )
