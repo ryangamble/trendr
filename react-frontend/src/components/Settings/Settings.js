@@ -20,7 +20,7 @@ function Settings() {
           console.log(res.data)
           console.log("\n\n\n\n")
           return JSON.stringify(res.data);
-        }).catch( (error) => { console.log(error) })
+        }).catch( (error) => { alert(error) })
         // .then((data)=> {
         //   console.log(data)
         // })
