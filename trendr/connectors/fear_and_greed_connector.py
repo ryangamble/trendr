@@ -2,13 +2,13 @@ import requests
 from datetime import datetime
 
 
-def convert_time(unix_time) -> datetime:
+def convert_time(unix_time) -> str:
     """
-    Returns a datetime object from a unix timestamp
+    Returns an RFC 1123 time string from a unix timestamp
     :param unix_time: time unix_time format
     :return: time as a datetime object
     """
-    return datetime.utcfromtimestamp(unix_time)
+    return datetime.utcfromtimestamp(unix_time).strftime('%a, %d %b %Y %H:%M:%S GMT')
 
 
 def get_current_crypto_fear_and_greed():
@@ -50,7 +50,7 @@ def get_crypto_historic_values(days: int = 365):
         values = {
             'value': stamp['value'],
             'value_classification': stamp['value_classification'],
-            'timestamp': convert_time(float(stamp['timestamp'])).strftime('%a, %d %b %Y %H:%M:%S GMT')
+            'timestamp': convert_time(float(stamp['timestamp']))
         }
         value_list.append(values)
 

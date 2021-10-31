@@ -25,7 +25,7 @@ services:
       - "5000:5000"
     env_file:
       - .env/.env_dev
-      - .env/.env_twitter
+      - .env/.env_apis
     environment:
       - FLASK_APP=trendr.app
     depends_on:
@@ -52,7 +52,7 @@ services:
     depends_on:
       - rabbitmq
       - api
-    
+
   celery_worker_social:
     build:
       context: .
@@ -63,7 +63,7 @@ services:
       - .:/app
     env_file:
       - .env/.env_dev
-      - .env/.env_twitter
+      - .env/.env_apis
     environment:
       - FLASK_APP=trendr
     depends_on:

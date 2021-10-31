@@ -9,11 +9,12 @@ from pycoingecko import CoinGeckoAPI
 
 def convert_time(date_list):
     """
+    Returns a list of RFC 1123 time strings from a list of unix timestamp
     :param date_list: a list of unix times
     :return: a python dataframe from this unix time
     """
     for row in date_list:
-        row[0] = datetime.utcfromtimestamp(row[0]/1000)
+        row[0] = datetime.utcfromtimestamp(row[0]/1000).strftime('%a, %d %b %Y %H:%M:%S GMT')
     return date_list
 
 
@@ -27,6 +28,7 @@ def get_historic_prices(coin, days):
     coin = coin.lower()
     prices = cg_api.get_coin_market_chart_by_id(id=coin, vs_currency='usd', days=days)['prices']
     return convert_time(prices)
+
 
 def get_historic_volumes(coin, days):
     """
@@ -82,8 +84,8 @@ def get_coin_live_stats(coin):
         'Image': info['image']['large'],
         'Address': info['platforms'],
         'MarketCapRank': info['market_data']['market_cap_rank'],
-        'DayHigh': info['market_data']['high_24h']['usd'],
-        'DayLow': info['market_data']['low_24h']['usd'],
+        'DayHigh': info['market_data']['high_24h']['USD'] if 'USD' in info['market_data']['high_24h'] else info['market_data']['high_24h']['usd'],
+        'DayLow': info['market_data']['low_24h']['USD'] if 'USD' in info['market_data']['low_24h'] else info['market_data']['low_24h']['usd'],
         'Price': stats[coin]['usd'],
         'MarketCap': stats[coin]['usd_market_cap'],
         '24HrVolume': '${0:,.2f}'.format(stats[coin]['usd_24h_vol']),
