@@ -102,7 +102,7 @@ function Results(props) {
               <br/>
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
-              <TweetSummary symbol={id.substring(1)}/>
+              <TweetSummary symbol={id}/>
               <br />
             </Col>
           </Row>
@@ -178,7 +178,7 @@ function Results(props) {
                 <br/>
               </Col>
               <Col xs={12} sm={12} md={12} lg={6}>
-                <TweetSummary symbol={id.substring(1)}/>
+                <TweetSummary symbol={id}/>
                 <br />
               </Col>
             </Row>
