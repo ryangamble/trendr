@@ -3,7 +3,7 @@ import MyNavBar from "../NavBar/MyNavBar";
 import SearchBar from "../SearchBar/SearchBar";
 
 import { useSelector } from "react-redux";
-import FearGreed from "../FearGreed/FearGreed";
+import { FearGreed } from "../Results/Graph";
 
 function Home() {
   const currentTheme = useSelector((state) => state.theme.currentTheme);

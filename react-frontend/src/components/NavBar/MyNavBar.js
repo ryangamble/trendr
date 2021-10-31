@@ -44,7 +44,7 @@ function MyNavBar() {
         variant="dark"
       >
         <Container>
-          <Navbar.Brand href="home" style={{ fontSize: "2em" }}>
+          <Navbar.Brand as={Link} to="/home" style={{ fontSize: "2em" }}>
             Trendr
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
