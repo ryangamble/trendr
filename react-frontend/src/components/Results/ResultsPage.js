@@ -14,10 +14,6 @@ import {
   CoinStatistics,
   TokenStatistics,
 } from "./Statistics";
-  TopTokenHolders,
-} from "./Graph";
-import { StockStatistics, CoinStatistics, TokenStatistics } from "./Statistics";
-import { Container, Col, Row, Spinner } from "react-bootstrap";
 import FollowBtn from "../FollowButton/FollowBtn";
 import axios from "axios";
 
