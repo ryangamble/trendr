@@ -155,7 +155,6 @@ def crypto_stats():
     response_body = cg.get_coin_live_stats(id)
     return json_response(response_body, status=200)
 
-
 @assets.route("/stock/stats", methods=["GET"])
 def stock_stats():
     """
@@ -303,3 +302,14 @@ def reddit_sentiment_route():
 
     response_body = [res_1.get(timeout=100), res_2.get(timeout=100), res_3.get(timeout=100)]
     return json_response(response_body, status=200)
+
+
+@assets.route('/tweet-summary/<asset_identifier>', methods=['GET'])
+def tweet_summary(asset_identifier):
+    """
+    Generates statistics related to the types of users tweeting about an asset
+    :param asset_identifier: The asset identifier (AAPL, BTC) to generate a tweet summary for
+    :return: JSON response containing tweet summary for the requested asset
+    """
+    summary_data = twitter_connector.twitter_accounts_mentioning_asset_summary(asset_identifier)
+    return json_response(summary_data, status=200)

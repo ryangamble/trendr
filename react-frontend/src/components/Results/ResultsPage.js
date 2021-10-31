@@ -2,14 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import MyNavBar from "../NavBar/MyNavBar";
+import TweetSummary from "./TweetSummary";
+import { Container, Col, Row, Spinner } from "react-bootstrap";
 import {
   SentimentGraph,
   StockGraph,
   CryptoGraph,
-  TopTokenHolders,
-} from "./Graph";
-import { StockStatistics, CoinStatistics, TokenStatistics } from "./Statistics";
-import { Container, Col, Row, Spinner } from "react-bootstrap";
+  TopTokenHolders} from "./Graph";
+import {
+  StockStatistics,
+  CoinStatistics,
+  TokenStatistics,
+} from "./Statistics";
 import FollowBtn from "../FollowButton/FollowBtn";
 import axios from "axios";
 
@@ -124,6 +128,10 @@ function Results(props) {
               <SentimentGraph symbol={id} />
               <br />
             </Col>
+            <Col xs={12} sm={12} md={12} lg={6}>
+              <TweetSummary symbol={id}/>
+              <br />
+            </Col>
           </Row>
           <Link to="../../home" style={{ color: currentTheme.linkColor }}>
             Return to Home
@@ -191,6 +199,10 @@ function Results(props) {
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
               <SentimentGraph symbol={id} />
+              <br />
+            </Col>
+            <Col xs={12} sm={12} md={12} lg={6}>
+              <TweetSummary symbol={id}/>
               <br />
             </Col>
           </Row>
