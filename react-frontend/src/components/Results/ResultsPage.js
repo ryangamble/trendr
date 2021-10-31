@@ -101,6 +101,10 @@ function Results(props) {
               <SentimentGraph symbol={id}/>
               <br/>
             </Col>
+            <Col xs={12} sm={12} md={12} lg={6}>
+              <TweetSummary symbol={id.substring(1)}/>
+              <br />
+            </Col>
           </Row>
           <Link to="../../home" style={{ color: currentTheme.linkColor }}>
             Return to Home

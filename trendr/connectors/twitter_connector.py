@@ -116,21 +116,42 @@ def twitter_accounts_mentioning_asset_summary(asset_identifier: str, api: tweepy
         if results[i]._json['user']['verified']:
             verified_count += 1
 
-    follower_stats = {
-        'median': median(followers_count_list),
-        'min': min(followers_count_list),
-        'max': max(followers_count_list)
-    }
-    following_stats = {
-        'median': median(following_count_list),
-        'min': min(following_count_list),
-        'max': max(following_count_list)
-    }
-    accounts_age_stats = {
-        'median': median(accounts_age_list),
-        'min': min(accounts_age_list),
-        'max': max(accounts_age_list)
-    }
+    if followers_count_list:
+        follower_stats = {
+            'median': median(followers_count_list),
+            'min': min(followers_count_list),
+            'max': max(followers_count_list)
+        }
+    else:
+        follower_stats = {
+            'median': 0,
+            'min': 0,
+            'max': 0
+        }
+    if following_count_list:
+        following_stats = {
+            'median': median(following_count_list),
+            'min': min(following_count_list),
+            'max': max(following_count_list)
+        }
+    else:
+        following_stats = {
+            'median': 0,
+            'min': 0,
+            'max': 0
+        }
+    if accounts_age_list:
+        accounts_age_stats = {
+            'median': median(accounts_age_list),
+            'min': min(accounts_age_list),
+            'max': max(accounts_age_list)
+        }
+    else:
+        accounts_age_stats = {
+            'median': 0,
+            'min': 0,
+            'max': 0
+        }
 
     return {
         'follower_stats': follower_stats,
