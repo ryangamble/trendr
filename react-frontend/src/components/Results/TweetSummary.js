@@ -88,15 +88,15 @@ function TweetSummary(props) {
               <tbody>
                 <tr>
                   <td className="statName">Min Account Age</td>
-                  <td className="statValue">{summaryData.minAccountAge}</td>
+                  <td className="statValue">{summaryData.minAccountAge} days</td>
                 </tr>
                 <tr>
                   <td className="statName">Median Account Age</td>
-                  <td className="statValue">{summaryData.medianAccountAge}</td>
+                  <td className="statValue">{summaryData.medianAccountAge} days</td>
                 </tr>
                 <tr>
                   <td className="statName">Max Account Age</td>
-                  <td className="statValue">{summaryData.maxAccountAge}</td>
+                  <td className="statValue">{summaryData.maxAccountAge} days</td>
                 </tr>
                 <tr>
                   <td className="statName">Number Verified</td>
