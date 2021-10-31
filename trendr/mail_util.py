@@ -2,6 +2,7 @@ from flask_security import MailUtil
 
 
 
+
 class CeleryMailUtil(MailUtil):
     def send_mail(
         self, template, subject, recipient, sender, body, html, user, **kwargs

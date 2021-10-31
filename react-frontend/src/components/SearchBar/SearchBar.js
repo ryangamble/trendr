@@ -18,7 +18,10 @@ function SearchBar() {
     }
 
     if (suggestions[0]) {
-      history.push(`/result/${suggestions[0].type}/${suggestions[0].id}`, {symbol: suggestions[0].symbol,  addr: suggestions[0].addr});
+      history.push(`/result/${suggestions[0].type}/${suggestions[0].id}`, {
+        symbol: suggestions[0].symbol,
+        addr: suggestions[0].addr,
+      });
     } else {
       alert("No matching stocks or cryptos");
     }
@@ -34,36 +37,37 @@ function SearchBar() {
       .get("http://localhost:5000/assets/search", {
         method: "GET",
         params: {
-          query: keyword
-        }
+          query: keyword,
+        },
       })
       .then((res) => {
         let data = JSON.parse(JSON.stringify(res.data));
         var sg = [];
         console.log("autocomplete suggestions:");
-        
+
         for (var key in data) {
           var ethAddr = "";
           if (data[key].typeDisp === "crypto") {
-            if (typeof(data[key]['platforms']['ethereum']) != undefined) {
-              ethAddr = data[key]['platforms']['ethereum']
+            if (typeof data[key]["platforms"]["ethereum"] != undefined) {
+              ethAddr = data[key]["platforms"]["ethereum"];
             } else {
-              ethAddr = null
+              ethAddr = null;
             }
           }
           sg.push({
             symbol: data[key].symbol,
             name: data[key].name,
             type: data[key].typeDisp,
-            id: data[key].typeDisp === "crypto" ? data[key].id : data[key].symbol,
-            addr: ethAddr
+            id:
+              data[key].typeDisp === "crypto" ? data[key].id : data[key].symbol,
+            addr: ethAddr,
           });
           // console.log(data[key]);
         }
         return sg;
       })
       .then((sg) => {
-        console.log(sg)
+        console.log(sg);
         setSuggestions(sg);
       })
       .catch((error) => {
@@ -77,7 +81,10 @@ function SearchBar() {
       setKeyword(suggestions[i].symbol);
     });
     setSuggestions([]);
-    history.push(`/result/${suggestions[i].type}/${suggestions[i].id}`, {symbol: suggestions[i].symbol, addr: suggestions[i].addr});
+    history.push(`/result/${suggestions[i].type}/${suggestions[i].id}`, {
+      symbol: suggestions[i].symbol,
+      addr: suggestions[i].addr,
+    });
   }
 
   return (
@@ -117,7 +124,8 @@ function SearchBar() {
                         className="suggestName"
                         style={{ color: currentTheme.foreground }}
                       >
-                        {suggestion.name}{" - "}({suggestion.type.toUpperCase()})
+                        {suggestion.name}
+                        {" - "}({suggestion.type.toUpperCase()})
                       </td>
                     </tr>
                   </tbody>

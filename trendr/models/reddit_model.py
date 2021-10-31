@@ -2,7 +2,6 @@ import enum
 from sqlalchemy import Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
-from sqlalchemy.sql.sqltypes import Float
 from sqlalchemy.types import Integer, Text, DateTime, String
 from trendr.extensions import db
 from trendr.models.association_tables import (
@@ -73,7 +72,7 @@ class RedditComment(db.Model):
     subreddit_id = db.Column(Integer, ForeignKey("subreddit.id"))
     subreddit = relationship("Subreddit", back_populates="comments")
 
-    # There is a many-many relationship between searches and reddit posts
+    # There is a many-many relationship between searches and reddit comments
     searches = relationship(
         "Search",
         secondary=search_reddit_comment_association,

@@ -283,17 +283,16 @@ function TokenStatistics(props) {
   const [token, setToken] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const requestBody = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    addr: props.addr,
-  };
-
   useEffect(() => {
     // console.log(props.addr)
     setLoading(true);
     axios
-      .post("http://localhost:5000/assets/token/info", requestBody)
+      .get("http://localhost:5000/assets/token/info", {
+        method: "GET",
+        params: {
+          address: props.addr
+        }
+      })
       .then((res) => {
         setLoading(true);
         return JSON.parse(JSON.stringify(res.data));

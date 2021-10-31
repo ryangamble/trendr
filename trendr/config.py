@@ -26,6 +26,8 @@ def fetch_config(name: str, default: any = None, cast: any = str):
 
 defaults = {
     "FLASK_ENV": "development",
+    "FLASK_CONFIG": "development",
+    "DATABASE_URL": "sqlite:///db.sqlite",
     "SECRET_KEY": "secret-key",
     "SECURITY_PASSWORD_SALT": "146585145368132386173505678016728509634",
     "PASSWORD_SCHEMES": "pbkdf2_sha512",
