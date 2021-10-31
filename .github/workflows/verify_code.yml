@@ -17,11 +17,12 @@ jobs:
       run: |
         touch .env/.env_dev
 
-    - name: Create .env_twitter
+    - name: Create .env_apis
       run: |
-        touch .env/.env_twitter
-        echo TWITTER_CONSUMER_KEY=${{ secrets.TWITTER_CONSUMER_KEY }} >> .env/.env_twitter
-        echo TWITTER_CONSUMER_SECRET=${{ secrets.TWITTER_CONSUMER_SECRET }} >> .env/.env_twitter
+        touch .env/.env_apis
+        echo TWITTER_CONSUMER_KEY=${{ secrets.TWITTER_CONSUMER_KEY }} >> .env/.env_apis
+        echo TWITTER_CONSUMER_SECRET=${{ secrets.TWITTER_CONSUMER_SECRET }} >> .env/.env_apis
+        echo ETHPLORER_KEY=${{ secrets.ETHPLORER_KEY }} >> .env/.env_apis
 
     - name: Create .env_mail_secrets
       run: |

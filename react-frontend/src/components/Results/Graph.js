@@ -165,7 +165,7 @@ function StockGraph(props) {
   const _onMouseLeave = () => {
     setCrosshairValues([]);
   };
-  
+
   const _onNearestX = (value) => {
     var x = value.x.toString();
     value.x = x;
@@ -175,7 +175,7 @@ function StockGraph(props) {
   const itemsFormatPrice = (data) => {
     return [{ title: "price", value: formatPrice(data[0].y) }];
   };
-  
+
   const itemsFormatVol = (data) => {
     return [{ title: "volume", value: data[0].y.toLocaleString("en-US") }];
   };
@@ -365,22 +365,21 @@ function CryptoGraph(props) {
   }, [period, loadedCount]);
 
   async function fetchDataPoints(timePeriod) {
-    const requestBody = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      id: props.symbol,
-      days: timePeriod,
-    };
-
-    var api = "";
+    let apiRoute = "";
     if (props.graphType === "price") {
-      api = "http://localhost:5000/assets/crypto/pricehistory";
+      apiRoute = "http://localhost:5000/assets/crypto/price-history";
     } else {
-      api = "http://localhost:5000/assets/crypto/volumehistory";
+      apiRoute = "http://localhost:5000/assets/crypto/volume-history";
     }
 
     axios
-      .post(api, requestBody)
+      .get(apiRoute, {
+        method: "GET",
+        params: {
+          id: props.symbol,
+          days: timePeriod
+        }
+      })
       .then((res) => {
         return JSON.parse(JSON.stringify(res.data));
       })
@@ -448,7 +447,7 @@ function CryptoGraph(props) {
   const _onMouseLeave = () => {
     setCrosshairValues([]);
   };
-  
+
   const _onNearestX = (value) => {
     var x = value.x.toString();
     value.x = x;
@@ -609,7 +608,7 @@ function CryptoGraph(props) {
 }
 
 function SentimentGraph(props) {
-  
+
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const [twitterData, setTwitterData] = useState([]);
@@ -757,14 +756,13 @@ function TopTokenHolders(props) {
   useEffect(() => {
     setLoading(true);
 
-    const requestBody = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      addr: props.addr,
-    };
-
     axios
-      .post("http://localhost:5000/assets/token/topholders", requestBody)
+      .get("http://localhost:5000/assets/token/top-holders", {
+        method: "GET",
+        params: {
+          address: props.addr
+        }
+      })
       .then((res) => {
         return JSON.parse(JSON.stringify(res.data));
       })

@@ -1,6 +1,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import Integer, DateTime, String
+
 from trendr.extensions import db
 from trendr.models.association_tables import (
     search_tweet_association,

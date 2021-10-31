@@ -6,8 +6,6 @@ import yahooquery as yq
 
 from flask import Blueprint, request, jsonify
 from textblob import TextBlob
-import re
-import os, json
 
 from trendr.connectors import twitter_connector
 from trendr.connectors import fear_and_greed_connector
@@ -19,6 +17,7 @@ from trendr.tasks.social.reddit.gather import (
     store_submissions
 )
 from trendr.routes.helpers.json_response import json_response
+
 
 assets = Blueprint("assets", __name__, url_prefix="/assets")
 
@@ -49,8 +48,6 @@ def search():
     if not query:
         return json_response({"error": "Parameter 'query' is required"}, status=400)
 
-    response_body = []
-
     SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
     json_path = os.path.join(SITE_ROOT, '../connectors', 'CoinGeckoCoins.json')
     crypto_list = json.loads(open(json_path).read())
@@ -69,7 +66,7 @@ def search():
 
     response_body = []
     # print (data)
-    
+
     for item in stock_filtered['quotes'][0:5]:
         if item['typeDisp'] == 'Equity' or item['typeDisp'] == 'ETF':
             item['typeDisp'] = item.pop('typeDisp').lower()
@@ -82,12 +79,12 @@ def search():
             item.pop('index')
             item.pop('score')
             response_body.append(item)
-    
+
     for item in short_list[0:5]:
         item['typeDisp'] = 'crypto'
         item['symbol'] = item.pop('symbol').upper()
         response_body.append(item)
-    
+
     print('\n\nSearch Results for ' + query + ':\n')
     print(response_body)
 
@@ -155,8 +152,8 @@ def crypto_stats():
     if not id:
         return json_response({"error": "Parameter 'id' is required"}, status=400)
 
-    return json_response(cg.get_coin_live_stats(id))
-
+    response_body = cg.get_coin_live_stats(id)
+    return json_response(response_body, status=200)
 
 
 @assets.route("/stock/stats", methods=["GET"])
@@ -177,39 +174,60 @@ def stock_stats():
     return json_response(response_body, status=200)
 
 
-@assets.route('/crypto/eth_address', methods=['POST'])
+@assets.route('/crypto/eth-address', methods=['GET'])
 def crypto_eth_address():
-    content = request.get_json()
-    return cg.get_id_eth_address(content['id'])
+    id = request.args.get('id')
+    if not id:
+        return json_response({"error": "Parameter 'id' is required"}, status=400)
+
+    response_body = cg.get_id_eth_address(id)
+    return json_response(response_body, status=200)
 
 
-@assets.route('/token/info', methods=['POST'])
+@assets.route('/token/info', methods=['GET'])
 def token_info():
-    content = request.get_json()
-    # print (content['addr'])
-    return df.get_token_info(content['addr'])
+    address = request.args.get('address')
+    if not address:
+        return json_response({"error": "Parameter 'address' is required"}, status=400)
+
+    response_body = df.get_token_info(address)
+    return json_response(response_body, status=200)
 
 
-@assets.route('/token/topholders', methods=['POST'])
+@assets.route('/token/top-holders', methods=['GET'])
 def token_top_holders():
-    content = request.get_json()
-    return json_response(df.get_top_token_holders(content['addr'], 20))
+    address = request.args.get('address')
+    if not address:
+        return json_response({"error": "Parameter 'address' is required"}, status=400)
+
+    response_body = df.get_top_token_holders(address, 20)
+    return json_response(response_body, status=200)
 
 
-@assets.route('/crypto/pricehistory', methods=['POST'])
+@assets.route('/crypto/price-history', methods=['GET'])
 def crypto_price_history():
-    content = request.get_json()
+    id = request.args.get('id')
+    days = request.args.get('days')
+    if not id:
+        return json_response({"error": "Parameter 'id' is required"}, status=400)
+    if not days:
+        return json_response({"error": "Parameter 'days' is required"}, status=400)
 
-    print("\nfetching historic price data for: " + content["id"] + " for " + content["days"] + " days\n")
-    return jsonify(cg.get_historic_prices(content["id"], content["days"]))
+    response_body = cg.get_historic_prices(id, days)
+    return json_response(response_body, status=200)
 
 
-@assets.route('/crypto/volumehistory', methods=['POST'])
+@assets.route('/crypto/volume-history', methods=['GET'])
 def crypto_volume_history():
-    content = request.get_json()
+    id = request.args.get('id')
+    days = request.args.get('days')
+    if not id:
+        return json_response({"error": "Parameter 'id' is required"}, status=400)
+    if not days:
+        return json_response({"error": "Parameter 'days' is required"}, status=400)
 
-    print("\nfetching historic volume data for: " + content["id"] + " for " + content["days"] + " days\n")
-    return jsonify(cg.get_historic_volumes(content["id"], content["days"]))
+    response_body = cg.get_historic_volumes(id, days)
+    return json_response(response_body, status=200)
 
 
 @assets.route("/stock/history", methods=["GET"])
