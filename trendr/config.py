@@ -95,7 +95,10 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 """
 Celery settings
 """
-CELERY_TASK_ROUTES = {"trendr.tasks.social.*": {"queue": "social"}}
+CELERY_TASK_ROUTES = {
+    "trendr.tasks.social.*": {"queue": "social"},
+    "trendr.tasks.sentiment.sentiment_analysis": {"queue": "sentiment"}
+}
 CELERY_TASK_DEFAULT_QUEUE = "general"
 
 CELERY_BROKER_URL = fetch_config(

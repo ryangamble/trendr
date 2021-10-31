@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+celery -A trendr.celery.workers.sentiment.celery worker --hostname=celery-sentiment%h --loglevel=info -Q sentiment

@@ -70,6 +70,20 @@ services:
       - rabbitmq
       - api
 
+  celery_worker_sentiment:
+    build:
+      context: .
+      dockerfile: ./compose/local/flask/Dockerfile
+    image: flask_celery_worker_sentiment
+    command: /start-celeryworker-sentiment
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_APP=trendr
+    depends_on:
+      - rabbitmq
+      - api
+
   celery_beat:
     build:
       context: .
