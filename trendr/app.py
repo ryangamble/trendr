@@ -1,4 +1,4 @@
-from flask import Flask, config
+from flask import Flask
 from flask_cors import CORS
 from flask_security import SQLAlchemyUserDatastore
 from flask_wtf.csrf import CSRFProtect
@@ -18,7 +18,6 @@ from trendr.models.reddit_model import (
 from trendr.models.tweet_model import Tweet
 from trendr.models.search_model import Search
 from trendr.models.user_model import User, Role
-from trendr.config import DEBUG
 
 
 def create_app(for_celery=False):
@@ -27,19 +26,12 @@ def create_app(for_celery=False):
 
     configure_extensions(app)
     if not for_celery:
-        CORS(app)
+        CORS(app, supports_credentials=True)
         register_blueprints(app)
         init_celery(app)
 
     with app.app_context():
         db.create_all()
-
-    if DEBUG:
-        from flask import request
-        @app.before_request
-        def log_request_info():
-            app.logger.debug('Headers: %s', request.headers)
-            app.logger.debug('Body: %s', request.get_data())
 
     return app
 

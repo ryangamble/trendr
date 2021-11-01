@@ -32,6 +32,14 @@ function MyNavBar() {
         })
         .catch((error) => {
           alert(JSON.stringify(error.response.data.response.errors));
+
+          // if we get an error here we are already logged out...
+
+          //remove the global user
+          dispatch(removeUser());
+
+          alert("You have been logged out!");
+          history.push("/home");
         });
     }
   };

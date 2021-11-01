@@ -73,12 +73,12 @@ def get_followed_assets_curr():
     )
 
 
-@users.route("/assets-followed/<id>", methods=["GET"])
+@users.route("/assets-followed/<username>", methods=["GET"])
 @auth_required('session')
-def get_assets_followed_by_user(id):
+def get_assets_followed_by_user(username):
     """
     Gets a list of the asset identifiers that a user follows
-    :param id: The id of the user to check followed assets on
+    :param username: The username of the user to check followed assets on
     :return: JSON Response containing a list of asset identifiers
     """
-    return json_response(payload={"assets": get_followed_assets(id=id)})
+    return json_response(payload={"assets": get_followed_assets(user=username)})
