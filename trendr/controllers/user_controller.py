@@ -1,5 +1,6 @@
 from typing import Union
 from flask_security import hash_password
+from sqlalchemy.orm.exc import NoResultFound
 
 from trendr.extensions import db, security
 from trendr.models.asset_model import Asset
@@ -24,30 +25,30 @@ def create_user(email, password, roles=None, **kwargs):
     return new_user
 
 
-def follow_asset(email: str, asset_identifier) -> bool:
+def follow_asset(user: Union[User, str, int], asset: Union[Asset, str, int]) -> bool:
     """
     Follows asset for user
 
-    :param email: user email
-    :param asset_identifier: asset identifier
+    :param user: user or user.id
+    :param asset: asset or asset.identifier or asset.id
     :return: success
     """
-    # TODO: Re-implement user.id and asset.id when frontend can handle it
-    # if type(user) == int:
-    user = User.query.filter_by(email=email).first()
 
-    asset = None
-    if type(asset_identifier) == str:
-        asset = Asset.query.filter_by(identifier=asset_identifier).first()
-    # elif type(asset) == int:
-    #     asset = Asset.query.filter_by(id=asset).first()
+    if type(user) == int:
+        user = User.query.filter_by(id=user).one()
+    elif type(user) == str:
+        user = User.query.filter_by(email=user).one()
 
-    if not asset:
-        asset = Asset(identifier=asset_identifier)
+    if type(asset) == str:
+        try:
+            asset = Asset.query.filter_by(identifier=asset).one()
+        except NoResultFound:
+            # TODO: remove this and init all assets when db created
+            asset = Asset(identifier=asset)
+    elif type(asset) == int:
+        asset = Asset.query.filter_by(id=asset).one()
 
-    if (user and isinstance(user, User)) and (
-        asset and isinstance(asset, Asset)
-    ):
+    if (user and isinstance(user, User)) and (asset and isinstance(asset, Asset)):
         user.assets.append(asset)
         db.session.commit()
         return True
@@ -55,26 +56,26 @@ def follow_asset(email: str, asset_identifier) -> bool:
     return False
 
 
-def unfollow_asset(email: str, asset: Union[Asset, str, int]) -> bool:
+def unfollow_asset(user: Union[User, str, int], asset: Union[Asset, str, int]) -> bool:
     """
     Unfollows asset for user
 
-    :param email: user email
+    :param user: user or user.id
     :param asset: asset or asset.identifier or asset.id
     :return: success
     """
-    # TODO: Undo email changes in favor of id when frontend can handle it
-    # if type(user) == int:
-    user = User.query.filter_by(email=email).first()
+
+    if type(user) == int:
+        user = User.query.filter_by(id=user).one()
+    elif type(user) == str:
+        user = User.query.filter_by(email=user).one()
 
     if type(asset) == str:
-        asset = Asset.query.filter_by(identifier=asset).first()
+        asset = Asset.query.filter_by(identifier=asset).one()
     elif type(asset) == int:
-        asset = Asset.query.filter_by(id=asset).first()
+        asset = Asset.query.filter_by(id=asset).one()
 
-    if (user and isinstance(user, User)) and (
-        asset and isinstance(asset, Asset)
-    ):
+    if (user and isinstance(user, User)) and (asset and isinstance(asset, Asset)):
         user.assets.remove(asset)
         db.session.commit()
         return True
@@ -82,20 +83,17 @@ def unfollow_asset(email: str, asset: Union[Asset, str, int]) -> bool:
     return False
 
 
-def get_followed_assets(user: User = None, user_id: int = None, email: str = None) -> list[str]:
+def get_followed_assets(user: Union[User, str, int]) -> list[str]:
     """
     Gets a list of the asset identifiers that a user follows
-    :param user: user
-    :param user_id: user.id
-    :param email: user email
+    :param user: user or user.id
     :return: list of asset identifiers
     :raises: Exception if user_id is not found
     """
-    # TODO: Undo email changes in favor of id when frontend can handle it
-    if user_id:
-        user = User.query.filter_by(id=user).first()
-    elif email:
-        user = User.query.filter_by(email=email).first()
+    if type(user) == int:
+        user = User.query.filter_by(id=user).one()
+    elif type(user) == str:
+        user = User.query.filter_by(email=user).one()
 
     if user and isinstance(user, User):
         return [asset.identifier for asset in user.assets]
