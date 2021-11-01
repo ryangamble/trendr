@@ -97,7 +97,7 @@ Celery settings
 """
 CELERY_TASK_ROUTES = {
     "trendr.tasks.social.*": {"queue": "social"},
-    "trendr.tasks.sentiment.sentiment_analysis": {"queue": "sentiment"}
+    "trendr.tasks.sentiment.sentiment_analysis.*": {"queue": "sentiment"}
 }
 CELERY_TASK_DEFAULT_QUEUE = "general"
 
