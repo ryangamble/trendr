@@ -2,7 +2,7 @@ import enum
 from sqlalchemy import Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
-from sqlalchemy.types import Integer, Text, DateTime, String
+from sqlalchemy.types import Integer, Text, DateTime, String, Float
 from trendr.extensions import db
 from trendr.models.association_tables import (
     search_reddit_submission_association,
@@ -28,7 +28,8 @@ class RedditSubmission(db.Model):
     up_votes = db.Column(Integer, nullable=True)
     down_votes = db.Column(Integer, nullable=True)
     score = db.Column(Integer, nullable=True)
-    sentiment_score = db.Column(Integer, nullable=True)
+    polarity = db.Column(Float, nullable=True)
+    subjectivity = db.Column(Float, nullable=True)
 
     # There is a one-many relationship between subreddits and reddit_submissions
     subreddit_id = db.Column(Integer, ForeignKey("subreddit.id"))
@@ -62,7 +63,8 @@ class RedditComment(db.Model):
     up_votes = db.Column(Integer, nullable=True)
     down_votes = db.Column(Integer, nullable=True)
     score = db.Column(Integer, nullable=True)
-    sentiment_score = db.Column(Integer, nullable=True)
+    polarity = db.Column(Float, nullable=True)
+    subjectivity = db.Column(Float, nullable=True)
 
     # There is a one-many relationship between reddit posts and reddit comments
     submission_id = db.Column(Integer, ForeignKey("reddit_submission.id"))
