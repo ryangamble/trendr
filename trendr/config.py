@@ -26,6 +26,8 @@ def fetch_config(name: str, default: any = None, cast: any = str):
 
 defaults = {
     "FLASK_ENV": "development",
+    "FLASK_CONFIG": "development",
+    "DATABASE_URL": "sqlite:///db.sqlite",
     "SECRET_KEY": "secret-key",
     "SECURITY_PASSWORD_SALT": "146585145368132386173505678016728509634",
     "PASSWORD_SCHEMES": "pbkdf2_sha512",
@@ -78,7 +80,7 @@ SECURITY_LOGOUT_METHODS = ["POST"]
 SECURITY_RECOVERABLE = True
 SECURITY_TRACKABLE = True
 SECURITY_CHANGEABLE = True
-SECURITY_CONFIRMABLE = False
+SECURITY_CONFIRMABLE = True
 SECURITY_REGISTERABLE = True
 SECURITY_USERNAME_ENABLE = True
 SECURITY_EMAIL_SENDER = "admin@trendr.dev"
@@ -89,6 +91,15 @@ if SQLALCHEMY_DATABASE_URI == defaults["SQLALCHEMY_DATABASE_URI"]:
     print("WARNING: Local database being used")
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+"""
+Celery settings
+"""
+CELERY_TASK_ROUTES = {
+    "trendr.tasks.social.*": {"queue": "social"},
+    "trendr.tasks.sentiment.sentiment_analysis.*": {"queue": "sentiment"}
+}
+CELERY_TASK_DEFAULT_QUEUE = "general"
 
 CELERY_BROKER_URL = fetch_config(
     "CELERY_BROKER_URL", default=defaults["CELERY_BROKER_URL"]
@@ -123,3 +134,8 @@ MAIL_PORT = fetch_config("MAIL_PORT")
 MAIL_USE_SSL = fetch_config("MAIL_USE_SSL")
 MAIL_USERNAME = fetch_config("MAIL_USERNAME")
 MAIL_PASSWORD = fetch_config("MAIL_PASSWORD")
+
+'''
+ETHplrere secret
+'''
+ETHPLORERE_KEY = fetch_config("ETHPLORER_KEY")

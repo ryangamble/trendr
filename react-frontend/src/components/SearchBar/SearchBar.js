@@ -16,13 +16,14 @@ function SearchBar() {
       alert("Search field can not be empty!");
       return;
     }
-    console.log("firing search to backend...");
 
     if (suggestions[0]) {
-      history.push(`/result:${suggestions[0].symbol}`);
+      history.push(`/result/${suggestions[0].type}/${suggestions[0].id}`, {
+        symbol: suggestions[0].symbol,
+        addr: suggestions[0].addr,
+      });
     } else {
       alert("No matching stocks or cryptos");
-      return;
     }
   };
 
@@ -32,55 +33,58 @@ function SearchBar() {
       return;
     }
 
-    const requestBody = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      query: keyword,
-    };
-
     axios
-      .post("http://localhost:5000/assets/search", requestBody)
-      .then((res) => {
-        return JSON.parse(JSON.stringify(res.data.quotes));
+      .get("http://localhost:5000/assets/search", {
+        method: "GET",
+        params: {
+          query: keyword,
+        },
       })
-      .then((data) => {
+      .then((res) => {
+        let data = JSON.parse(JSON.stringify(res.data));
         var sg = [];
         console.log("autocomplete suggestions:");
+
         for (var key in data) {
-          if (
-            data[key].typeDisp === "Equity" ||
-            data[key].typeDisp === "Cryptocurrency" ||
-            data[key].typeDisp === "ETF"
-          ) {
-            sg.push({
-              symbol: data[key].symbol,
-              name: data[key].shortname,
-              exchange: data[key].exchange,
-              typeDisp: data[key].typeDisp,
-            });
+          var ethAddr = "";
+          if (data[key].typeDisp === "crypto") {
+            if (typeof data[key]["platforms"]["ethereum"] != undefined) {
+              ethAddr = data[key]["platforms"]["ethereum"];
+            } else {
+              ethAddr = null;
+            }
           }
-          console.log(data[key]);
+          sg.push({
+            symbol: data[key].symbol,
+            name: data[key].name,
+            type: data[key].typeDisp,
+            id:
+              data[key].typeDisp === "crypto" ? data[key].id : data[key].symbol,
+            addr: ethAddr,
+          });
+          // console.log(data[key]);
         }
         return sg;
       })
       .then((sg) => {
+        console.log(sg);
         setSuggestions(sg);
       })
       .catch((error) => {
         console.log(error);
       });
-
-    console.log("search keyword is:" + keyword);
   }, [keyword]);
 
   async function onSuggestionHandler(i) {
     console.log(suggestions[i].symbol);
     await (() => {
       setKeyword(suggestions[i].symbol);
-      return;
     });
     setSuggestions([]);
-    history.push(`/result:${suggestions[i].symbol}`);
+    history.push(`/result/${suggestions[i].type}/${suggestions[i].id}`, {
+      symbol: suggestions[i].symbol,
+      addr: suggestions[i].addr,
+    });
   }
 
   return (
@@ -120,7 +124,8 @@ function SearchBar() {
                         className="suggestName"
                         style={{ color: currentTheme.foreground }}
                       >
-                        {suggestion.name}{" "}
+                        {suggestion.name}
+                        {" - "}({suggestion.type.toUpperCase()})
                       </td>
                     </tr>
                   </tbody>

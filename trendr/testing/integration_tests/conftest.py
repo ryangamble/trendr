@@ -4,7 +4,7 @@ from trendr.extensions import db
 from sqlalchemy import create_engine
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def db_engine():
     """yields a SQLAlchemy engine which is suppressed after the test session"""
     engine_ = None

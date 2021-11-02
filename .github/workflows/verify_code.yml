@@ -16,9 +16,13 @@ jobs:
     - name: Create .env_dev
       run: |
         touch .env/.env_dev
-        echo TWITTER_CONSUMER_KEY=${{ secrets.TWITTER_CONSUMER_KEY }} >> .env/.env_dev
-        echo TWITTER_CONSUMER_SECRET=${{ secrets.TWITTER_CONSUMER_SECRET }} >> .env/.env_dev
-        cat .env/.env_dev
+
+    - name: Create .env_apis
+      run: |
+        touch .env/.env_apis
+        echo TWITTER_CONSUMER_KEY=${{ secrets.TWITTER_CONSUMER_KEY }} >> .env/.env_apis
+        echo TWITTER_CONSUMER_SECRET=${{ secrets.TWITTER_CONSUMER_SECRET }} >> .env/.env_apis
+        echo ETHPLORER_KEY=${{ secrets.ETHPLORER_KEY }} >> .env/.env_apis
 
     - name: Create .env_mail_secrets
       run: |
@@ -28,7 +32,6 @@ jobs:
         echo MAIL_USE_SSL=${{ secrets.MAIL_USE_SSL }} >> .env/.env_mail_secrets
         echo MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} >> .env/.env_mail_secrets
         echo MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} >> .env/.env_mail_secrets
-        cat .env/.env_mail_secrets
 
     - name: Build Docker
       run: docker-compose up --build -d
