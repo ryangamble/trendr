@@ -18,7 +18,8 @@ function Reset() {
       email: email,
     });
     const config = {
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
     };
 
     axios

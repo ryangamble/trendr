@@ -26,7 +26,8 @@ function SetPassword() {
       password_confirm: password2,
     });
     const config = {
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
     };
 
     axios

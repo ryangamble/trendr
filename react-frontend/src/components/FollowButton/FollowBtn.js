@@ -42,7 +42,6 @@ function FollowBtn({ id, isFollow, callback, type, symbol, addr }) {
           console.log(res);
           if (res.status == 200 && res.data.success == true) {
             //toggle between follow/unfollow
-            alert("unfollowed");
             setFollowed(!followed);
           } else {
             alert("Error following!");
@@ -62,7 +61,6 @@ function FollowBtn({ id, isFollow, callback, type, symbol, addr }) {
         .then((res) => {
           if (res.status == 200 && res.data.success == true) {
             //toggle between follow/unfollow
-            alert("followed");
             setFollowed(!followed);
           } else {
             alert("Error following!");
