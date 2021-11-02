@@ -26,7 +26,7 @@ def create_app(for_celery=False):
 
     configure_extensions(app)
     if not for_celery:
-        CORS(app)
+        CORS(app, supports_credentials=True)
         register_blueprints(app)
         init_celery(app)
 

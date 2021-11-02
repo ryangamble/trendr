@@ -36,7 +36,7 @@ function Results(props) {
       console.log("fetching user follow list");
 
       axios
-        .get(`http://localhost:5000/users/assets-followed/${currentUser.email}`)
+        .get(`http://localhost:5000/users/assets-followed`, {withCredentials: true})
         .then((res) => {
           return res.data;
         })

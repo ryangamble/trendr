@@ -25,12 +25,12 @@ function FollowBtn({ id, isFollow, callback, type, symbol, addr }) {
 
     const json = JSON.stringify({
       id: id,
-      email: currentUser.email,
     });
     const config = {
       headers: {
         "Content-Type": "application/json",
       },
+      withCredentials: true,
     };
 
     //send follow/unfollow request to backend
@@ -40,6 +40,12 @@ function FollowBtn({ id, isFollow, callback, type, symbol, addr }) {
         .post("http://localhost:5000/users/unfollow-asset", json, config)
         .then((res) => {
           console.log(res);
+          if (res.status == 200 && res.data.success == true) {
+            //toggle between follow/unfollow
+            setFollowed(!followed);
+          } else {
+            alert("Error following!");
+          }
         })
         .catch((error) => {
           alert(JSON.stringify(error.response.data.response.errors));
@@ -53,6 +59,12 @@ function FollowBtn({ id, isFollow, callback, type, symbol, addr }) {
       axios
         .post("http://localhost:5000/users/follow-asset", json, config)
         .then((res) => {
+          if (res.status == 200 && res.data.success == true) {
+            //toggle between follow/unfollow
+            setFollowed(!followed);
+          } else {
+            alert("Error following!");
+          }
           console.log(res);
         })
         .catch((error) => {
@@ -67,9 +79,6 @@ function FollowBtn({ id, isFollow, callback, type, symbol, addr }) {
       };
       localStorage.setItem(id, JSON.stringify(obj));
     }
-
-    //toggle between follow/unfollow
-    setFollowed(!followed);
   };
 
   useEffect(() => {
