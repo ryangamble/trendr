@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from flask_security import current_user, auth_required
 from trendr.controllers.user_controller import (
     get_followed_assets,
@@ -13,15 +13,12 @@ users = Blueprint("users", __name__, url_prefix="/users")
 def get_users():
     pass
 
-
-
-
 @users.route("/<user_id>", methods=["GET"])
 def get_users_by_id(user_id):
     pass
 
 @users.route("/test", methods=["GET"])
-def get_users_by_id():
+def test_function():
     return jsonify({"light" : True})
 
 

@@ -12,18 +12,31 @@ function Settings() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
 
-  function loadThemefromBackend() {
-      axios
-        .get("http://localhost:5000/users/test", "test")
-        .then((res) => {
-          console.log("\n\n\n\n")
-          console.log(res.data)
-          console.log("\n\n\n\n")
-          return JSON.stringify(res.data);
-        }).catch( (error) => { alert(error) })
-        // .then((data)=> {
-        //   console.log(data)
-        // })
+  async function loadThemefromBackend() {
+  //   (async () => {
+  //     // GET request using axios with async/await
+  //     const response = await axios.get("http://localhost:5000/users/test");
+  //     console.log("\n\n\n\n");
+  //     console.log(response);
+  //     console.log("\n\n\n\n");
+  //     return response;
+  // })();
+    axios
+      .get("http://localhost:5000/users/test")
+      .then(response => {return response})
+      .catch(err => {console.log(err)});
+
+    //     axios
+  //       .get("http://localhost:5000/users/test", "test")
+  //       .then((res) => {
+  //         console.log("\n\n\n\n")
+  //         console.log(res.data)
+  //         console.log("\n\n\n\n")
+  //         return JSON.stringify(res.data);
+  //       }).catch( (error) => { alert(error) })
+  //       // .then((data)=> {
+  //       //   console.log(data)
+  //       // })
   }
   // loadThemefromBackend();
 
@@ -38,12 +51,6 @@ function Settings() {
   //     console.log(data)
   //     return data;
   //   })
-  //   .then((points) => {
-  //     return setTwitterData(points)
-  //   })
-  //   .then(()=> {
-  //     setLoading(false)
-  //   })
 
   }
 
@@ -55,9 +62,16 @@ function Settings() {
   return (
     <div style={{ backgroundColor: currentTheme.background }}>
       <MyNavBar />
+
+      {/* {loadThemefromBackend().then( (res) => {
+        console.log(res);
+        return res;
+      }
+      )
+      } */}
       {currentUser.username === "" && currentUser.email === ""
-                  ? "You Must log in to save your settings!  " +
-                  loadThemefromBackend()
+                  ? "You Must log in to save your settings!  "
+                  // loadThemefromBackend()
                   : <Button variant={currentTheme.variant} >
                     Click the following button to save your theme settings
                     Test Button
@@ -65,16 +79,10 @@ function Settings() {
                      </Button>
 
                     }
-          {/* <Button variant={currentTheme.variant} > */}
-          {/* <Button variant={currentTheme.variant} onClick={}> */}
-                {/* {currentUser.username === "" && currentUser.email === ""
-                  ? "Login/Register"
-                  : "Log Out"}
-              </Button> */}
+
               <Button
                 variant={currentTheme.variant}
                 onClick={() => storeThemeandToggle()}
-                // onClick={() => dispatch(toggleTheme())}
               >
                 {currentTheme.name} Mode
         </Button>

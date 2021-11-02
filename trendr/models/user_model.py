@@ -4,7 +4,6 @@ from sqlalchemy.types import Boolean
 from trendr.extensions import db
 from trendr.models.association_tables import user_asset_association
 
-
 class Role(db.Model, fsqla.FsRoleMixin):
     __tablename__ = "role"
 

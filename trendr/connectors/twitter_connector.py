@@ -95,7 +95,7 @@ def twitter_accounts_mentioning_asset_summary(asset_identifier: str, api: tweepy
     """
     Queries Twitter for up to 300 tweets that mention an asset_identifier (AAPL, BTC) within the last 7 days, then
     checks meta data about the posters of those tweets.
-    
+
     :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
     :param api: An optional tweepy.API object, if one is not provided it will be created
     :return: a Python dictionary with relevant stats
