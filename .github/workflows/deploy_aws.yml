@@ -36,9 +36,18 @@ jobs:
   - name: Create .env_dev
     run: |
       touch .env/.env_dev
-      echo TWITTER_CONSUMER_KEY=${{ secrets.TWITTER_CONSUMER_KEY }} >> .env/.env_dev
-      echo TWITTER_CONSUMER_SECRET=${{ secrets.TWITTER_CONSUMER_SECRET }} >> .env/.env_dev
-      cat .env/.env_dev
+      echo FLASK_ENV=development >> .env/.env_dev
+      echo FLASK_CONFIG=development >> .env/.env_dev
+      echo DATABASE_URL=sqlite:///db.sqlite >> .env/.env_dev
+      echo CELERY_BROKER_URL=pyamqp://rabbitmq:5672 >> .env/.env_dev
+      echo CELERY_RESULT_BACKEND=rpc://rabbitmq:5672 >> .env/.env_dev
+
+  - name: Create .env_apis
+    run: |
+      touch .env/.env_apis
+      echo TWITTER_CONSUMER_KEY=${{ secrets.TWITTER_CONSUMER_KEY }} >> .env/.env_apis
+      echo TWITTER_CONSUMER_SECRET=${{ secrets.TWITTER_CONSUMER_SECRET }} >> .env/.env_apis
+      echo ETHPLORER_KEY=${{ secrets.ETHPLORER_KEY }} >> .env/.env_apis
 
   - name: Create .env_mail_secrets
     run: |
@@ -48,7 +57,6 @@ jobs:
       echo MAIL_USE_SSL=${{ secrets.MAIL_USE_SSL }} >> .env/.env_mail_secrets
       echo MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} >> .env/.env_mail_secrets
       echo MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} >> .env/.env_mail_secrets
-      cat .env/.env_mail_secrets
 
   - name: Configure AWS credentials
     uses: aws-actions/configure-aws-credentials@v1
@@ -114,11 +122,27 @@ jobs:
       container-name: celery_worker_general
       image: ${{ steps.build-backend-image.outputs.image }}
 
+  - name: Render task definition of the celery_worker_social container
+    id: render-celery-worker-social-container
+    uses: aws-actions/amazon-ecs-render-task-definition@v1
+    with:
+      task-definition: ${{ steps.render-celery-worker-general-container.outputs.task-definition }}
+      container-name: celery_worker_social
+      image: ${{ steps.build-backend-image.outputs.image }}
+
+  - name: Render task definition of the celery_worker_sentiment container
+    id: render-celery-worker-sentiment-container
+    uses: aws-actions/amazon-ecs-render-task-definition@v1
+    with:
+      task-definition: ${{ steps.render-celery-worker-social-container.outputs.task-definition }}
+      container-name: celery_worker_sentiment
+      image: ${{ steps.build-backend-image.outputs.image }}
+
   - name: Render task definition of the flower container
     id: render-flower-container
     uses: aws-actions/amazon-ecs-render-task-definition@v1
     with:
-      task-definition: ${{ steps.render-celery-worker-general-container.outputs.task-definition }}
+      task-definition: ${{ steps.render-celery-worker-sentiment-container.outputs.task-definition }}
       container-name: flower
       image: ${{ steps.build-backend-image.outputs.image }}
 

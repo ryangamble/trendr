@@ -12,12 +12,6 @@
             ],
             "essential": true,
             "image": "flask_backend",
-            "mountPoints": [
-                {
-                    "containerPath": "/app",
-                    "sourceVolume": "_"
-                }
-            ],
             "name": "api",
             "portMappings": [
                 {
@@ -46,12 +40,6 @@
             ],
             "essential": true,
             "image": "flask_celery_beat",
-            "mountPoints": [
-                {
-                    "containerPath": "/app",
-                    "sourceVolume": "_"
-                }
-            ],
             "name": "celery_beat",
             "logConfiguration": {
                 "logDriver": "awslogs",
@@ -74,12 +62,6 @@
             ],
             "essential": true,
             "image": "flask_celery_worker_general",
-            "mountPoints": [
-                {
-                    "containerPath": "/app",
-                    "sourceVolume": "_"
-                }
-            ],
             "name": "celery_worker_general",
             "logConfiguration": {
                 "logDriver": "awslogs",
@@ -91,18 +73,52 @@
             }
         },
         {
-            "essential": true,
-            "image": "react_frontend",
-            "mountPoints": [
+            "command": [
+                "/start-celeryworker-social"
+            ],
+            "environment": [
                 {
-                    "containerPath": "/usr/src/frontend/node_modules",
-                    "sourceVolume": "UsrSrcFrontendNode_Modules"
-                },
-                {
-                    "containerPath": "/usr/src/frontend",
-                    "sourceVolume": "_React-Frontend"
+                    "name": "FLASK_APP",
+                    "value": "trendr"
                 }
             ],
+            "essential": true,
+            "image": "flask_celery_worker_social",
+            "name": "celery_worker_social",
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "ecs-trendr-service-logs-groups",
+                    "awslogs-region": "us-east-2",
+                    "awslogs-stream-prefix": "celery_worker_social"
+                }
+            }
+        },
+        {
+            "command": [
+                "/start-celeryworker-sentiment"
+            ],
+            "environment": [
+                {
+                    "name": "FLASK_APP",
+                    "value": "trendr"
+                }
+            ],
+            "essential": true,
+            "image": "flask_celery_worker_sentiment",
+            "name": "celery_worker_sentiment",
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "ecs-trendr-service-logs-groups",
+                    "awslogs-region": "us-east-2",
+                    "awslogs-stream-prefix": "celery_worker_sentiment"
+                }
+            }
+        },
+        {
+            "essential": true,
+            "image": "react_frontend",
             "name": "client",
             "portMappings": [
                 {
