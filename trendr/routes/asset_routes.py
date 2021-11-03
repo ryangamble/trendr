@@ -142,6 +142,35 @@ def cryptos_official_channels():
     return json_response(response_body, status=200)
 
 
+
+
+@assets.route('/stocks/listed-exchanges', methods=['GET'])
+def stocks_listed_exchanges():
+    """
+    Gets the exchanges that list a stock
+    :return: JSON response containing official channels
+    """
+    symbol = request.args.get('symbol')
+    if not symbol:
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
+
+    return json_response("Not implemented yet", status=200)
+
+
+@assets.route('/cryptos/listed-exchanges', methods=['GET'])
+def cryptos_listed_exchanges():
+    """
+    Gets the exchanges that list this crypto coin/token
+    :return: JSON response containing the exchanges
+    """
+    id = request.args.get('id')
+    if not id:
+        return json_response({"error": "Parameter 'name' is required"}, status=400)
+
+    response_body = cg.get_coin_links(id)
+    return json_response(response_body, status=200)
+
+
 @assets.route('/crypto/stats', methods=['GET'])
 def crypto_stats():
     """

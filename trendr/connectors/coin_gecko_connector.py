@@ -6,7 +6,6 @@ import json
 from datetime import datetime
 from pycoingecko import CoinGeckoAPI
 
-
 def convert_time(date_list):
     """
     Returns a list of RFC 1123 time strings from a list of unix timestamp
@@ -72,7 +71,7 @@ def get_coin_live_stats(coin):
     coin = coin.lower()
     stats = cg_api.get_price(ids=coin, vs_currencies='usd', include_market_cap='true', include_24hr_vol='true',
                              include_24hr_change='true', include_last_updated_at='true')
-    
+
     info = cg_api.get_coin_by_id(coin)
 
     if len(stats) == 0 or len(info) == 0:
@@ -99,7 +98,8 @@ def convert_symbol_to_id(symbol):
     :param symbol: The ticker of a coin/token
     :return: if this symbl exists, we return the corresponding ID used by coingecko API
     """
-    token_file = open('connectors/CoinGeckoCoins.json', encoding="utf8")
+    token_file = open('CoinGeckoCoins.json', encoding="utf8")
+    # token_file = open('connectors/CoinGeckoCoins.json', encoding="utf8")
     tokens = json.load(token_file)
     for token in tokens:
         if token['symbol'] == symbol:
@@ -158,3 +158,16 @@ def get_coin_links(coin_id):
         links['telegram_url'] = 'https://t.me/' + data['telegram_channel_identifier']
 
     return links
+
+def get_coin_exchanges(coin_id):
+    """
+    :param coin_id: The ID of the coin, as stored in coin gecko coins json file
+    :return: a list of exchanges that list the coin/token
+    """
+    exchanges = []
+    cg_api = CoinGeckoAPI()
+    data = cg_api.get_coin_by_id(coin_id, localization=False, market_data=False, community_data=False)['tickers']
+    for market in data:
+        if market['market']['name'] not in exchanges:
+            exchanges.append(market['market']['name'])
+    return exchanges
