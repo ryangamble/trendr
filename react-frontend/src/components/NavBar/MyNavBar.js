@@ -99,13 +99,6 @@ function MyNavBar() {
                   ? "Login/Register"
                   : "Log Out"}
               </Button>
-
-              <Button
-                variant={currentTheme.variant}
-                onClick={() => dispatch(toggleTheme())}
-              >
-                {currentTheme.name} Mode
-              </Button>
             </Nav>
           </Navbar.Collapse>
         </Container>

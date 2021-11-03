@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 // import React from "react";
 import MyNavBar from "../NavBar/MyNavBar";
 import axios from "axios";
-import { toggleTheme } from "../Theme/themeActions";
-import { Button } from "react-bootstrap";
+import { themes, toggleTheme } from "../Theme/themeActions";
+import { Row, Col, Form, FormCheck, Card } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 
 function Settings() {
@@ -12,80 +12,75 @@ function Settings() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
 
-  async function loadThemefromBackend() {
-  //   (async () => {
-  //     // GET request using axios with async/await
-  //     const response = await axios.get("http://localhost:5000/users/test");
-  //     console.log("\n\n\n\n");
-  //     console.log(response);
-  //     console.log("\n\n\n\n");
-  //     return response;
-  // })();
-    axios
-      .get("http://localhost:5000/users/test")
-      .then(response => {return response})
-      .catch(err => {console.log(err)});
+  // todo investigate theme not updating sometimes when doing toggletheme
 
-    //     axios
-  //       .get("http://localhost:5000/users/test", "test")
-  //       .then((res) => {
-  //         console.log("\n\n\n\n")
-  //         console.log(res.data)
-  //         console.log("\n\n\n\n")
-  //         return JSON.stringify(res.data);
-  //       }).catch( (error) => { alert(error) })
-  //       // .then((data)=> {
-  //       //   console.log(data)
-  //       // })
-  }
-  // loadThemefromBackend();
-
-  function storeThemetoBackend() {
-  //   axios
-  //   .get("http://localhost:5000/user/", "settings")
-  //   .then((res) => {
-  //     // console.log(res.data)
-  //     return JSON.parse(JSON.stringify(res.data));
-  //   })
-  //   .then((data) => {
-  //     console.log(data)
-  //     return data;
-  //   })
-
+  // todo replace theme with arbitrary json structure and have theme
+  //  be just a single field. Also possibly have user class and settings
+  //  be child class
+  function loadSettingsFromBackend() {
+    if (currentUser.username === "" && currentUser.email === "") {
+      axios
+        .get("http://localhost:5000/users/settings", { withCredentials: true })
+        .then(response => {
+          console.log("server: " + response.data.dark_mode + "\nclient: " + currentTheme.name);
+          // false represents light, true represents dark
+          if ((response.data.dark_mode === false && currentTheme === themes.dark) ||
+            (response.data.dark_mode === true && currentTheme === themes.light)) {
+            dispatch(toggleTheme());
+          }
+        })
+        .catch(err => { console.log(err) });
+    }
   }
 
-  function storeThemeandToggle() {
-    dispatch(toggleTheme());
-    storeThemetoBackend();
+  function storeThemeToBackend() {
+    if (currentUser.username !== "" || currentUser.email !== "") {
+      axios
+        .put("http://localhost:5000/users/settings", { "dark_mode": (currentTheme === themes.dark) }, { withCredentials: true })
+        .then(response => {
+          console.log("Saved theme");
+        })
+        .catch(err => { console.log(err) });
+    }
   }
 
   return (
-    <div style={{ backgroundColor: currentTheme.background }}>
+    <div style={{
+      background: currentTheme.background,
+      color: currentTheme.foreground,
+      height: "100vh",
+    }}>
       <MyNavBar />
-
-      {/* {loadThemefromBackend().then( (res) => {
-        console.log(res);
-        return res;
-      }
-      )
-      } */}
-      {currentUser.username === "" && currentUser.email === ""
-                  ? "You Must log in to save your settings!  "
-                  // loadThemefromBackend()
-                  : <Button variant={currentTheme.variant} >
-                    Click the following button to save your theme settings
-                    Test Button
-
-                     </Button>
-
-                    }
-
-              <Button
-                variant={currentTheme.variant}
-                onClick={() => storeThemeandToggle()}
-              >
-                {currentTheme.name} Mode
-        </Button>
+      <Row className="justify-content-md-center">
+        <Col sm="12" md="6" lg="3">
+          <Card>
+            <Card.Header
+              style={{ color: currentTheme.textColorLightBackground }}
+            >
+              Settings
+            </Card.Header>
+            <Card.Body>
+              <Form>
+                <Form.Group className="mb-3" controlId="formDarkMode">
+                  <FormCheck
+                    type="switch"
+                    style={{ color: currentTheme.textColorLightBackground }}
+                    label= {currentTheme.name + " Mode"}
+                    variant={currentTheme.variant}
+                    checked={(currentTheme.name === "Dark")}
+                    onChange={(e) => {
+                      console.log(e);
+                      // TODO: solve race condition here
+                      dispatch(toggleTheme());
+                      storeThemeToBackend();
+                    }}
+                  />
+                </Form.Group>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 }

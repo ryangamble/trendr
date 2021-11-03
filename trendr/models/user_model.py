@@ -13,7 +13,7 @@ class User(db.Model, fsqla.FsUserMixin):
 
     # settings
     _settings_attrs = ("dark_mode",)
-    dark_mode = db.Column(Boolean, nullable=False)
+    dark_mode = db.Column(Boolean, nullable=False, default=False)
 
     # There is a one-many relationship between users and searches
     searches = relationship("Search", back_populates="user")
@@ -35,12 +35,12 @@ class User(db.Model, fsqla.FsUserMixin):
         
         return settings
 
-    def set_settings(self, **kwargs):
+    def set_settings(self, settings):
         """
         Set settings contained in keyword args
         """
 
-        for key, val in kwargs.values():
+        for key, val in settings.items():
             if key in self._settings_attrs and hasattr(self, key):
                 setattr(self, key, val)
 

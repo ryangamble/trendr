@@ -85,13 +85,14 @@ def get_assets_followed_by_user(username):
     :return: JSON Response containing a list of asset identifiers
     """
     return json_response(payload={"assets": get_followed_assets(user=username)})
+
 @users.route("/settings", methods=["GET"])
-@auth_required()
+@auth_required('session')
 def get_settings():
-    json_response(current_user.get_settings())
+    return json_response(current_user.get_settings())
 
 @users.route("/settings", methods=["PUT"])
-@auth_required()
+@auth_required('session')
 def set_settings():
     content = request.get_json()
 
