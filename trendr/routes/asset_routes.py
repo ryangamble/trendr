@@ -4,7 +4,7 @@ import re
 import yfinance as yf
 import yahooquery as yq
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from textblob import TextBlob
 
 from trendr.connectors import twitter_connector
@@ -105,6 +105,9 @@ def historic_fear_greed():
         'crypto_values': crypto_values,
         'stock_values': []
     }
+    
+    current_app.logger.info("Calling fear greed endpoint")
+
     return json_response(response_body, status=200)
 
 
