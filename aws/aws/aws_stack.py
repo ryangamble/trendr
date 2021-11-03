@@ -36,7 +36,9 @@ class AwsStack(core.Stack):
                     "ecr:GetDownloadUrlForLayer",
                     "ecr:BatchGetImage",
                     "logs:CreateLogStream",
-                    "logs:PutLogEvents"
+                    "logs:PutLogEvents",
+                    "s3:GetObject",
+                    "s3:GetBucketLocation"
                 ]
             )
         )
