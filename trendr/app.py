@@ -63,7 +63,7 @@ def configure_logging(app):
     log_file = os.path.join(logdir, 'app.log')
     handler = logging.FileHandler(log_file)
     
-    formatter = logging.Formatter('%(asctime)s - %(filename)s: %(funcName)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter('%(asctime)s - %(module)s: %(funcName)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
 
     log_level = logging.DEBUG
