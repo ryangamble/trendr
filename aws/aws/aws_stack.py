@@ -7,6 +7,7 @@ from aws_cdk import (
     aws_ecs as ecs,
     aws_ecr as ecr,
     aws_ec2 as ec2,
+    aws_s3 as s3,
     aws_logs
 )
 
@@ -58,3 +59,4 @@ class AwsStack(core.Stack):
             assign_public_ip=True
         )
         log_group = aws_logs.LogGroup(self, "ecs-trendr-service-logs-groups", log_group_name="ecs-trendr-service-logs")
+        bucket = s3.Bucket(self, "s3-trendr-bucket", bucket_name="s3-trendr-bucket")
