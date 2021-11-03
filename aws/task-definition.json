@@ -22,7 +22,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "ecs-trendr-service-logs-groups",
+                    "awslogs-group": "ecs-trendr-service-logs",
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "api"
                 }
@@ -44,7 +44,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "ecs-trendr-service-logs-groups",
+                    "awslogs-group": "ecs-trendr-service-logs",
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "celery_beat"
                 }
@@ -66,7 +66,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "ecs-trendr-service-logs-groups",
+                    "awslogs-group": "ecs-trendr-service-logs",
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "celery_worker_general"
                 }
@@ -88,7 +88,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "ecs-trendr-service-logs-groups",
+                    "awslogs-group": "ecs-trendr-service-logs",
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "celery_worker_social"
                 }
@@ -110,7 +110,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "ecs-trendr-service-logs-groups",
+                    "awslogs-group": "ecs-trendr-service-logs",
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "celery_worker_sentiment"
                 }
@@ -129,7 +129,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "ecs-trendr-service-logs-groups",
+                    "awslogs-group": "ecs-trendr-service-logs",
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "client"
                 }
@@ -154,7 +154,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "ecs-trendr-service-logs-groups",
+                    "awslogs-group": "ecs-trendr-service-logs",
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "flower"
                 }
@@ -173,7 +173,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "ecs-trendr-service-logs-groups",
+                    "awslogs-group": "ecs-trendr-service-logs",
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "rabbitmq"
                 }
