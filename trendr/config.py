@@ -139,3 +139,8 @@ MAIL_PASSWORD = fetch_config("MAIL_PASSWORD")
 ETHplrere secret
 '''
 ETHPLORERE_KEY = fetch_config("ETHPLORER_KEY")
+
+'''
+FINNHUB KEY
+'''
+FINNHUB_KEY = fetch_config("FINNHUB_KEY")

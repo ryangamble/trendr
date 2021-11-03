@@ -6,6 +6,8 @@ import json
 from datetime import datetime
 from pycoingecko import CoinGeckoAPI
 
+# print(finnhub_client.company_profile(symbol='AAPL'))
+
 def convert_time(date_list):
     """
     Returns a list of RFC 1123 time strings from a list of unix timestamp
@@ -98,8 +100,8 @@ def convert_symbol_to_id(symbol):
     :param symbol: The ticker of a coin/token
     :return: if this symbl exists, we return the corresponding ID used by coingecko API
     """
-    token_file = open('CoinGeckoCoins.json', encoding="utf8")
-    # token_file = open('connectors/CoinGeckoCoins.json', encoding="utf8")
+    # token_file = open('CoinGeckoCoins.json', encoding="utf8")
+    token_file = open('connectors/CoinGeckoCoins.json', encoding="utf8")
     tokens = json.load(token_file)
     for token in tokens:
         if token['symbol'] == symbol:
@@ -125,7 +127,8 @@ def get_id_eth_address(id):
     :param id: The id of a coin/token
     :returns the eth token contract address if it exists, or None of it's not an ETH token
     """
-    token_file = open('CoinGeckoCoins.json', encoding="utf8")
+    # token_file = open('CoinGeckoCoins.json', encoding="utf8")
+    token_file = open('connectors/CoinGeckoCoins.json', encoding="utf8")
     tokens = json.load(token_file)
     for token in tokens:
         if token['id'] == id:
