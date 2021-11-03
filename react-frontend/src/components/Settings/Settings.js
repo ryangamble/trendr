@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 // import React from "react";
 import MyNavBar from "../NavBar/MyNavBar";
 import axios from "axios";
-import { themes, toggleTheme } from "../Theme/themeActions";
+import { toggleTheme } from "../Theme/themeActions";
 import { Row, Col, Form, FormCheck, Card } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -11,8 +11,6 @@ function Settings() {
   const currentUser = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
-
-  // todo investigate theme not updating sometimes when doing toggletheme
 
   // todo replace theme with arbitrary json structure and have theme
   //  be just a single field. Also possibly have user class and settings
@@ -24,8 +22,8 @@ function Settings() {
         .then(response => {
           console.log("server: " + response.data.dark_mode + "\nclient: " + currentTheme.name);
           // false represents light, true represents dark
-          if ((response.data.dark_mode === false && currentTheme === themes.dark) ||
-            (response.data.dark_mode === true && currentTheme === themes.light)) {
+          if ((response.data.dark_mode === false && currentTheme.name === "Dark") ||
+            (response.data.dark_mode === true && currentTheme.name === "Light")) {
             dispatch(toggleTheme());
           }
         })
@@ -33,12 +31,12 @@ function Settings() {
     }
   }
 
-  function storeThemeToBackend() {
+  function storeThemeToBackend(currtheme) {
     if (currentUser.username !== "" || currentUser.email !== "") {
       axios
-        .put("http://localhost:5000/users/settings", { "dark_mode": (currentTheme === themes.dark) }, { withCredentials: true })
+        .put("http://localhost:5000/users/settings", { "dark_mode": currtheme }, { withCredentials: true })
         .then(response => {
-          console.log("Saved theme");
+          console.log("Saved theme: " + (currtheme ? "Dark": "Light"));
         })
         .catch(err => { console.log(err) });
     }
@@ -70,9 +68,9 @@ function Settings() {
                     checked={(currentTheme.name === "Dark")}
                     onChange={(e) => {
                       console.log(e);
-                      // TODO: solve race condition here
+                      // TODO: solve race condition better
+                      storeThemeToBackend(!(currentTheme.name === "Dark"));
                       dispatch(toggleTheme());
-                      storeThemeToBackend();
                     }}
                   />
                 </Form.Group>
