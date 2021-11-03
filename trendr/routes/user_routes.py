@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
 from flask_security import current_user, auth_required
 from trendr.controllers.user_controller import (
     get_followed_assets,
@@ -68,6 +68,7 @@ def unfollow_asset_curr():
 @users.route("/assets-followed", methods=["GET"])
 @auth_required('session')
 def get_followed_assets_curr():
+    current_app.logger.info("Getting assets follwed for " + current_user.id)
     return json_response(
         payload={"assets": get_followed_assets(user=current_user)}
     )
