@@ -186,7 +186,7 @@
     "memory": "512",
     "cpu": "256",
     "executionRoleArn": "arn:aws:iam::514592108082:role/ecs-trendr-execution-role",
-    "family": "ecs-devops-task-definition",
+    "family": "ecs-trendr-task-definition",
     "taskRoleArn": "",
     "placementConstraints": [],
     "volumes": []
