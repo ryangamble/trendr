@@ -35,7 +35,7 @@ export const toggleTheme = () => {
 export const themeReducer = (state = initialThemeState, action) => {
   switch (action.type) {
     case TOGGLE_THEME:
-      if (state.currentTheme === themes.light) {
+      if (state.currentTheme.name === "Light") {
         return {
           ...state,
           currentTheme: themes.dark,
