@@ -71,7 +71,7 @@ function StockStatistics(props) {
           .catch((error) => {
             console.log(error);
           });
-        
+
         axios
           .get(`http://localhost:5000/assets/stocks/listed-exchanges`, {
             method: "GET",
@@ -224,7 +224,7 @@ function CoinStatistics(props) {
             }
           })
           .then((res) => {
-            setCrypto(prevData => { return {...prevData, website: res.data["website"]}});
+            setCrypto(prevData => { return {...prevData, website: res.data["homepage"]}});
           })
           .catch((error) => {
             console.log(error);
