@@ -29,12 +29,12 @@ services:
     environment:
       - FLASK_APP=trendr.app
     depends_on:
-      - rabbitmq
+      - redis
 
-  rabbitmq:
-    image: rabbitmq
+  redis:
+    image: redis:latest
     ports:
-      - "5672:5672"
+     - '6379:6379'
 
   celery_worker_general:
     build:
@@ -50,7 +50,7 @@ services:
     environment:
       - FLASK_APP=trendr
     depends_on:
-      - rabbitmq
+      - redis
       - api
 
   celery_worker_social:
@@ -67,7 +67,7 @@ services:
     environment:
       - FLASK_APP=trendr
     depends_on:
-      - rabbitmq
+      - redis
       - api
 
   celery_worker_sentiment:
@@ -81,7 +81,21 @@ services:
     environment:
       - FLASK_APP=trendr
     depends_on:
-      - rabbitmq
+      - redis
+      - api
+
+  celery_worker_search:
+    build:
+      context: .
+      dockerfile: ./compose/local/flask/Dockerfile
+    image: flask_celery_worker_search
+    command: /start-celeryworker-search
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_APP=trendr
+    depends_on:
+      - redis
       - api
 
   celery_beat:
@@ -97,7 +111,7 @@ services:
     environment:
       - FLASK_APP=trendr
     depends_on:
-      - rabbitmq
+      - redis
 
   flower:
     image: mher/flower
@@ -108,4 +122,4 @@ services:
     ports:
       - "5555:5555"
     depends_on:
-      - rabbitmq
+      - redis

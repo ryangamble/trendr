@@ -1,9 +1,11 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
 from flask_security import current_user, auth_required
 from trendr.controllers.user_controller import (
     get_followed_assets,
     follow_asset,
     unfollow_asset,
+    get_settings,
+    set_settings,
 )
 from trendr.routes.helpers.json_response import json_response
 
@@ -31,53 +33,70 @@ def delete_user(user_id):
 
 
 @users.route("/follow-asset", methods=["POST"])
+@auth_required("session")
 def follow_asset_curr():
     content = request.get_json()
 
+    asset = None
     if "identifier" in content:
-        asset_identifier = content["identifier"]
+        asset = content["identifier"]
     else:
-        asset_identifier = content["id"]
-    email = content["email"]
+        asset = content["id"]
 
     # TODO: Get current user workflow working (requires frontend changes)
-    if follow_asset(email, asset_identifier):
+    if follow_asset(current_user, asset):
         return json_response(status=200, payload={"success": True})
     else:
         return json_response(status=400, payload={"success": False})
 
 
 @users.route("/unfollow-asset", methods=["POST"])
+@auth_required("session")
 def unfollow_asset_curr():
     content = request.get_json()
 
-    # TODO: Get current user workflow working (requires frontend changes)
     asset = None
     if "identifier" in content:
         asset = content["identifier"]
-    elif "id" in content:
+    else:
         asset = content["id"]
-    email = content["email"]
 
-    if unfollow_asset(email, asset):
+    if unfollow_asset(current_user, asset):
         return json_response(status=200, payload={"success": True})
     else:
         return json_response(status=400, payload={"success": False})
 
 
 @users.route("/assets-followed", methods=["GET"])
+@auth_required("session")
 def get_followed_assets_curr():
+    current_app.logger.info("Getting assets follwed for " + current_user.id)
     return json_response(
-        payload={"assets": get_followed_assets(user_id=current_user.id)}
+        payload={"assets": get_followed_assets(user=current_user)}
     )
 
 
-@users.route("/assets-followed/<email>", methods=["GET"])
-def get_assets_followed_by_user(email):
+@users.route("/assets-followed/<username>", methods=["GET"])
+@auth_required("session")
+def get_assets_followed_by_user(username):
     """
     Gets a list of the asset identifiers that a user follows
-    :param email: The email of the user to check followed assets on
+    :param username: The username of the user to check followed assets on
     :return: JSON Response containing a list of asset identifiers
     """
-    # TODO: Get user id working (requires returning user_id to frontend)
-    return json_response(payload={"assets": get_followed_assets(email=email)})
+    return json_response(payload={"assets": get_followed_assets(user=username)})
+
+
+@users.route("/settings", methods=["GET"])
+@auth_required("session")
+def get_settings_route():
+    return json_response(get_settings(current_user))
+
+
+@users.route("/settings", methods=["PUT"])
+@auth_required("session")
+def set_settings_route():
+    content = request.get_json()
+
+    set_settings(current_user, content)
+    return json_response({"success": "true"})

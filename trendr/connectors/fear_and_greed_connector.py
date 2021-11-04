@@ -8,7 +8,9 @@ def convert_time(unix_time) -> str:
     :param unix_time: time unix_time format
     :return: time as a datetime object
     """
-    return datetime.utcfromtimestamp(unix_time).strftime('%a, %d %b %Y %H:%M:%S GMT')
+    return datetime.utcfromtimestamp(unix_time).strftime(
+        "%a, %d %b %Y %H:%M:%S GMT"
+    )
 
 
 def get_current_crypto_fear_and_greed():
@@ -17,8 +19,8 @@ def get_current_crypto_fear_and_greed():
     """
     response = requests.get("https://api.alternative.me/fng/?limit=1")
     values = {
-        'value': response.json()['data'][0]['value'],
-        'valueText': response.json()['data'][0]['value_classification']
+        "value": response.json()["data"][0]["value"],
+        "valueText": response.json()["data"][0]["value_classification"]
         # 'timestamp': convert_time(float(response.json()['data'][0]['timestamp']))
     }
     return values
@@ -30,11 +32,11 @@ def get_current_stock_fear_and_greed():
     """
     url = "https://fear-and-greed-index.p.rapidapi.com/v1/fgi"
     headers = {
-        'x-rapidapi-host': "fear-and-greed-index.p.rapidapi.com",
-        'x-rapidapi-key': "b5ba7967dcmsh69f36a951adbe11p1d2ff4jsnabfb5a0d224e"
-        }
+        "x-rapidapi-host": "fear-and-greed-index.p.rapidapi.com",
+        "x-rapidapi-key": "b5ba7967dcmsh69f36a951adbe11p1d2ff4jsnabfb5a0d224e",
+    }
     response = requests.request("GET", url, headers=headers)
-    return response.json()['fgi']['now']
+    return response.json()["fgi"]["now"]
 
 
 def get_crypto_historic_values(days: int = 365):
@@ -44,13 +46,15 @@ def get_crypto_historic_values(days: int = 365):
     """
     if days == 0:
         days = 1
-    response = requests.get("https://api.alternative.me/fng/?limit=" + str(days))
+    response = requests.get(
+        "https://api.alternative.me/fng/?limit=" + str(days)
+    )
     value_list = []
-    for stamp in response.json()['data']:
+    for stamp in response.json()["data"]:
         values = {
-            'value': stamp['value'],
-            'value_classification': stamp['value_classification'],
-            'timestamp': convert_time(float(stamp['timestamp']))
+            "value": stamp["value"],
+            "value_classification": stamp["value_classification"],
+            "timestamp": convert_time(float(stamp["timestamp"])),
         }
         value_list.append(values)
 
