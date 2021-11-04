@@ -187,6 +187,9 @@ function StockGraph(props) {
   }
 
   const formatPrice = (num) => {
+    if (num < 0.1) {
+      return num.toFixed(7)
+    }
     const options = {
       style: "currency",
       currency: props.currency
@@ -463,6 +466,9 @@ function CryptoGraph(props) {
   };
 
   const formatPrice = (num) => {
+    if (num < 0.1) {
+      return "$" + num.toFixed(7).toString()
+    }
     const options = {
       style: "currency",
       currency: "usd"

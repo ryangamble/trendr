@@ -173,7 +173,7 @@ def stocks_listed_exchanges():
                     exchangeList.append(contents['name'])
     except:
         return json_response("Time out", status=500)
-    return json_response(exchangesList, status=200)
+    return json_response(exchangeList, status=200)
 
 
 @assets.route('/cryptos/listed-exchanges', methods=['GET'])
