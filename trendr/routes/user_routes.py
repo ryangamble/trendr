@@ -1,9 +1,12 @@
-from flask import Blueprint, request, current_app
+from flask import Blueprint, request, jsonify
+from flask_migrate import current
 from flask_security import current_user, auth_required
 from trendr.controllers.user_controller import (
     get_followed_assets,
     follow_asset,
     unfollow_asset,
+    get_settings,
+    set_settings,
 )
 from trendr.routes.helpers.json_response import json_response
 
@@ -31,10 +34,10 @@ def delete_user(user_id):
 
 
 @users.route("/follow-asset", methods=["POST"])
-@auth_required('session')
+@auth_required("session")
 def follow_asset_curr():
     content = request.get_json()
-    
+
     asset = None
     if "identifier" in content:
         asset = content["identifier"]
@@ -49,7 +52,7 @@ def follow_asset_curr():
 
 
 @users.route("/unfollow-asset", methods=["POST"])
-@auth_required('session')
+@auth_required("session")
 def unfollow_asset_curr():
     content = request.get_json()
 
@@ -66,7 +69,7 @@ def unfollow_asset_curr():
 
 
 @users.route("/assets-followed", methods=["GET"])
-@auth_required('session')
+@auth_required("session")
 def get_followed_assets_curr():
     current_app.logger.info("Getting assets follwed for " + current_user.id)
     return json_response(
@@ -75,7 +78,7 @@ def get_followed_assets_curr():
 
 
 @users.route("/assets-followed/<username>", methods=["GET"])
-@auth_required('session')
+@auth_required("session")
 def get_assets_followed_by_user(username):
     """
     Gets a list of the asset identifiers that a user follows
@@ -83,3 +86,18 @@ def get_assets_followed_by_user(username):
     :return: JSON Response containing a list of asset identifiers
     """
     return json_response(payload={"assets": get_followed_assets(user=username)})
+
+
+@users.route("/settings", methods=["GET"])
+@auth_required("session")
+def get_settings_route():
+    return json_response(get_settings(current_user))
+
+
+@users.route("/settings", methods=["PUT"])
+@auth_required("session")
+def set_settings_route():
+    content = request.get_json()
+
+    set_settings(current_user, content)
+    return json_response({"success": "true"})

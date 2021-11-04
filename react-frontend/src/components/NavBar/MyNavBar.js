@@ -85,6 +85,9 @@ function MyNavBar() {
               <Nav.Link as={Link} to="/myaccount">
                 MyAccount
               </Nav.Link>
+              <Nav.Link as={Link} to="/settings">
+                Settings
+              </Nav.Link>
               <Nav.Link as={Link} to="/report">
                 MyReport
               </Nav.Link>
@@ -95,13 +98,6 @@ function MyNavBar() {
                 {currentUser.username === "" && currentUser.email === ""
                   ? "Login/Register"
                   : "Log Out"}
-              </Button>
-
-              <Button
-                variant={currentTheme.variant}
-                onClick={() => dispatch(toggleTheme())}
-              >
-                {currentTheme.name} Mode
               </Button>
             </Nav>
           </Navbar.Collapse>

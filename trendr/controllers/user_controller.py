@@ -99,3 +99,34 @@ def get_followed_assets(user: Union[User, str, int]) -> list[str]:
         return [asset.identifier for asset in user.assets]
     else:
         return None
+
+
+def get_settings(user: User) -> dict:
+    """
+    Get settings dict from user
+
+    :param user: user to get settings for
+    :return: dictionary of settings
+    """
+
+    settings = {}
+    for attr in user._settings_attrs:
+        if hasattr(user, attr):
+            settings[attr] = getattr(user, attr)
+
+    return settings
+
+
+def set_settings(user: User, settings: dict):
+    """
+    Set settings for user
+
+    :param user: user to set settings for
+    :param settings: settings dict. keys should be
+        User attributes which are defined as settings attributes
+    """
+    for key, val in settings.items():
+        if key in user._settings_attrs and hasattr(user, key):
+            setattr(user, key, val)
+
+    db.session.commit()
