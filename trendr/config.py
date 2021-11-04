@@ -34,8 +34,8 @@ defaults = {
     "SECURITY_PASSWORD_NORMALIZE_FORM": "NFKD",
     "SECURITY_PASSWORD_COMPLEXITY_CHECKER": "zxcvbn",
     "SQLALCHEMY_DATABASE_URI": "sqlite:///db.sqlite",
-    "CELERY_BROKER_URL": "pyamqp://rabbitmq:5672",
-    "CELERY_RESULT_BACKEND": "rpc://rabbitmq:5672",
+    "CELERY_BROKER_URL": "redis://redis:6379/0",
+    "CELERY_RESULT_BACKEND": "redis://redis:6379/0",
 }
 
 ENV = fetch_config("FLASK_ENV", default=defaults["FLASK_ENV"])
@@ -97,7 +97,8 @@ Celery settings
 """
 CELERY_TASK_ROUTES = {
     "trendr.tasks.social.*": {"queue": "social"},
-    "trendr.tasks.sentiment.sentiment_analysis.*": {"queue": "sentiment"}
+    "trendr.tasks.sentiment.sentiment_analysis.*": {"queue": "sentiment"},
+    "trendr.tasks.search.*": {"queue": "search"},
 }
 CELERY_TASK_DEFAULT_QUEUE = "general"
 
@@ -135,7 +136,7 @@ MAIL_USE_SSL = fetch_config("MAIL_USE_SSL")
 MAIL_USERNAME = fetch_config("MAIL_USERNAME")
 MAIL_PASSWORD = fetch_config("MAIL_PASSWORD")
 
-'''
+"""
 ETHplrere secret
-'''
+"""
 ETHPLORERE_KEY = fetch_config("ETHPLORER_KEY")

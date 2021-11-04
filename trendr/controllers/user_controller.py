@@ -25,7 +25,9 @@ def create_user(email, password, roles=None, **kwargs):
     return new_user
 
 
-def follow_asset(user: Union[User, str, int], asset: Union[Asset, str, int]) -> bool:
+def follow_asset(
+    user: Union[User, str, int], asset: Union[Asset, str, int]
+) -> bool:
     """
     Follows asset for user
 
@@ -48,7 +50,9 @@ def follow_asset(user: Union[User, str, int], asset: Union[Asset, str, int]) -> 
     elif type(asset) == int:
         asset = Asset.query.filter_by(id=asset).one()
 
-    if (user and isinstance(user, User)) and (asset and isinstance(asset, Asset)):
+    if (user and isinstance(user, User)) and (
+        asset and isinstance(asset, Asset)
+    ):
         user.assets.append(asset)
         db.session.commit()
         return True
@@ -56,7 +60,9 @@ def follow_asset(user: Union[User, str, int], asset: Union[Asset, str, int]) -> 
     return False
 
 
-def unfollow_asset(user: Union[User, str, int], asset: Union[Asset, str, int]) -> bool:
+def unfollow_asset(
+    user: Union[User, str, int], asset: Union[Asset, str, int]
+) -> bool:
     """
     Unfollows asset for user
 
@@ -75,7 +81,9 @@ def unfollow_asset(user: Union[User, str, int], asset: Union[Asset, str, int]) -
     elif type(asset) == int:
         asset = Asset.query.filter_by(id=asset).one()
 
-    if (user and isinstance(user, User)) and (asset and isinstance(asset, Asset)):
+    if (user and isinstance(user, User)) and (
+        asset and isinstance(asset, Asset)
+    ):
         user.assets.remove(asset)
         db.session.commit()
         return True

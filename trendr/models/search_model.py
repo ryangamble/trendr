@@ -1,6 +1,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.types import Integer, DateTime, String
+from sqlalchemy.sql.sqltypes import Enum
+from sqlalchemy.types import Integer, DateTime, String, Float
 
 from trendr.extensions import db
 from trendr.models.association_tables import (
@@ -10,6 +11,12 @@ from trendr.models.association_tables import (
 )
 
 
+class SearchType(Enum):
+    TWITTER = 0
+    REDDIT_SUBMISSION = 1
+    REDDIT_COMMENT = 2
+
+
 class Search(db.Model):
     __tablename__ = "search"
 
@@ -17,6 +24,9 @@ class Search(db.Model):
 
     ran_at = db.Column(DateTime, nullable=False)
     search_string = db.Column(String, nullable=False)
+
+    twitter_sentiment = db.Column(Float, nullable=True)
+    reddit_sentiment = db.Column(Float, nullable=True)
 
     # There is a many-many relationship between searches and tweets/reddit_submissions/reddit_comments
     tweets = relationship(

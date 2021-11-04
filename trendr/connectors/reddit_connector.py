@@ -1,3 +1,4 @@
+from typing import List
 import praw
 import pmaw
 from enum import Enum
@@ -59,8 +60,8 @@ def create_pmaw_api() -> pmaw.PushshiftAPI:
 def gather_items(
     api: pmaw.PushshiftAPI,
     item: RedditItem,
-    keywords: [str],
-    subreddits: [str] = None,
+    keywords: List[str],
+    subreddits: List[str] = None,
     **kwargs
 ) -> list:
     """
