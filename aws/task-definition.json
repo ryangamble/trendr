@@ -48,11 +48,11 @@
                 }
             ],
             "healthCheck": {
-                "Command" : [ "CMD-SHELL", "curl -f http://localhost:5000/health/test | grep OK || (exit 1)" ],
-                "Interval" : 30,
-                "Retries" : 10,
-                "StartPeriod" : 180,
-                "Timeout" : 5
+                "command" : [ "CMD-SHELL", "curl -f http://localhost:5000/health/test | grep OK || (exit 1)" ],
+                "interval" : 30,
+                "retries" : 10,
+                "startPeriod" : 180,
+                "timeout" : 5
             }
         },
         {
@@ -318,11 +318,11 @@
                 }
             },
             "healthCheck": {
-                "Command" : [ "CMD-SHELL", "rabbitmq-diagnostics -q ping" ],
-                "Interval" : 30,
-                "Retries" : 10,
-                "StartPeriod" : 180,
-                "Timeout" : 5
+                "command" : [ "CMD-SHELL", "rabbitmq-diagnostics -q ping" ],
+                "interval" : 30,
+                "retries" : 10,
+                "startPeriod" : 180,
+                "timeout" : 5
             }
         }
     ],
