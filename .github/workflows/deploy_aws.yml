@@ -183,18 +183,10 @@ jobs:
 #      container-name: flower
 #      image: ${{ steps.build-backend-image.outputs.image }}
 
-  - name: Render task definition of the rabbitmq container
-    id: render-rabbitmq-container
-    uses: aws-actions/amazon-ecs-render-task-definition@v1
-    with:
-      task-definition: ./aws/task-definition.json
-      container-name: rabbitmq
-      image: rabbitmq
-
   - name: Deploy Amazon ECS task definition
     uses: aws-actions/amazon-ecs-deploy-task-definition@v1
     with:
-      task-definition: ${{ steps.render-rabbitmq-container.outputs.task-definition }}
+      task-definition: ./aws/task-definition.json
       service: ecs-trendr-service
       cluster: ecs-trendr-cluster
       wait-for-service-stability: false
