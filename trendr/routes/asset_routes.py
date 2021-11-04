@@ -19,6 +19,10 @@ from .helpers.json_response import json_response
 
 assets = Blueprint("assets", __name__, url_prefix="/assets")
 
+@assets.route('/test', methods=['GET'])
+def test():
+    from trendr.analyzers import posts_weight
+    return "Test!"
 
 @assets.route('/fear-greed', methods=['GET'])
 def fear_and_greed():
