@@ -71,6 +71,7 @@ def unfollow_asset_curr():
 @users.route("/assets-followed", methods=["GET"])
 @auth_required("session")
 def get_followed_assets_curr():
+    current_app.logger.info("Getting assets follwed for " + current_user.id)
     return json_response(
         payload={"assets": get_followed_assets(user=current_user)}
     )

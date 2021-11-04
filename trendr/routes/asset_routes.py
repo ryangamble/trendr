@@ -5,7 +5,7 @@ import re
 import yfinance as yf
 import yahooquery as yq
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from textblob import TextBlob
 from trendr.controllers.search_controller import new_search
 
@@ -39,6 +39,8 @@ def fear_greed():
         "crypto_values": crypto_values,
         "stock_values": stock_values,
     }
+
+    current_app.logger.info("Getting current fear greed values")
     return json_response(response_body, status=200)
 
 
@@ -64,9 +66,8 @@ def search():
     """
     query = request.args.get("query")
     if not query:
-        return json_response(
-            {"error": "Parameter 'query' is required"}, status=400
-        )
+        current_app.logger.error("No query given")
+        return json_response({"error": "Parameter 'query' is required"}, status=400)
 
     SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
     json_path = os.path.join(SITE_ROOT, "../connectors", "CoinGeckoCoins.json")
@@ -111,6 +112,8 @@ def search():
     print("\n\nSearch Results for " + query + ":\n")
     print(response_body)
 
+    current_app.logger.info("Getting search results for " + query)
+
     return json_response(response_body, status=200)
 
 
@@ -124,7 +127,13 @@ def historic_fear_greed():
 
     # TODO: Figure out a way to get historic stock values
     crypto_values = fear_and_greed_connector.get_crypto_historic_values(days)
-    response_body = {"crypto_values": crypto_values, "stock_values": []}
+    response_body = {
+        'crypto_values': crypto_values,
+        'stock_values': []
+    }
+    
+    current_app.logger.info("Getting historic fear greed values")
+
     return json_response(response_body, status=200)
 
 
@@ -136,21 +145,20 @@ def stock_official_channels():
     """
     symbol = request.args.get("symbol")
     if not symbol:
-        return json_response(
-            {"error": "Parameter 'symbol' is required"}, status=400
-        )
+        current_app.logger.error("No symbol given")
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
 
     asset_ticker = yf.Ticker(symbol)
-    if (
-        not asset_ticker
-        or not hasattr(asset_ticker, "info")
-        or "website" not in asset_ticker.info
-    ):
-        return json_response(
-            {"error": "Couldn't retrieve official channels"}, status=500
-        )
+    if not asset_ticker or not hasattr(asset_ticker, "info") or "website" not in asset_ticker.info:
+        current_app.logger.error("Couldn't retrieve official channels for " + symbol)
+        return json_response({"error": "Couldn't retrieve official channels"}, status=500)
 
-    response_body = {"website": asset_ticker.info["website"]}
+    response_body = {
+        'website': asset_ticker.info['website']
+    }
+
+    current_app.logger.info("Getting offical channels for " + symbol)
+
     return json_response(response_body, status=200)
 
 
@@ -162,11 +170,12 @@ def cryptos_official_channels():
     """
     id = request.args.get("id")
     if not id:
-        return json_response(
-            {"error": "Parameter 'name' is required"}, status=400
-        )
+        current_app.logger.error("No id given")
+        return json_response({"error": "Parameter 'name' is required"}, status=400)
+
 
     response_body = cg.get_coin_links(id)
+    current_app.logger.info("Getting offical channels for " + id)
     return json_response(response_body, status=200)
 
 
@@ -178,11 +187,12 @@ def crypto_stats():
     """
     id = request.args.get("id")
     if not id:
-        return json_response(
-            {"error": "Parameter 'id' is required"}, status=400
-        )
+        current_app.logger.error("No id given")
+        return json_response({"error": "Parameter 'id' is required"}, status=400)
+
 
     response_body = cg.get_coin_live_stats(id)
+    current_app.logger.info("Getting crypto stats for " + id)
     return json_response(response_body, status=200)
 
 
@@ -194,17 +204,16 @@ def stock_stats():
     """
     symbol = request.args.get("symbol")
     if not symbol:
-        return json_response(
-            {"error": "Parameter 'symbol' is required"}, status=400
-        )
+        current_app.logger.error("No symbol given")
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
 
     asset_ticker = yf.Ticker(symbol)
     if not asset_ticker or not hasattr(asset_ticker, "info"):
-        return json_response(
-            {"error": "Couldn't retrieve statistics"}, status=500
-        )
+        current_app.logger.error("Couldn't retrieve statistics for " + symbol)
+        return json_response({"error": "Couldn't retrieve statistics"}, status=500)
 
     response_body = asset_ticker.info
+    current_app.logger.info("Getting stock stats for " + symbol)
     return json_response(response_body, status=200)
 
 
@@ -212,9 +221,8 @@ def stock_stats():
 def crypto_eth_address():
     id = request.args.get("id")
     if not id:
-        return json_response(
-            {"error": "Parameter 'id' is required"}, status=400
-        )
+        current_app.logger.error("No id given")
+        return json_response({"error": "Parameter 'id' is required"}, status=400)
 
     response_body = cg.get_id_eth_address(id)
     return json_response(response_body, status=200)
@@ -224,9 +232,8 @@ def crypto_eth_address():
 def token_info():
     address = request.args.get("address")
     if not address:
-        return json_response(
-            {"error": "Parameter 'address' is required"}, status=400
-        )
+        current_app.logger.error("No address given")
+        return json_response({"error": "Parameter 'address' is required"}, status=400)
 
     response_body = df.get_token_info(address)
     return json_response(response_body, status=200)
@@ -236,9 +243,8 @@ def token_info():
 def token_top_holders():
     address = request.args.get("address")
     if not address:
-        return json_response(
-            {"error": "Parameter 'address' is required"}, status=400
-        )
+        current_app.logger.error("No address given")
+        return json_response({"error": "Parameter 'address' is required"}, status=400)
 
     response_body = df.get_top_token_holders(address, 20)
     return json_response(response_body, status=200)
@@ -249,15 +255,14 @@ def crypto_price_history():
     id = request.args.get("id")
     days = request.args.get("days")
     if not id:
-        return json_response(
-            {"error": "Parameter 'id' is required"}, status=400
-        )
+        current_app.logger.error("No id given")
+        return json_response({"error": "Parameter 'id' is required"}, status=400)
     if not days:
-        return json_response(
-            {"error": "Parameter 'days' is required"}, status=400
-        )
+        current_app.logger.error("No days given")
+        return json_response({"error": "Parameter 'days' is required"}, status=400)
 
     response_body = cg.get_historic_prices(id, days)
+    current_app.logger.info("Getting crypto price history for " + id + " over " + days + " days")
     return json_response(response_body, status=200)
 
 
@@ -266,15 +271,14 @@ def crypto_volume_history():
     id = request.args.get("id")
     days = request.args.get("days")
     if not id:
-        return json_response(
-            {"error": "Parameter 'id' is required"}, status=400
-        )
+        current_app.logger.error("No id given")
+        return json_response({"error": "Parameter 'id' is required"}, status=400)
     if not days:
-        return json_response(
-            {"error": "Parameter 'days' is required"}, status=400
-        )
+        current_app.logger.error("No days given")
+        return json_response({"error": "Parameter 'days' is required"}, status=400)
 
     response_body = cg.get_historic_volumes(id, days)
+    current_app.logger.info("Getting crypto volume history for " + id + " over " + days + " days")
     return json_response(response_body, status=200)
 
 
@@ -287,13 +291,11 @@ def stock_history():
     period = request.args.get("period")
     symbol = request.args.get("symbol")
     if not period:
-        return json_response(
-            {"error": "Parameter 'period' is required"}, status=400
-        )
+        current_app.logger.error("No period given")
+        return json_response({"error": "Parameter 'period' is required"}, status=400)
     if not symbol:
-        return json_response(
-            {"error": "Parameter 'symbol' is required"}, status=400
-        )
+        current_app.logger.error("No symbol given")
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
 
     period_to_interval_map = {
         "1d": "5m",
@@ -306,8 +308,10 @@ def stock_history():
 
     asset_ticker = yf.Ticker(symbol)
     if not asset_ticker:
+        current_app.logger.error("Couldn't retrieve history for " + symbol)
         return json_response({"error": "Couldn't retrieve history"}, status=500)
 
+    current_app.logger.info("Getting stock pirce and volume history for " + symbol + " over " + period)
     # TODO: Figure out how to return this like the other endpoints w/o breaking the frontend
     return asset_ticker.history(
         period=period,
@@ -325,9 +329,8 @@ def twitter_sentiment():
     """
     symbol = request.args.get("symbol")
     if not symbol:
-        return json_response(
-            {"error": "Parameter 'symbol' is required"}, status=400
-        )
+        current_app.logger.error("No symbol given")
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
 
     response_body = []
     results = twitter_connector.get_tweets_mentioning_asset(symbol)
@@ -344,7 +347,8 @@ def twitter_sentiment():
         # first number: polarity (-1.0 = very negative, 0 = neutral, 1.0 = very positive)
         # second number: subjectivity (0.0 = objective, 1.0 = subjective)
         response_body.append([text_clean, blob.sentiment])
-
+    
+    current_app.logger.info("Getting twitter sentiment data for " + symbol)
     return json_response(response_body, status=200)
 
 
@@ -358,11 +362,8 @@ def reddit_sentiment_route():
     res_2 = store_submissions.delay(keywords=["apple"], limit=50)
     res_3 = store_comments.delay(keywords=["apple"], limit=50)
 
-    response_body = [
-        res_1.get(timeout=100),
-        res_2.get(timeout=100),
-        res_3.get(timeout=100),
-    ]
+    response_body = [res_1.get(timeout=100), res_2.get(timeout=100), res_3.get(timeout=100)]
+    current_app.logger.info("Getting reddit sentiment")
     return json_response(response_body, status=200)
 
 
@@ -373,7 +374,6 @@ def tweet_summary(asset_identifier):
     :param asset_identifier: The asset identifier (AAPL, BTC) to generate a tweet summary for
     :return: JSON response containing tweet summary for the requested asset
     """
-    summary_data = twitter_connector.twitter_accounts_mentioning_asset_summary(
-        asset_identifier
-    )
+    summary_data = twitter_connector.twitter_accounts_mentioning_asset_summary(asset_identifier)
+    current_app.logger.info("Getting twitter user statistics for " + asset_identifier)
     return json_response(summary_data, status=200)
