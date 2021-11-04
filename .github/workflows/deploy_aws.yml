@@ -11,89 +11,89 @@ jobs:
   - name: Checkout
     uses: actions/checkout@v1
 
-  - name: Set up Python python-version
-    uses: actions/setup-python@v1
-    with:
-      python-version: 3.9
-
-  - name: Set up QEMU
-    uses: docker/setup-qemu-action@v1
-
-  - name: Set up Docker Buildx
-    uses: docker/setup-buildx-action@v1
-
-  - name: create docker cache
-    uses: actions/cache@v1
-    with:
-      path: ${{ github.workspace }}/cache
-      key: ${{ runner.os }}-docker-${{ hashfiles('cache/**') }}
-      restore-keys: |
-        ${{ runner.os }}-docker-
-
-  - name: Create .env/
-    run: mkdir .env
-
-  - name: Create .env_dev
-    run: |
-      touch .env/.env_dev
-      echo FLASK_ENV=development >> .env/.env_dev
-      echo FLASK_CONFIG=development >> .env/.env_dev
-      echo DATABASE_URL=sqlite:///db.sqlite >> .env/.env_dev
-      echo CELERY_BROKER_URL=pyamqp://rabbitmq:5672 >> .env/.env_dev
-      echo CELERY_RESULT_BACKEND=rpc://rabbitmq:5672 >> .env/.env_dev
-
-  - name: Create .env_apis
-    run: |
-      touch .env/.env_apis
-      echo TWITTER_CONSUMER_KEY=${{ secrets.TWITTER_CONSUMER_KEY }} >> .env/.env_apis
-      echo TWITTER_CONSUMER_SECRET=${{ secrets.TWITTER_CONSUMER_SECRET }} >> .env/.env_apis
-      echo ETHPLORER_KEY=${{ secrets.ETHPLORER_KEY }} >> .env/.env_apis
-
-  - name: Create .env_mail_secrets
-    run: |
-      touch .env/.env_mail_secrets
-      echo MAIL_SERVER=${{ secrets.MAIL_SERVER }} >> .env/.env_mail_secrets
-      echo MAIL_PORT=${{ secrets.MAIL_PORT }} >> .env/.env_mail_secrets
-      echo MAIL_USE_SSL=${{ secrets.MAIL_USE_SSL }} >> .env/.env_mail_secrets
-      echo MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} >> .env/.env_mail_secrets
-      echo MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} >> .env/.env_mail_secrets
-
-
-  - name: Upload .env_dev to s3
-    uses: zdurham/s3-upload-github-action@master
-    with:
-      args: --acl public-read
-    env:
-      FILE: .env/.env_dev
-      AWS_REGION: 'us-east-2'
-      S3_BUCKET: s3-trendr-bucket
-      S3_KEY: trendr-dev.env
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-  - name: Upload .env_apis to s3
-    uses: zdurham/s3-upload-github-action@master
-    with:
-      args: --acl public-read
-    env:
-      FILE: .env/.env_apis
-      AWS_REGION: 'us-east-2'
-      S3_BUCKET: s3-trendr-bucket
-      S3_KEY: trendr-apis.env
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-  - name: Upload .env_mail_secrets to s3
-    uses: zdurham/s3-upload-github-action@master
-    with:
-      args: --acl public-read
-    env:
-      FILE: .env/.env_mail_secrets
-      AWS_REGION: 'us-east-2'
-      S3_BUCKET: s3-trendr-bucket
-      S3_KEY: trendr-mail.env
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#  - name: Set up Python python-version
+#    uses: actions/setup-python@v1
+#    with:
+#      python-version: 3.9
+#
+#  - name: Set up QEMU
+#    uses: docker/setup-qemu-action@v1
+#
+#  - name: Set up Docker Buildx
+#    uses: docker/setup-buildx-action@v1
+#
+#  - name: create docker cache
+#    uses: actions/cache@v1
+#    with:
+#      path: ${{ github.workspace }}/cache
+#      key: ${{ runner.os }}-docker-${{ hashfiles('cache/**') }}
+#      restore-keys: |
+#        ${{ runner.os }}-docker-
+#
+#  - name: Create .env/
+#    run: mkdir .env
+#
+#  - name: Create .env_dev
+#    run: |
+#      touch .env/.env_dev
+#      echo FLASK_ENV=development >> .env/.env_dev
+#      echo FLASK_CONFIG=development >> .env/.env_dev
+#      echo DATABASE_URL=sqlite:///db.sqlite >> .env/.env_dev
+#      echo CELERY_BROKER_URL=pyamqp://rabbitmq:5672 >> .env/.env_dev
+#      echo CELERY_RESULT_BACKEND=rpc://rabbitmq:5672 >> .env/.env_dev
+#
+#  - name: Create .env_apis
+#    run: |
+#      touch .env/.env_apis
+#      echo TWITTER_CONSUMER_KEY=${{ secrets.TWITTER_CONSUMER_KEY }} >> .env/.env_apis
+#      echo TWITTER_CONSUMER_SECRET=${{ secrets.TWITTER_CONSUMER_SECRET }} >> .env/.env_apis
+#      echo ETHPLORER_KEY=${{ secrets.ETHPLORER_KEY }} >> .env/.env_apis
+#
+#  - name: Create .env_mail_secrets
+#    run: |
+#      touch .env/.env_mail_secrets
+#      echo MAIL_SERVER=${{ secrets.MAIL_SERVER }} >> .env/.env_mail_secrets
+#      echo MAIL_PORT=${{ secrets.MAIL_PORT }} >> .env/.env_mail_secrets
+#      echo MAIL_USE_SSL=${{ secrets.MAIL_USE_SSL }} >> .env/.env_mail_secrets
+#      echo MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} >> .env/.env_mail_secrets
+#      echo MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} >> .env/.env_mail_secrets
+#
+#
+#  - name: Upload .env_dev to s3
+#    uses: zdurham/s3-upload-github-action@master
+#    with:
+#      args: --acl public-read
+#    env:
+#      FILE: .env/.env_dev
+#      AWS_REGION: 'us-east-2'
+#      S3_BUCKET: s3-trendr-bucket
+#      S3_KEY: trendr-dev.env
+#      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#
+#  - name: Upload .env_apis to s3
+#    uses: zdurham/s3-upload-github-action@master
+#    with:
+#      args: --acl public-read
+#    env:
+#      FILE: .env/.env_apis
+#      AWS_REGION: 'us-east-2'
+#      S3_BUCKET: s3-trendr-bucket
+#      S3_KEY: trendr-apis.env
+#      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#
+#  - name: Upload .env_mail_secrets to s3
+#    uses: zdurham/s3-upload-github-action@master
+#    with:
+#      args: --acl public-read
+#    env:
+#      FILE: .env/.env_mail_secrets
+#      AWS_REGION: 'us-east-2'
+#      S3_BUCKET: s3-trendr-bucket
+#      S3_KEY: trendr-mail.env
+#      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   - name: Configure AWS credentials
     uses: aws-actions/configure-aws-credentials@v1
