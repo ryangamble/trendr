@@ -11,25 +11,25 @@ jobs:
   - name: Checkout
     uses: actions/checkout@v1
 
-#  - name: Set up Python python-version
-#    uses: actions/setup-python@v1
-#    with:
-#      python-version: 3.9
-#
-#  - name: Set up QEMU
-#    uses: docker/setup-qemu-action@v1
-#
-#  - name: Set up Docker Buildx
-#    uses: docker/setup-buildx-action@v1
-#
-#  - name: create docker cache
-#    uses: actions/cache@v1
-#    with:
-#      path: ${{ github.workspace }}/cache
-#      key: ${{ runner.os }}-docker-${{ hashfiles('cache/**') }}
-#      restore-keys: |
-#        ${{ runner.os }}-docker-
-#
+  - name: Set up Python python-version
+    uses: actions/setup-python@v1
+    with:
+      python-version: 3.9
+
+  - name: Set up QEMU
+    uses: docker/setup-qemu-action@v1
+
+  - name: Set up Docker Buildx
+    uses: docker/setup-buildx-action@v1
+
+  - name: create docker cache
+    uses: actions/cache@v1
+    with:
+      path: ${{ github.workspace }}/cache
+      key: ${{ runner.os }}-docker-${{ hashfiles('cache/**') }}
+      restore-keys: |
+        ${{ runner.os }}-docker-
+
 #  - name: Create .env/
 #    run: mkdir .env
 #
@@ -102,10 +102,21 @@ jobs:
       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       aws-region: us-east-2
 
-#  - name: Login to Amazon ECR
-#    id: login-ecr
-#    uses: aws-actions/amazon-ecr-login@v1
-#
+  - name: Login to Amazon ECR
+    id: login-ecr
+    uses: aws-actions/amazon-ecr-login@v1
+
+  - name: Build, tag, and push the rabbitmq image to Amazon ECR
+    id: build-rabbitmq-image
+    env:
+      ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      ECR_REPOSITORY: ecs-trendr-repository
+      IMAGE_TAG: rabbitmq-image-${{ github.sha }}
+    run: |
+      docker buildx build -f ./compose/rabbitmq/Dockerfile --cache-from "type=local,src=$GITHUB_WORKSPACE/cache" --cache-to "type=local,dest=$GITHUB_WORKSPACE/cache" --output "type=image, name=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG,push=true" .
+      echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+
 #  - name: Build, tag, and push the frontend image to Amazon ECR
 #    id: build-frontend-image
 #    working-directory: react-frontend
@@ -183,10 +194,18 @@ jobs:
 #      container-name: flower
 #      image: ${{ steps.build-backend-image.outputs.image }}
 
+  - name: Render task definition of the rabbitmq container
+    id: render-rabbitmq-container
+    uses: aws-actions/amazon-ecs-render-task-definition@v1
+    with:
+      task-definition: ./aws/task-definition.json
+      container-name: rabbitmq
+      image: ${{ steps.build-rabbitmq-image.outputs.image }}
+
   - name: Deploy Amazon ECS task definition
     uses: aws-actions/amazon-ecs-deploy-task-definition@v1
     with:
-      task-definition: ./aws/task-definition.json
+      task-definition: ${{ steps.render-rabbitmq-container.outputs.task-definition }}
       service: ecs-trendr-service
       cluster: ecs-trendr-cluster
       wait-for-service-stability: false
