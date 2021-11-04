@@ -1,5 +1,4 @@
-from flask import Blueprint, request, jsonify
-from flask_migrate import current
+from flask import Blueprint, request, current_app
 from flask_security import current_user, auth_required
 from trendr.controllers.user_controller import (
     get_followed_assets,
