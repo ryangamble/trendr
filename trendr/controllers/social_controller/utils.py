@@ -1,3 +1,4 @@
+from re import search
 import tweepy
 import pmaw
 import functools
@@ -13,6 +14,7 @@ def store_results(
         tweepy.models.SearchResults, tweepy.models.Status, pmaw.Response
     ],
     overwrite: bool = True,
+    search_id: int = None,
 ) -> list[int]:
     """Store results from social connector endpoint in db
 
@@ -23,17 +25,17 @@ def store_results(
     if isinstance(results, tweepy.models.SearchResults) or isinstance(
         results, tweepy.models.Status
     ):
-        return store_twitter_results(results, overwrite)
+        return store_twitter_results(results, overwrite, search_id)
     elif isinstance(results, pmaw.Response):
         # do not return database model class becuase its unnecessary to serialize
         #   caller should know which type of results it is passing
-        return store_reddit_results(results, overwrite)[1]
+        return store_reddit_results(results, overwrite, search_id)[1]
     else:
         raise Exception(f"Unsupported type for results: {type(results)}")
 
 
 def store_in_db(
-    api: Union[tweepy.API, pmaw.PushshiftAPI],
+    # api: Union[tweepy.API, pmaw.PushshiftAPI],
     overwrite: bool = True,
     wraps: callable = None,
 ) -> list[int]:
@@ -48,20 +50,24 @@ def store_in_db(
 
     def wrapper(func):
         # copy signature
-        if wraps:
-            func.__signature__ = inspect.signature(wraps)
+        # if wraps:
+        #     func.__signature__ = inspect.signature(wraps)
 
         @functools.wraps(func)
         def with_storing(*args, **kwargs):
             # insert arg
-            kwargs["api"] = api
+            # kwargs["api"] = api
+
+            search_id = None
+            if "search_id" in kwargs:
+                search_id = kwargs.pop("search_id")
 
             # call wrapped function
             # NOTE: If you are getting exceptions here, stop passing api
             #   when calling function, it is already supplied
             res = func(*args, **kwargs)
 
-            return store_results(res)
+            return store_results(res, overwrite=overwrite, search_id=search_id)
 
         return with_storing
 

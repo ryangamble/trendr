@@ -8,8 +8,8 @@ import requests
 from trendr.connectors.coin_gecko_connector import get_symbol_eth_address
 from trendr.config import ETHPLORERE_KEY
 
-ETHPLORER_URL = 'https://api.ethplorer.io/'
-UNISWAP_URL = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2'
+ETHPLORER_URL = "https://api.ethplorer.io/"
+UNISWAP_URL = "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2"
 
 
 def get_top_token_holders(token_address, number):
@@ -18,10 +18,17 @@ def get_top_token_holders(token_address, number):
     :param number: How many of the top holders are returned(max is 100)
     :return: the top holders in a dictionary
     """
-    path = ETHPLORER_URL + "getTopTokenHolders/" + str(token_address) \
-        + "?apiKey=" + ETHPLORERE_KEY + "&limit=" + str(number)
+    path = (
+        ETHPLORER_URL
+        + "getTopTokenHolders/"
+        + str(token_address)
+        + "?apiKey="
+        + ETHPLORERE_KEY
+        + "&limit="
+        + str(number)
+    )
     response = requests.get(path)
-    return response.json()['holders']
+    return response.json()["holders"]
 
 
 def volume_history(token_address):
@@ -29,7 +36,13 @@ def volume_history(token_address):
     :param token_address: Contract address of the token on the eth chain
     :return: the volume of the token across available data
     """
-    path = ETHPLORER_URL + "getTokenPriceHistoryGrouped/" + str(token_address) + "?apiKey=" + ETHPLORERE_KEY
+    path = (
+        ETHPLORER_URL
+        + "getTokenPriceHistoryGrouped/"
+        + str(token_address)
+        + "?apiKey="
+        + ETHPLORERE_KEY
+    )
     response = requests.get(path)
     return response.json()
 
@@ -39,7 +52,13 @@ def get_token_info(token_address):
     :param token_address: Contract address of the token on the eth chain
     :return: a json of token data from ethplorer API
     """
-    path = ETHPLORER_URL + "getTokenInfo/" + str(token_address) + "?apiKey=" + ETHPLORERE_KEY
+    path = (
+        ETHPLORER_URL
+        + "getTokenInfo/"
+        + str(token_address)
+        + "?apiKey="
+        + ETHPLORERE_KEY
+    )
     response = requests.get(path)
     return response.json()
 
@@ -65,9 +84,12 @@ def get_token_liquidity(token_address):
         }}
         }}
         """
-        response = requests.post(UNISWAP_URL, json={"query": single_token_liquidity_query.format(token_address)})
+        response = requests.post(
+            UNISWAP_URL,
+            json={"query": single_token_liquidity_query.format(token_address)},
+        )
         response = json.loads(response.text)
-        liquidity_total = response['data']['token']['totalLiquidity']
+        liquidity_total = response["data"]["token"]["totalLiquidity"]
         return float("{0:.2f}".format(float(liquidity_total)))
     except:
         return None
@@ -78,6 +100,7 @@ class TokenInfo:
     This class is a wrapper that combines Defi. Just supplying the symbol of a token
     to the constructor will fill all the data of in an object.
     """
+
     def __init__(self, symbol: str, number: int = 100):
         """
         creates an object for the token and will fill all its info at creation.
@@ -89,21 +112,26 @@ class TokenInfo:
         address = get_symbol_address(symbol)
         token_info = get_token_info(address)
         self.attributes = {
-            'address': address,
-            'name': token_info['name'],
-            'available_supply': "{0:.2f}".format(float(token_info['price']['availableSupply'])),
+            "address": address,
+            "name": token_info["name"],
+            "available_supply": "{0:.2f}".format(
+                float(token_info["price"]["availableSupply"])
+            ),
             # 'totalSupply': info['totalSupply'],
-            'holder_count': token_info["holdersCount"],
-            'official_website': token_info["website"],
-            'official_telegram': token_info["telegram"],
-            'official_twitter': token_info["twitter"],
-            'volume_24h': str('$') + "{0:.2f}".format(float(token_info['price']["volume24h"])),
+            "holder_count": token_info["holdersCount"],
+            "official_website": token_info["website"],
+            "official_telegram": token_info["telegram"],
+            "official_twitter": token_info["twitter"],
+            "volume_24h": str("$")
+            + "{0:.2f}".format(float(token_info["price"]["volume24h"])),
             # 'vol_diff_1': info['price']["volDiff1"],
-            'liquidity': str('$') + str(get_token_liquidity(address))
+            "liquidity": str("$") + str(get_token_liquidity(address)),
         }
         holder_info = self.get_top_token_holders(address, number)
         self.top_100_holders_list = holder_info[0]
-        self.top_100_ownership = str('%') + "{0:.2f}".format(float(holder_info[1]))
+        self.top_100_ownership = str("%") + "{0:.2f}".format(
+            float(holder_info[1])
+        )
 
     @staticmethod
     def get_top_token_holders(token_address, number):
@@ -119,7 +147,9 @@ class TokenInfo:
         top_100_holder_list = []
         for holder in holders:
             top_100_total_ownership += float(holder["share"])
-            top_100_holder_list.append([holder['balance'], str('%') + str(holder['share'])])
+            top_100_holder_list.append(
+                [holder["balance"], str("%") + str(holder["share"])]
+            )
         # print(type(Top100HoldersList[0][0]))
         return top_100_holder_list, top_100_total_ownership
 
@@ -135,13 +165,18 @@ class TokenInfo:
         """
         prints a summary of the top holders of this token object
         """
-        print('Top', len(self.top_100_holders_list), 'holders:')
+        print("Top", len(self.top_100_holders_list), "holders:")
         for holder in self.top_100_holders_list:
             print(holder)
-        print('Total Ownership of Top', len(self.top_100_holders_list), ':', self.top_100_ownership)
+        print(
+            "Total Ownership of Top",
+            len(self.top_100_holders_list),
+            ":",
+            self.top_100_ownership,
+        )
 
     def get_address(self):
         """
         returns the token contract address of this token object
         """
-        return self.attributes['address']
+        return self.attributes["address"]
