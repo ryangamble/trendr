@@ -40,7 +40,13 @@
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "api"
                 }
-            }
+            },
+            "dependsOn": [
+                {
+                    "containerName": "rabbitmq",
+                    "condition": "START"
+                }
+            ]
         },
         {
             "command": [
@@ -76,7 +82,13 @@
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "celery_beat"
                 }
-            }
+            },
+            "dependsOn": [
+                {
+                    "containerName": "rabbitmq",
+                    "condition": "START"
+                }
+            ]
         },
         {
             "command": [
@@ -112,7 +124,17 @@
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "celery_worker_general"
                 }
-            }
+            },
+            "dependsOn": [
+                {
+                    "containerName": "rabbitmq",
+                    "condition": "START"
+                },
+                {
+                    "containerName": "api",
+                    "condition": "START"
+                }
+            ]
         },
         {
             "command": [
@@ -148,7 +170,17 @@
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "celery_worker_social"
                 }
-            }
+            },
+            "dependsOn": [
+                {
+                    "containerName": "rabbitmq",
+                    "condition": "START"
+                },
+                {
+                    "containerName": "api",
+                    "condition": "START"
+                }
+            ]
         },
         {
             "command": [
@@ -184,7 +216,17 @@
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "celery_worker_sentiment"
                 }
-            }
+            },
+            "dependsOn": [
+                {
+                    "containerName": "rabbitmq",
+                    "condition": "START"
+                },
+                {
+                    "containerName": "api",
+                    "condition": "START"
+                }
+            ]
         },
         {
             "essential": true,
@@ -242,7 +284,13 @@
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "flower"
                 }
-            }
+            },
+            "dependsOn": [
+                {
+                    "containerName": "rabbitmq",
+                    "condition": "START"
+                }
+            ]
         },
         {
             "essential": true,
@@ -273,5 +321,9 @@
     "family": "ecs-trendr-task-definition",
     "taskRoleArn": "",
     "placementConstraints": [],
-    "volumes": []
+    "volumes": [
+        {
+            "name": "db-volume"
+        }
+    ]
 }
