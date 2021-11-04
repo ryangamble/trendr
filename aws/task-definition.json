@@ -2,7 +2,7 @@
     "containerDefinitions": [
         {
             "essential": true,
-            "image": "rabbitmq:latest",
+            "image": "rabbitmq:management",
             "name": "rabbitmq",
             "portMappings": [
                 {
@@ -13,7 +13,7 @@
             "environment": [
                 {
                     "name": "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS",
-                    "value": "-setcookie cookie-value"
+                    "value": "-setcookie trendrrabbitmqcookie"
                 }
             ],
             "logConfiguration": {
