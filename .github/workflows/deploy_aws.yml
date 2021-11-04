@@ -189,7 +189,7 @@ jobs:
     with:
       task-definition: ./aws/task-definition.json
       container-name: rabbitmq
-      image: ${{ steps.build-backend-image.outputs.image }}
+      image: rabbitmq
 
   - name: Deploy Amazon ECS task definition
     uses: aws-actions/amazon-ecs-deploy-task-definition@v1
