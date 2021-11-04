@@ -2,6 +2,318 @@
     "containerDefinitions": [
         {
             "essential": true,
+            "image": "rabbitmq",
+            "name": "rabbitmq",
+            "portMappings": [
+                {
+                    "containerPort": 5672,
+                    "hostPort": 5672
+                }
+            ],
+            "environment": [
+                {
+                    "name": "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS",
+                    "value": "-setcookie trendrrabbitmqcookie"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "ecs-trendr-service-logs",
+                    "awslogs-region": "us-east-2",
+                    "awslogs-stream-prefix": "rabbitmq"
+                }
+            },
+            "healthCheck": {
+                "command" : [ "CMD-SHELL", "rabbitmq-diagnostics -q ping" ],
+                "interval" : 10,
+                "retries" : 6,
+                "startPeriod" : 60,
+                "timeout" : 5
+            }
+        },
+        {
+            "command": [
+                "/start-celerybeat"
+            ],
+            "environment": [
+                {
+                    "name": "FLASK_APP",
+                    "value": "trendr"
+                }
+            ],
+            "environmentFiles": [
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-apis.env",
+                    "type": "s3"
+                },
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-dev.env",
+                    "type": "s3"
+                },
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-mail.env",
+                    "type": "s3"
+                }
+            ],
+            "essential": true,
+            "image": "flask_celery_beat",
+            "name": "celery_beat",
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "ecs-trendr-service-logs",
+                    "awslogs-region": "us-east-2",
+                    "awslogs-stream-prefix": "celery_beat"
+                }
+            },
+            "dependsOn": [
+                {
+                    "containerName": "rabbitmq",
+                    "condition": "HEALTHY"
+                }
+            ]
+        },
+        {
+            "environment": [
+                {
+                    "name": "FLASK_APP",
+                    "value": "trendr"
+                }
+            ],
+            "environmentFiles": [
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-apis.env",
+                    "type": "s3"
+                },
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-dev.env",
+                    "type": "s3"
+                },
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-mail.env",
+                    "type": "s3"
+                }
+            ],
+            "essential": true,
+            "image": "mher/flower",
+            "name": "flower",
+            "portMappings": [
+                {
+                    "containerPort": 5555,
+                    "hostPort": 5555
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "ecs-trendr-service-logs",
+                    "awslogs-region": "us-east-2",
+                    "awslogs-stream-prefix": "flower"
+                }
+            },
+            "dependsOn": [
+                {
+                    "containerName": "rabbitmq",
+                    "condition": "HEALTHY"
+                }
+            ]
+        },
+        {
+            "command": [
+                "/start"
+            ],
+            "environment": [
+                {
+                    "name": "FLASK_APP",
+                    "value": "trendr.app"
+                }
+            ],
+            "environmentFiles": [
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-apis.env",
+                    "type": "s3"
+                },
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-dev.env",
+                    "type": "s3"
+                },
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-mail.env",
+                    "type": "s3"
+                }
+            ],
+            "essential": true,
+            "image": "flask_backend",
+            "name": "api",
+            "portMappings": [
+                {
+                    "containerPort": 5000,
+                    "hostPort": 5000
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "ecs-trendr-service-logs",
+                    "awslogs-region": "us-east-2",
+                    "awslogs-stream-prefix": "api"
+                }
+            },
+            "dependsOn": [
+                {
+                    "containerName": "rabbitmq",
+                    "condition": "HEALTHY"
+                }
+            ],
+            "healthCheck": {
+                "command" : [ "CMD-SHELL", "curl -f http://localhost:5000/health/test | grep OK || (exit 1)" ],
+                "interval" : 30,
+                "retries" : 10,
+                "startPeriod" : 180,
+                "timeout" : 5
+            }
+        },
+        {
+            "command": [
+                "/start-celeryworker-general"
+            ],
+            "environment": [
+                {
+                    "name": "FLASK_APP",
+                    "value": "trendr"
+                }
+            ],
+            "environmentFiles": [
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-apis.env",
+                    "type": "s3"
+                },
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-dev.env",
+                    "type": "s3"
+                },
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-mail.env",
+                    "type": "s3"
+                }
+            ],
+            "essential": true,
+            "image": "flask_celery_worker_general",
+            "name": "celery_worker_general",
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "ecs-trendr-service-logs",
+                    "awslogs-region": "us-east-2",
+                    "awslogs-stream-prefix": "celery_worker_general"
+                }
+            },
+            "dependsOn": [
+                {
+                    "containerName": "rabbitmq",
+                    "condition": "HEALTHY"
+                },
+                {
+                    "containerName": "api",
+                    "condition": "HEALTHY"
+                }
+            ]
+        },
+        {
+            "command": [
+                "/start-celeryworker-social"
+            ],
+            "environment": [
+                {
+                    "name": "FLASK_APP",
+                    "value": "trendr"
+                }
+            ],
+            "environmentFiles": [
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-apis.env",
+                    "type": "s3"
+                },
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-dev.env",
+                    "type": "s3"
+                },
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-mail.env",
+                    "type": "s3"
+                }
+            ],
+            "essential": true,
+            "image": "flask_celery_worker_social",
+            "name": "celery_worker_social",
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "ecs-trendr-service-logs",
+                    "awslogs-region": "us-east-2",
+                    "awslogs-stream-prefix": "celery_worker_social"
+                }
+            },
+            "dependsOn": [
+                {
+                    "containerName": "rabbitmq",
+                    "condition": "HEALTHY"
+                },
+                {
+                    "containerName": "api",
+                    "condition": "HEALTHY"
+                }
+            ]
+        },
+        {
+            "command": [
+                "/start-celeryworker-sentiment"
+            ],
+            "environment": [
+                {
+                    "name": "FLASK_APP",
+                    "value": "trendr"
+                }
+            ],
+            "environmentFiles": [
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-apis.env",
+                    "type": "s3"
+                },
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-dev.env",
+                    "type": "s3"
+                },
+                {
+                    "value": "arn:aws:s3:::s3-trendr-bucket/trendr-mail.env",
+                    "type": "s3"
+                }
+            ],
+            "essential": true,
+            "image": "flask_celery_worker_sentiment",
+            "name": "celery_worker_sentiment",
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "ecs-trendr-service-logs",
+                    "awslogs-region": "us-east-2",
+                    "awslogs-stream-prefix": "celery_worker_sentiment"
+                }
+            },
+            "dependsOn": [
+                {
+                    "containerName": "rabbitmq",
+                    "condition": "HEALTHY"
+                },
+                {
+                    "containerName": "api",
+                    "condition": "HEALTHY"
+                }
+            ]
+        },
+        {
+            "essential": true,
             "image": "react_frontend",
             "name": "client",
             "portMappings": [
