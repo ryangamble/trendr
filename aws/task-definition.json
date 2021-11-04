@@ -10,6 +10,12 @@
                     "hostPort": 5672
                 }
             ],
+            "environment": [
+                {
+                    "name": "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS",
+                    "value": "-setcookie cookie-value"
+                }
+            ],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
