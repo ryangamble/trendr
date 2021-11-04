@@ -39,10 +39,12 @@ def time_delta_days(date: datetime) -> int:
     days  = duration.days
     return days
 
-def tweet_score(tweet: tweet_model.Tweet()) -> float:
+def tweet_score(tweet: tweet_model.Tweet(), old_score: bool=False) -> float:
     time_score = 5
     time_delta = time_delta_hours(tweet.tweeted_at)
-    if time_delta > 120:
+    if old_score:
+        time_score = 6
+    elif time_delta > 120:
         time_score = 2
     elif time_delta > 96:
         time_score = 3
@@ -119,22 +121,19 @@ def tweet_score(tweet: tweet_model.Tweet()) -> float:
     else:
         likes_score = 0
 
-    score = (retweet_score * 2 + likes_score + tweet.subjectivity * 0.3) * tweet.polarity * time_score
+    score = (retweet_score * 2 + likes_score + tweet.subjectivity * 1.3) * tweet.polarity * time_score
     print(score)
     return score
 
 
 
-def reddit_post_score(post: reddit_model.RedditSubmission()) -> float:
-    pass
 
 
-def get_tweets_moving_average(days: int, tweetsList) -> float:
+def get_tweets_moving_average(days: int, tweetsList:[tweet_model.Tweet()]) -> [float]:
     if len(tweetsList) < 1:
         return [0]
     elif len(tweetsList) == 1:
         return [tweet_score(tweetsList[0])]
-
 
     maxDays = 0
     for tweet in tweetsList:
@@ -171,15 +170,115 @@ def get_tweets_moving_average(days: int, tweetsList) -> float:
     return movingAvg
 
 
-def get_reddit_post_moving_average(days: int,post: reddit_model.RedditSubmission()) -> float:
-    pass
+
+
+def reddit_post_score(post: reddit_model.RedditSubmission(), old_score: bool=False) -> float:
+    time_score = 5
+    time_delta = time_delta_hours(post.posted_at)
+    if old_score:
+        time_score = 6
+    elif time_delta > 120:
+        time_score = 2
+    elif time_delta > 96:
+        time_score = 3
+    elif time_delta > 24:
+        time_score = 4
+    else:
+        time_score = hours_time_delta_scores[time_delta]
+
+    subscribers_score = 1
+    if post.subreddit.subscribers > 1000000:
+        subscribers_score = 10
+    elif post.subreddit.subscribers > 500000:
+        subscribers_score = 8
+    elif post.subreddit.subscribers > 100000:
+        subscribers_score = 7
+    elif post.subreddit.subscribers > 30000:
+        subscribers_score = 6
+    elif post.subreddit.subscribers > 10000:
+        subscribers_score = 5
+    elif post.subreddit.subscribers > 5000:
+        subscribers_score = 3
+    elif post.subreddit.subscribers > 1000:
+        subscribers_score = 2
+    else:
+        subscribers_score = 1
+
+    comments_count = len(post.comments)
+    score = (comments_count * 3 + subscribers_score) * post.sentiment_score * post.score * time_score
+    return score
+
+def get_reddit_post_moving_average(days: int, posts:[reddit_model.RedditSubmission()]) -> [float]:
+    if len(posts) < 1:
+        return [0]
+    elif len(posts) == 1:
+        return [reddit_post_score(posts[0])]
+
+    maxDays = 0
+    for post in posts:
+        time_delta = time_delta_days(post.posted_at)
+        if time_delta > maxDays:
+            maxDays = time_delta
+
+    postDaysDict = {}
+    for i in range(maxDays + 1):
+        postDaysDict[i] = []
+
+    for post in posts:
+        time_delta = time_delta_days(post.posted_at)
+        if time_delta < 0:
+            continue
+        postDaysDict[time_delta].append(reddit_post_score(post))
+
+    daysAvg = []
+    for day in postDaysDict:
+        avg = np.average(postDaysDict[day])
+        daysAvg.append(avg)
+
+    #calculate moving average
+    movingAvg = pd.Series(daysAvg).rolling(window=days).mean().iloc[days-1:].values
+    for i in range(len(movingAvg)):
+        if i == 0 and np.isnan(movingAvg[i]):
+            movingAvg[0] = movingAvg[1]
+        elif i == len(movingAvg) - 1 and np.isnan(movingAvg[i]):
+            movingAvg[i] = movingAvg[i - 1]
+        elif np.isnan(movingAvg[i]):
+            avg = (movingAvg[i - 1] + movingAvg[i + 1]) / 2
+            movingAvg[i] = avg
+    # mean = np.nanmean(movingAvg, axis=0)
+    # #Find indices that you need to replace
+    # inds = np.where(np.isnan(a))
+    # #Place column means in the indices. A
+    return movingAvg
+
 
 # post = reddit_model.RedditSubmission()
-# print(post.comments)
-# print(type(post.comments))
+# post.subreddit = reddit_model.Subreddit()
+# post.posted_at = datetime(2021, 11, 2, 10, 55, 59, 342380)
+# post.subreddit.subscribers = 100
+# post.comments = [reddit_model.RedditComment(), reddit_model.RedditComment(), reddit_model.RedditComment()]
+# post.sentiment_score = 1.0
+# post.score = 0.6
 
+
+# post2 = reddit_model.RedditSubmission()
+# post2.subreddit = reddit_model.Subreddit()
+# post2.posted_at = datetime(2021, 10, 2, 10, 55, 59, 342380)
+# post2.subreddit.subscribers = 1000
+# post2.comments = [reddit_model.RedditComment(), reddit_model.RedditComment(), reddit_model.RedditComment()]
+# post2.sentiment_score = -0.5
+# post2.score = 0.9
+
+
+# print('scores = ', reddit_post_score(post))
+# print(get_reddit_post_moving_average(1, [post, post2]))
+
+
+# print('poest type = ', type(post))
+# print('post.comment type = ', type(post.comments))
+# print('subreddit type=, ', type(post.subreddit))
 # print(post.author)
-# print(type(post.author))
+# print('post.author type = ', type(post.author))
 
 
 # b = datetime(2021, 11, 2, 10, 55, 59, 342380)
