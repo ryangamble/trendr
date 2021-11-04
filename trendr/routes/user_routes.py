@@ -1,26 +1,26 @@
 from flask import Blueprint, request, jsonify
+from flask_migrate import current
 from flask_security import current_user, auth_required
 from trendr.controllers.user_controller import (
     get_followed_assets,
     follow_asset,
     unfollow_asset,
+    get_settings,
+    set_settings,
 )
 from trendr.routes.helpers.json_response import json_response
 
 users = Blueprint("users", __name__, url_prefix="/users")
 
+
 @users.route("/", methods=["GET"])
 def get_users():
     pass
 
+
 @users.route("/<user_id>", methods=["GET"])
 def get_users_by_id(user_id):
     pass
-
-@users.route("/test", methods=["GET"])
-def test_function():
-    return jsonify({"light" : True})
-
 
 
 @users.route("/<user_id>", methods=["PUT"])
@@ -34,10 +34,10 @@ def delete_user(user_id):
 
 
 @users.route("/follow-asset", methods=["POST"])
-@auth_required('session')
+@auth_required("session")
 def follow_asset_curr():
     content = request.get_json()
-    
+
     asset = None
     if "identifier" in content:
         asset = content["identifier"]
@@ -52,7 +52,7 @@ def follow_asset_curr():
 
 
 @users.route("/unfollow-asset", methods=["POST"])
-@auth_required('session')
+@auth_required("session")
 def unfollow_asset_curr():
     content = request.get_json()
 
@@ -69,15 +69,13 @@ def unfollow_asset_curr():
 
 
 @users.route("/assets-followed", methods=["GET"])
-@auth_required('session')
+@auth_required("session")
 def get_followed_assets_curr():
-    return json_response(
-        payload={"assets": get_followed_assets(user=current_user)}
-    )
+    return json_response(payload={"assets": get_followed_assets(user=current_user)})
 
 
 @users.route("/assets-followed/<username>", methods=["GET"])
-@auth_required('session')
+@auth_required("session")
 def get_assets_followed_by_user(username):
     """
     Gets a list of the asset identifiers that a user follows
@@ -86,15 +84,17 @@ def get_assets_followed_by_user(username):
     """
     return json_response(payload={"assets": get_followed_assets(user=username)})
 
+
 @users.route("/settings", methods=["GET"])
-@auth_required('session')
-def get_settings():
-    return json_response(current_user.get_settings())
+@auth_required("session")
+def get_settings_route():
+    return json_response(get_settings(current_user))
+
 
 @users.route("/settings", methods=["PUT"])
-@auth_required('session')
-def set_settings():
+@auth_required("session")
+def set_settings_route():
     content = request.get_json()
 
-    current_user.set_settings(content)
+    set_settings(current_user, content)
     return json_response({"success": "true"})

@@ -4,6 +4,7 @@ from sqlalchemy.types import Boolean
 from trendr.extensions import db
 from trendr.models.association_tables import user_asset_association
 
+
 class Role(db.Model, fsqla.FsRoleMixin):
     __tablename__ = "role"
 
@@ -24,27 +25,6 @@ class User(db.Model, fsqla.FsUserMixin):
         secondary=user_asset_association,
         back_populates="users",
     )
-    def get_settings(self):
-        """
-        Returns keyword dict of setting_name: setting_value
-        """
-        settings = {}
-        for attr in self._settings_attrs:
-            if hasattr(self, attr):
-                settings[attr] = getattr(self, attr)
-        
-        return settings
-
-    def set_settings(self, settings):
-        """
-        Set settings contained in keyword args
-        """
-
-        for key, val in settings.items():
-            if key in self._settings_attrs and hasattr(self, key):
-                setattr(self, key, val)
-
-        db.session.commit()
 
     def __repr__(self):
         return "<User {}>".format(self.email)
