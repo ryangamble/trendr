@@ -106,28 +106,17 @@ jobs:
     id: login-ecr
     uses: aws-actions/amazon-ecr-login@v1
 
-  - name: Build, tag, and push the rabbitmq image to Amazon ECR
-    id: build-rabbitmq-image
+  - name: Build, tag, and push the frontend image to Amazon ECR
+    id: build-frontend-image
+    working-directory: react-frontend
     env:
       ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       ECR_REPOSITORY: ecs-trendr-repository
-      IMAGE_TAG: rabbitmq-image-${{ github.sha }}
+      IMAGE_TAG: frontend-image-${{ github.sha }}
     run: |
-      docker buildx build -f ./compose/rabbitmq/Dockerfile --cache-from "type=local,src=$GITHUB_WORKSPACE/cache" --cache-to "type=local,dest=$GITHUB_WORKSPACE/cache" --output "type=image, name=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG,push=true" .
+      docker buildx build -f Dockerfile --cache-from "type=local,src=$GITHUB_WORKSPACE/cache" --cache-to "type=local,dest=$GITHUB_WORKSPACE/cache" --output "type=image, name=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG,push=true" .
       echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-
-#  - name: Build, tag, and push the frontend image to Amazon ECR
-#    id: build-frontend-image
-#    working-directory: react-frontend
-#    env:
-#      ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#      ECR_REPOSITORY: ecs-trendr-repository
-#      IMAGE_TAG: frontend-image-${{ github.sha }}
-#    run: |
-#      docker buildx build -f Dockerfile --cache-from "type=local,src=$GITHUB_WORKSPACE/cache" --cache-to "type=local,dest=$GITHUB_WORKSPACE/cache" --output "type=image, name=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG,push=true" .
-#      echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-#
 #  - name: Build, tag, and push the backend image to Amazon ECR
 #    id: build-backend-image
 #    env:
@@ -137,15 +126,15 @@ jobs:
 #    run: |
 #      docker buildx build -f ./compose/local/flask/Dockerfile --cache-from "type=local,src=$GITHUB_WORKSPACE/cache" --cache-to "type=local,dest=$GITHUB_WORKSPACE/cache" --output "type=image, name=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG,push=true" .
 #      echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-#
-#  - name: Render task definition of the client container
-#    id: render-client-container
-#    uses: aws-actions/amazon-ecs-render-task-definition@v1
-#    with:
-#      task-definition: ./aws/task-definition.json
-#      container-name: client
-#      image: ${{ steps.build-frontend-image.outputs.image }}
-#
+
+  - name: Render task definition of the client container
+    id: render-client-container
+    uses: aws-actions/amazon-ecs-render-task-definition@v1
+    with:
+      task-definition: ./aws/task-definition.json
+      container-name: client
+      image: ${{ steps.build-frontend-image.outputs.image }}
+
 #  - name: Render task definition of the api container
 #    id: render-api-container
 #    uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -194,18 +183,10 @@ jobs:
 #      container-name: flower
 #      image: ${{ steps.build-backend-image.outputs.image }}
 
-  - name: Render task definition of the rabbitmq container
-    id: render-rabbitmq-container
-    uses: aws-actions/amazon-ecs-render-task-definition@v1
-    with:
-      task-definition: ./aws/task-definition.json
-      container-name: rabbitmq
-      image: ${{ steps.build-rabbitmq-image.outputs.image }}
-
   - name: Deploy Amazon ECS task definition
     uses: aws-actions/amazon-ecs-deploy-task-definition@v1
     with:
-      task-definition: ${{ steps.render-rabbitmq-container.outputs.task-definition }}
+      task-definition: ${{ steps.render-client-container.outputs.task-definition }}
       service: ecs-trendr-service
       cluster: ecs-trendr-cluster
       wait-for-service-stability: false
