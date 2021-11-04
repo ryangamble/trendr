@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 from pycoingecko import CoinGeckoAPI
 
+# print(finnhub_client.company_profile(symbol='AAPL'))
 
 def convert_time(date_list):
     """
@@ -117,7 +118,8 @@ def convert_symbol_to_id(symbol):
     :param symbol: The ticker of a coin/token
     :return: if this symbl exists, we return the corresponding ID used by coingecko API
     """
-    token_file = open("connectors/CoinGeckoCoins.json", encoding="utf8")
+    # token_file = open('CoinGeckoCoins.json', encoding="utf8")
+    token_file = open('connectors/CoinGeckoCoins.json', encoding="utf8")
     tokens = json.load(token_file)
     for token in tokens:
         if token["symbol"] == symbol:
@@ -143,7 +145,8 @@ def get_id_eth_address(id):
     :param id: The id of a coin/token
     :returns the eth token contract address if it exists, or None of it's not an ETH token
     """
-    token_file = open("CoinGeckoCoins.json", encoding="utf8")
+    # token_file = open('CoinGeckoCoins.json', encoding="utf8")
+    token_file = open('connectors/CoinGeckoCoins.json', encoding="utf8")
     tokens = json.load(token_file)
     for token in tokens:
         if token["id"] == id:
@@ -180,3 +183,16 @@ def get_coin_links(coin_id):
         )
 
     return links
+
+def get_coin_exchanges(coin_id):
+    """
+    :param coin_id: The ID of the coin, as stored in coin gecko coins json file
+    :return: a list of exchanges that list the coin/token
+    """
+    exchanges = []
+    cg_api = CoinGeckoAPI()
+    data = cg_api.get_coin_by_id(coin_id, localization=False, market_data=False, community_data=False)['tickers']
+    for market in data:
+        if market['market']['name'] not in exchanges:
+            exchanges.append(market['market']['name'])
+    return exchanges

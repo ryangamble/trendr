@@ -22,7 +22,6 @@ function StockStatistics(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const [asset, setAsset] = useState({});
-  const [link, setLink] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -66,11 +65,29 @@ function StockStatistics(props) {
             }
           })
           .then((res) => {
-            setLink(res.data["website"]);
+            // setLink(res.data["website"]);
+            setAsset(prevData => { return {...prevData, website: res.data["website"]}})
           })
           .catch((error) => {
             console.log(error);
           });
+        
+        axios
+          .get(`http://localhost:5000/assets/stocks/listed-exchanges`, {
+            method: "GET",
+            params: {
+              symbol: props.symbol
+            }
+          })
+          .then((res) => {
+            console.log(res.data)
+            setAsset(prevData => { return {...prevData, exchanges: res.data}})
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      })
+      .then(() => {
         setLoading(false);
       })
       .catch((error) => {
@@ -79,11 +96,22 @@ function StockStatistics(props) {
   }, []);
 
   function formatPrice(num) {
+    if (num < 0.1) {
+      return num.toFixed(7)
+    }
     const options = {
       style: "currency",
-      currency: asset.currency,
+      currency: "usd",
     };
     return num.toLocaleString("en-US", options);
+  }
+
+  function renderExchanges() {
+    var list = [];
+    for (var key in asset.exchanges) {
+      list.push(<div>{asset.exchanges[key]}<br/></div>);
+    }
+    return (list);
   }
 
   if (loading) {
@@ -99,10 +127,7 @@ function StockStatistics(props) {
           <Image src={asset.logo} rounded />
           <h2>{asset.companyName}</h2>
           <p>{asset.symbol}</p>
-          { link ?
-              (<a href={link} target="_blank">Homepage</a>) :
-              null
-          }
+          { asset.website && <a href={asset.website} target="_blank">Homepage</a>}
         </Col>
         <Col>
           <Table size="sm" style={{ color: currentTheme.foreground }}>
@@ -158,6 +183,10 @@ function StockStatistics(props) {
                     asset.marketCap.slice(-1)}
                 </td>
               </tr>
+              <tr>
+                <td className="statName">Exchanges</td>
+                <td className="statValue">{renderExchanges()}</td>
+              </tr>
             </tbody>
           </Table>
         </Col>
@@ -171,7 +200,6 @@ function CoinStatistics(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const [crypto, setCrypto] = useState([]);
-  const [link, setLink] = useState("");
   const [loading, setLoading] = useState(true);
 
 
@@ -196,7 +224,22 @@ function CoinStatistics(props) {
             }
           })
           .then((res) => {
-            setLink(res.data["homepage"]);
+            setCrypto(prevData => { return {...prevData, website: res.data["website"]}});
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+
+        axios
+          .get(`http://localhost:5000/assets/cryptos/listed-exchanges`, {
+            method: "GET",
+            params: {
+              id: props.id
+            }
+          })
+          .then((res) => {
+            console.log(res.data)
+            setCrypto(prevData => { return {...prevData, exchanges: res.data}})
           })
           .catch((error) => {
             console.log(error);
@@ -211,11 +254,22 @@ function CoinStatistics(props) {
   }, []);
 
   function formatPrice(num) {
+    if (num < 0.1) {
+      return "$" + num.toFixed(7).toString()
+    }
     const options = {
       style: "currency",
       currency: "usd",
     };
     return num.toLocaleString("en-US", options);
+  }
+
+  function renderExchanges() {
+    var list = [];
+    for (var key in crypto.exchanges) {
+      list.push(<div>{crypto.exchanges[key]}<br/></div>);
+    }
+    return (list);
   }
 
   if (loading) {
@@ -232,10 +286,7 @@ function CoinStatistics(props) {
           <Image src={crypto.Image} rounded />
           <h2>{crypto.Name}</h2>
           <p>{crypto.Symbol.toUpperCase()}</p>
-          { link ?
-              (<a href={link} target="_blank">Homepage</a>) :
-              null
-          }
+          {crypto.website && <a href={crypto.website} target="_blank">Homepage</a>}
         </Col>
         </Col>
         <Col>
@@ -268,6 +319,10 @@ function CoinStatistics(props) {
               <tr>
                 <td className="statName">Market Cap</td>
                 <td className="statValue">{formatPrice(crypto.MarketCap)}</td>
+              </tr>
+              <tr>
+                <td className="statName">Exchanges</td>
+                <td className="statValue">{renderExchanges()}</td>
               </tr>
             </tbody>
           </Table>

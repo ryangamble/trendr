@@ -4,6 +4,8 @@ import os
 import re
 import yfinance as yf
 import yahooquery as yq
+import finnhub
+import pandas as pd
 
 from flask import Blueprint, request, jsonify, current_app
 from textblob import TextBlob
@@ -21,7 +23,7 @@ from trendr.tasks.social.twitter.gather import store_tweet_by_id
 from trendr.tasks.social.reddit.gather import store_comments, store_submissions
 from trendr.tasks.search import perform_search
 from trendr.routes.helpers.json_response import json_response
-
+from trendr.config import FINNHUB_KEY
 
 assets = Blueprint("assets", __name__, url_prefix="/assets")
 
@@ -179,7 +181,51 @@ def cryptos_official_channels():
     return json_response(response_body, status=200)
 
 
-@assets.route("/crypto/stats", methods=["GET"])
+@assets.route('/stocks/listed-exchanges', methods=['GET'])
+def stocks_listed_exchanges():
+    """
+    Gets the exchanges that list a stock.
+    NOTE: Extremely slow
+    :return: JSON response containing official channels
+    """
+    symbol = request.args.get('symbol')
+    if not symbol:
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
+
+    symbol = symbol.upper()
+    finnhub_client = finnhub.Client(api_key=FINNHUB_KEY)
+
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    exchangesPath = os.path.join(SITE_ROOT, '../connectors', 'FinnhubExchanges.csv')
+    df = pd.read_csv(exchangesPath)
+
+    exchangeList = []
+    try:
+        for index, contents in df.iterrows():
+            exchangeCode = contents['code']
+            for c in finnhub_client.stock_symbols(exchangeCode):
+                if c['symbol'] == symbol:
+                    exchangeList.append(contents['name'])
+    except:
+        return json_response("Time out", status=500)
+    return json_response(exchangeList, status=200)
+
+
+@assets.route('/cryptos/listed-exchanges', methods=['GET'])
+def cryptos_listed_exchanges():
+    """
+    Gets the exchanges that list this crypto coin/token
+    :return: JSON response containing the exchanges
+    """
+    id = request.args.get('id')
+    if not id:
+        return json_response({"error": "Parameter 'id' is required"}, status=400)
+
+    response_body = cg.get_coin_exchanges(id)
+    return json_response(response_body, status=200)
+
+
+@assets.route('/crypto/stats', methods=['GET'])
 def crypto_stats():
     """
     Gets general statistics for cryptos
