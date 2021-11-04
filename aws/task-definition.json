@@ -44,9 +44,16 @@
             "dependsOn": [
                 {
                     "containerName": "rabbitmq",
-                    "condition": "START"
+                    "condition": "HEALTHY"
                 }
-            ]
+            ],
+            "healthCheck": {
+                "Command" : [ "CMD-SHELL", "curl -f http://localhost:5000/health/test | grep OK || (exit 1)" ],
+                "Interval" : 30,
+                "Retries" : 10,
+                "StartPeriod" : 180,
+                "Timeout" : 5
+            }
         },
         {
             "command": [
@@ -86,7 +93,7 @@
             "dependsOn": [
                 {
                     "containerName": "rabbitmq",
-                    "condition": "START"
+                    "condition": "HEALTHY"
                 }
             ]
         },
@@ -128,11 +135,11 @@
             "dependsOn": [
                 {
                     "containerName": "rabbitmq",
-                    "condition": "START"
+                    "condition": "HEALTHY"
                 },
                 {
                     "containerName": "api",
-                    "condition": "START"
+                    "condition": "HEALTHY"
                 }
             ]
         },
@@ -174,11 +181,11 @@
             "dependsOn": [
                 {
                     "containerName": "rabbitmq",
-                    "condition": "START"
+                    "condition": "HEALTHY"
                 },
                 {
                     "containerName": "api",
-                    "condition": "START"
+                    "condition": "HEALTHY"
                 }
             ]
         },
@@ -220,11 +227,11 @@
             "dependsOn": [
                 {
                     "containerName": "rabbitmq",
-                    "condition": "START"
+                    "condition": "HEALTHY"
                 },
                 {
                     "containerName": "api",
-                    "condition": "START"
+                    "condition": "HEALTHY"
                 }
             ]
         },
@@ -288,7 +295,7 @@
             "dependsOn": [
                 {
                     "containerName": "rabbitmq",
-                    "condition": "START"
+                    "condition": "HEALTHY"
                 }
             ]
         },
@@ -309,6 +316,13 @@
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "rabbitmq"
                 }
+            },
+            "healthCheck": {
+                "Command" : [ "CMD-SHELL", "rabbitmq-diagnostics -q ping" ],
+                "Interval" : 30,
+                "Retries" : 10,
+                "StartPeriod" : 180,
+                "Timeout" : 5
             }
         }
     ],
