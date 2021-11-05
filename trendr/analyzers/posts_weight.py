@@ -330,28 +330,30 @@ def get_reddit_comment_moving_average(days: int, posts:[RedditComment]) -> [floa
 
 
 
+'''
+Testing Code, will leave here for now
+'''
+
+# post = RedditComment()
+# post.subreddit = Subreddit()
+# post.posted_at = datetime(2021, 11, 2, 10, 55, 59, 342380)
+# post.subreddit.subscribers = 100
+# # post.comments = [RedditComment(), RedditComment(), RedditComment()]
+# post.sentiment_score = 1.0
+# post.score = 0.6
 
 
-post = RedditComment()
-post.subreddit = Subreddit()
-post.posted_at = datetime(2021, 11, 2, 10, 55, 59, 342380)
-post.subreddit.subscribers = 100
-# post.comments = [RedditComment(), RedditComment(), RedditComment()]
-post.sentiment_score = 1.0
-post.score = 0.6
+# post2 = RedditComment()
+# post2.subreddit = Subreddit()
+# post2.posted_at = datetime(2021, 10, 2, 10, 55, 59, 342380)
+# post2.subreddit.subscribers = 1000
+# # post2.comments = [RedditComment(),RedditComment(), RedditComment()]
+# post2.sentiment_score = -0.5
+# post2.score = 0.9
 
 
-post2 = RedditComment()
-post2.subreddit = Subreddit()
-post2.posted_at = datetime(2021, 10, 2, 10, 55, 59, 342380)
-post2.subreddit.subscribers = 1000
-# post2.comments = [RedditComment(),RedditComment(), RedditComment()]
-post2.sentiment_score = -0.5
-post2.score = 0.9
-
-
-print('scores = ', reddit_comment_score(post))
-print(get_reddit_comment_moving_average(1, [post, post2]))
+# print('scores = ', reddit_comment_score(post))
+# print(get_reddit_comment_moving_average(1, [post, post2]))
 
 
 # print('poest type = ', type(post))
