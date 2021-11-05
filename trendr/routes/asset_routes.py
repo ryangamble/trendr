@@ -9,7 +9,7 @@ import pandas as pd
 
 from flask import Blueprint, request, jsonify, current_app
 from textblob import TextBlob
-# from trendr.controllers.search_controller import new_search
+from trendr.controllers.search_controller import new_search
 
 from trendr.extensions import db
 from trendr.connectors import twitter_connector
@@ -17,11 +17,11 @@ from trendr.connectors import fear_and_greed_connector
 from trendr.connectors import coin_gecko_connector as cg
 from trendr.connectors import defi_connector as df
 from trendr.models.reddit_model import RedditSubmission
-# from trendr.models.search_model import Search, SearchType
+from trendr.models.search_model import Search, SearchType
 from trendr.models.tweet_model import Tweet
 from trendr.tasks.social.twitter.gather import store_tweet_by_id
 from trendr.tasks.social.reddit.gather import store_comments, store_submissions
-# from trendr.tasks.search import perform_search
+from trendr.tasks.search import perform_search
 from trendr.routes.helpers.json_response import json_response
 # from trendr.config import FINNHUB_KEY
 
@@ -52,16 +52,16 @@ def fear_greed():
 
 @assets.route("/perform_asset_search", methods=["GET"])
 def perform_asset_search():
-    # search = new_search("apple")
+    search = new_search("apple")
 
     since = (search.ran_at - timedelta(days=1)).timestamp()
-    # perform_search.delay(
-    #     keyword="apple",
-    #     # search_types=[SearchType.TWITTER, SearchType.REDDIT_SUBMISSION],
-    #     search_id=search.id,
-    #     limit=10,
-    # )
-    # return json_response({"search_id": search.id}, status=200)
+    perform_search.delay(
+        keyword="apple",
+        search_types=[SearchType.TWITTER, SearchType.REDDIT_SUBMISSION],
+        search_id=search.id,
+        limit=10,
+    )
+    return json_response({"search_id": search.id}, status=200)
 
 
 @assets.route("/search", methods=["GET"])
@@ -371,7 +371,7 @@ def stock_history():
     ).to_json()
 
 
-@assets.route('/stock/sp500', methods=['GET'])
+@assets.route('/stocks/sp500', methods=['GET'])
 def SP500():
     content = request.get_json()
     print("\nfetching history market data for S&P500"  + "\n")
@@ -426,6 +426,11 @@ def bitcoin_price_history():
         "5y": "5d"
     }
     return stock.history(period=p, interval=period_to_interval.get(p), prepost="True", actions="False").to_json()
+
+@assets.route("/crypto/general", methods=["GET"])
+def general_crypto_stats():
+    response_body = cg.get_global_data()
+    return json_response(response_body, status=200)
 
 @assets.route("/twitter_sentiment", methods=["GET"])
 def twitter_sentiment():

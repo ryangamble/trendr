@@ -25,7 +25,6 @@ def auth_to_api(consumer_key: str, consumer_secret: str) -> tweepy.API:
         auth = tweepy.AppAuthHandler(consumer_key, consumer_secret)
         return tweepy.API(auth)
     else:
-        return
         raise ConnectorException(
             "Could not authenticate to Twitter because the necessary secrets were not available."
         )

@@ -30,7 +30,7 @@ import "../../../node_modules/react-vis/dist/style.css";
 
 // Currently pass symbol as a prop, can be changed later
 // Used for both price and volume charts for stocks
-function StockGraph(props) {
+function BitcoinGraph(props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const [graphData, setgraphData] = useState([]);
@@ -71,7 +71,7 @@ function StockGraph(props) {
     };
 
     axios
-      .post("http://localhost:5000/assets/gdow", requestBody)
+      .get("http://localhost:5000/crypto/bitcoin", requestBody)
       .then((res) => {
         return JSON.parse(JSON.stringify(res.data));
       })
@@ -317,5 +317,5 @@ function StockGraph(props) {
 }
 
 export {
-  StockGraph,
+  BitcoinGraph,
 };

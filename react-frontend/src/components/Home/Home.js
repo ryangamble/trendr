@@ -4,7 +4,9 @@ import SearchBar from "../SearchBar/SearchBar";
 
 import { useSelector } from "react-redux";
 import FearGreed from "../FearGreed/FearGreed";
-import {StockGraph} from "./CustomGraph";
+import {GdowGraph} from "./gdow";
+import {BitcoinGraph} from "./bitcoin";
+import {SP500Graph} from "./sp500";
 import { Container, Col, Spinner } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
@@ -30,7 +32,37 @@ function Home() {
       <FearGreed />
       <Col xs={12} sm={12} md={12} lg={6}>
             {currency ? (
-              <StockGraph
+              <GdowGraph
+                symbol={"placeholder"}
+                currency={'placeHolder'}
+                graphType="price"
+                color="#0D6EFD"
+              />
+            ) : (
+              <Container fluid>
+                <Spinner animation="border" />
+              </Container>
+            )}
+            <br />
+      </Col>
+      <Col xs={12} sm={12} md={12} lg={6}>
+            {currency ? (
+              <BitcoinGraph
+                symbol={"placeholder"}
+                currency={'placeHolder'}
+                graphType="price"
+                color="#0D6EFD"
+              />
+            ) : (
+              <Container fluid>
+                <Spinner animation="border" />
+              </Container>
+            )}
+            <br />
+      </Col>
+      <Col xs={12} sm={12} md={12} lg={6}>
+            {currency ? (
+              <SP500Graph
                 symbol={"placeholder"}
                 currency={'placeHolder'}
                 graphType="price"

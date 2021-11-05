@@ -122,3 +122,12 @@ def get_coin_links(coinid):
         links['Telegram_URL'] = 'https://t.me/' + data['telegram_channel_identifier']
 
     return links
+
+def get_global_data():
+    cg_api = CoinGeckoAPI()
+    data = cg_api.get_global()
+    # print(data)
+    btc_dominance = data['market_cap_percentage']['btc']
+    print(btc_dominance)
+
+get_global_data()
