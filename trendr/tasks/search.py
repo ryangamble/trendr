@@ -91,14 +91,25 @@ def aggregate_sentiment_simple_mean_search(search_id: int):
     search = Search.query.filter_by(id=search_id).one()
     if search.tweets:
         search.twitter_sentiment = aggregate_sentiment_simple_mean(
-            search.tweets
-        )
+            search.tweets, 1)
+
     if search.reddit_submissions:
         search.reddit_sentiment = aggregate_sentiment_simple_mean(
-            search.reddit_submissions
+            search.reddit_submissions, 2
         )
+
     elif search.reddit_comments:
         search.reddit_sentiment = aggregate_sentiment_simple_mean(
-            search.reddit_comments
+            search.reddit_comments, 3
         )
+    # if search.tweets:
+    #     search.twitter_sentiment = aggregate_sentiment_simple_mean(
+    #         search.tweets
+    #     )
+    # search.reddit_sentiment = aggregate_sentiment_simple_mean(
+    #     search.reddit_submissions
+    # )
+    # search.reddit_sentiment = aggregate_sentiment_simple_mean(
+    #     search.reddit_comments
+    # )
     db.session.commit()
