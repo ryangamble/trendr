@@ -9,23 +9,34 @@ from trendr.models.tweet_model import Tweet
 
 
 def aggregate_sentiment_simple_mean(
-    socials: Union[list[Tweet], list[RedditSubmission], list[RedditComment]]
+    socials, search_type:int
 ):
-    averages = []
+    # averages = []
     days_MA = 3
-    for s in socials:
-        if type(s) == list[Tweet]:
-            res = get_tweets_moving_average(days_MA, s)
-            averages.append(3 * res[len(s) - 1])
-        elif type(s) == list[RedditSubmission]:
-            res = get_reddit_post_moving_average(days_MA, s)
-            averages.append(4 * res[len(s) - 1])
-        elif type(s) == list[RedditComment]:
-            res = get_reddit_comment_moving_average(days_MA, s)
-            averages.append(1.5 * res[len(s) - 1])
+    if search_type == 1:
+        res = get_tweets_moving_average(days_MA, socials)
+        return 3 * res[len(socials) - 1]
+        # averages.append(3 * res[len(s) - 1])
+    elif search_type == 2:
+        res = get_reddit_post_moving_average(days_MA, socials)
+        return 3 * res[len(socials) - 1]
+    else:
+        res = get_reddit_comment_moving_average(days_MA, socials)
+        return 3 * res[len(socials) - 1]
+
+    # for s in socials:
+    #     if type(s) == list[Tweet]:
+    #         res = get_tweets_moving_average(days_MA, s)
+    #         averages.append(3 * res[len(s) - 1])
+    #     elif type(s) == list[RedditSubmission]:
+    #         res = get_reddit_post_moving_average(days_MA, s)
+    #         averages.append(4 * res[len(s) - 1])
+    #     elif type(s) == list[RedditComment]:
+    #         res = get_reddit_comment_moving_average(days_MA, s)
+    #         averages.append(1.5 * res[len(s) - 1])
 
     # return mean([s.polarity for s in socials])
-    return mean([x for s in averages])
+    # return mean([x for s in averages])
 
 
 hours_time_delta_scores = {
