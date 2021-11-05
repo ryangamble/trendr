@@ -1,3 +1,5 @@
+import logging
+import os
 from flask import Flask
 from flask_cors import CORS
 from flask_security import SQLAlchemyUserDatastore
@@ -25,8 +27,10 @@ def create_app(for_celery=False):
     app.config.from_object("trendr.config")
 
     configure_extensions(app)
+    configure_logging(app)
+
     if not for_celery:
-        CORS(app)
+        CORS(app, supports_credentials=True)
         register_blueprints(app)
         init_celery(app)
 
@@ -47,6 +51,28 @@ def configure_extensions(app):
     CSRFProtect(app)
 
 
+def configure_logging(app):
+ 
+    for handler in app.logger.handlers:
+        app.logger.removeHandler(handler)
+ 
+    root = os.path.dirname(os.path.abspath(__file__))
+    logdir = os.path.join(root, 'logs')
+    if not os.path.exists(logdir):
+        os.mkdir(logdir)
+    log_file = os.path.join(logdir, 'app.log')
+    handler = logging.FileHandler(log_file)
+    
+    formatter = logging.Formatter('%(asctime)s - %(module)s: %(funcName)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+
+    log_level = logging.DEBUG
+    handler.setLevel(log_level)
+    
+    app.logger.addHandler(handler)
+    app.logger.setLevel(log_level)
+
+
 def register_blueprints(app):
 
     from trendr.routes.asset_routes import assets as assets_blueprint
@@ -56,7 +82,7 @@ def register_blueprints(app):
     app.register_blueprint(users_blueprint)
 
     # logging routes
-    print("\nApp routes:")
+    print("\nApp routes:\n")
     print(app.url_map)
     # print("\n".join(sorted([f"{p.method}" for p in app.url_map.iter_rules()])))
 

@@ -11,6 +11,7 @@ import Reset from "./components/Register/Reset";
 import SetPassword from "./components/Register/SetPassword";
 import ConfirmEmail from "./components/Register/ConfirmEmail";
 import About from "./components/About/About";
+import Settings from "./components/Settings/Settings";
 
 import { Provider } from "react-redux";
 import { store } from "./components/Theme/store";
@@ -27,10 +28,11 @@ function App() {
             <Route path="/login" component={Login} />
             <Route path="/reset" component={Reset} />
             <Route path="/set-password:resetCode" component={SetPassword} />
+            <Route path="/result/:type/:id" component={Result} />
             <Route path="/confirm-email:confirmCode" component={ConfirmEmail} />
-            <Route path="/result:id" component={Result} />
             <Route path="/myaccount" component={MyAccount} />
             <Route path="/about" component={About} />
+            <Route path="/settings" component={Settings} />
             <Route path="*" component={Home} />
           </Switch>
         </Router>

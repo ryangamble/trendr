@@ -9,6 +9,7 @@ from trendr.models.reddit_model import (
     RedditComment,
     Subreddit,
 )
+from trendr.models.search_model import Search
 
 
 def attach_to(
@@ -86,7 +87,7 @@ def store_reddit_author(username: str) -> int:
 
 
 def store_reddit_results(
-    results: pmaw.Response, overwrite: bool = True
+    results: pmaw.Response, overwrite: bool = True, search_id: int = None
 ) -> tuple[Union[RedditSubmission, RedditComment], list[int]]:
     """
     Store reddit result (comments or submissions) in database
@@ -102,16 +103,16 @@ def store_reddit_results(
     # determine type
     if "title" in results.responses[results.i]:
         return RedditSubmission, store_reddit_submissions(
-            submissions=results, overwrite=overwrite
+            submissions=results, overwrite=overwrite, search_id=search_id
         )
     else:
         return RedditComment, store_reddit_comments(
-            comments=results, overwrite=overwrite
+            comments=results, overwrite=overwrite, search_id=search_id
         )
 
 
 def store_reddit_comments(
-    comments: pmaw.Response, overwrite: bool = True
+    comments: pmaw.Response, overwrite: bool = True, search_id: int = None
 ) -> list[int]:
     """
     Store reddit comments from a pmaw Response
@@ -127,6 +128,10 @@ def store_reddit_comments(
     res_ids = []
     to_add = []
 
+    search = None
+    if search_id is not None:
+        search = Search.query.filter_by(id=search_id).one()
+
     for result in comments:
 
         existing = RedditComment.query.filter_by(reddit_id=result["id"]).first()
@@ -140,6 +145,9 @@ def store_reddit_comments(
                     existing.sentiment_score = None
                 existing.text = result["body"]
                 existing.score = result["score"]
+
+            if search:
+                search.reddit_comments.append(existing)
         else:
             # generate new db row
             new_comment = RedditComment(
@@ -178,6 +186,10 @@ def store_reddit_comments(
 
     # add batch
     db.session.add_all(to_add)
+
+    if search:
+        search.reddit_comments.extend(to_add)
+
     db.session.commit()
 
     res_ids.extend([added.id for added in to_add])
@@ -187,7 +199,9 @@ def store_reddit_comments(
 
 
 def store_reddit_submissions(
-    submissions: pmaw.Response, overwrite: bool = True
+    submissions: pmaw.Response,
+    overwrite: bool = True,
+    search_id: int = None,
 ) -> list[int]:
     """
     Store reddit submissions from a pmaw Response
@@ -201,6 +215,9 @@ def store_reddit_submissions(
 
     res_ids = []
     to_add = []
+
+    if search_id is not None:
+        search = Search.query.filter_by(id=search_id).one()
 
     for result in submissions:
 
@@ -217,6 +234,9 @@ def store_reddit_submissions(
                     existing.sentiment_score = None
                 existing.text = result["selftext"]
                 existing.score = result["score"]
+
+            if search:
+                search.reddit_submissions.append(existing)
         else:
             # generate new db row
             new_submission = RedditSubmission(
@@ -249,6 +269,10 @@ def store_reddit_submissions(
 
     # add batch
     db.session.add_all(to_add)
+
+    if search:
+        search.reddit_submissions.extend(to_add)
+
     db.session.commit()
 
     res_ids.extend([added.id for added in to_add])

@@ -26,14 +26,16 @@ def fetch_config(name: str, default: any = None, cast: any = str):
 
 defaults = {
     "FLASK_ENV": "development",
+    "FLASK_CONFIG": "development",
+    "DATABASE_URL": "sqlite:///db.sqlite",
     "SECRET_KEY": "secret-key",
     "SECURITY_PASSWORD_SALT": "146585145368132386173505678016728509634",
     "PASSWORD_SCHEMES": "pbkdf2_sha512",
     "SECURITY_PASSWORD_NORMALIZE_FORM": "NFKD",
     "SECURITY_PASSWORD_COMPLEXITY_CHECKER": "zxcvbn",
     "SQLALCHEMY_DATABASE_URI": "sqlite:///db.sqlite",
-    "CELERY_BROKER_URL": "pyamqp://rabbitmq:5672",
-    "CELERY_RESULT_BACKEND": "rpc://rabbitmq:5672",
+    "CELERY_BROKER_URL": "redis://redis:6379/0",
+    "CELERY_RESULT_BACKEND": "redis://redis:6379/0",
 }
 
 ENV = fetch_config("FLASK_ENV", default=defaults["FLASK_ENV"])
@@ -93,7 +95,11 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 """
 Celery settings
 """
-CELERY_TASK_ROUTES = {"trendr.tasks.social.*": {"queue": "social"}}
+CELERY_TASK_ROUTES = {
+    "trendr.tasks.social.*": {"queue": "social"},
+    "trendr.tasks.sentiment.sentiment_analysis.*": {"queue": "sentiment"},
+    "trendr.tasks.search.*": {"queue": "search"},
+}
 CELERY_TASK_DEFAULT_QUEUE = "general"
 
 CELERY_BROKER_URL = fetch_config(
@@ -130,7 +136,12 @@ MAIL_USE_SSL = fetch_config("MAIL_USE_SSL")
 MAIL_USERNAME = fetch_config("MAIL_USERNAME")
 MAIL_PASSWORD = fetch_config("MAIL_PASSWORD")
 
-'''
+"""
 ETHplrere secret
-'''
+"""
 ETHPLORERE_KEY = fetch_config("ETHPLORER_KEY")
+
+'''
+FINNHUB KEY
+'''
+FINNHUB_KEY = fetch_config("FINNHUB_KEY")
