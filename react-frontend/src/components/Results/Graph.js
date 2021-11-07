@@ -683,7 +683,13 @@ function SentimentGraph(props) {
     opacity: "0.4",
   }
 
-  if (redditData.length == 0 && twitterData.length == 0) {
+  if (redditError && twitterError) {
+    return (
+      <Container fluid>
+        <div>Could not retrieve sentiment data</div>
+      </Container>
+    );
+  } else if (redditData.length == 0 && twitterData.length == 0) {
     return (
       <Container fluid>
         <Spinner animation="border" />
