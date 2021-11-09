@@ -624,7 +624,7 @@ function SentimentGraph(props) {
   useEffect (() => {
     fetchTwitterData()
     fetchRedditData()
-
+    setLoading(false);
   }, [props])
 
   // TODO: Make this fetch actual data
@@ -638,40 +638,50 @@ function SentimentGraph(props) {
       setRedditData(data);
   }
 
-  function fetchTwitterData() {
-    axios
-      .get("http://localhost:5000/assets/twitter_sentiment", {
-        method: "GET",
-        params: {
-          symbol: props.symbol,
-        }
-      })
-      .then((res) => {
-        // console.log(res.data)
-        return JSON.parse(JSON.stringify(res.data));
-      })
-      .then((data) => {
-        // console.log(data['0']['1']['1'])
-        var points = [];
-        for (var i = 0; i < data.length; i++) {
-          // console.log(data[i.toString()]['1'])
-          points.push({
-            x: parseFloat(data[i.toString()]['1']['0']),
-            y: parseFloat(data[i.toString()]['1']['1']),
-            size: 1,
-          });
-        }
-        console.log("twitter sentiment analysis points")
-        console.log(points)
-        return points;
-      })
-      .then((points) => {
-        return setTwitterData(points)
-      })
-      .then(()=> {
-        setLoading(false)
-      })
+  function fetchTwitterData(req) {
+    var data = new Array(10).fill(0).reduce((prev,curr) =>
+    [...prev, {
+      x: Math.random() * 2 - 1,
+      y: Math.random(),
+      size: 1
+    }], []);
+      setTwitterData(data);
   }
+
+  // function fetchTwitterData() {
+  //   axios
+  //     .get("http://localhost:5000/assets/twitter_sentiment", {
+  //       method: "GET",
+  //       params: {
+  //         symbol: props.symbol,
+  //       }
+  //     })
+  //     .then((res) => {
+  //       // console.log(res.data)
+  //       return JSON.parse(JSON.stringify(res.data));
+  //     })
+  //     .then((data) => {
+  //       // console.log(data['0']['1']['1'])
+  //       var points = [];
+  //       for (var i = 0; i < data.length; i++) {
+  //         // console.log(data[i.toString()]['1'])
+  //         points.push({
+  //           x: parseFloat(data[i.toString()]['1']['0']),
+  //           y: parseFloat(data[i.toString()]['1']['1']),
+  //           size: 1,
+  //         });
+  //       }
+  //       console.log("twitter sentiment analysis points")
+  //       console.log(points)
+  //       return points;
+  //     })
+  //     .then((points) => {
+  //       return setTwitterData(points)
+  //     })
+  //     .then(()=> {
+  //       setLoading(false)
+  //     })
+  // }
 
   const markSeriesProps = {
     animation: true,

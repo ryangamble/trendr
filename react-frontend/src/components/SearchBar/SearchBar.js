@@ -16,12 +16,13 @@ function SearchBar() {
       alert("Search field can not be empty!");
       return;
     }
-
+    
     if (suggestions[0]) {
-      history.push(`/result/${suggestions[0].type}/${suggestions[0].id}`, {
-        symbol: suggestions[0].symbol,
-        addr: suggestions[0].addr,
-      });
+      var assetRoute = `/result/${suggestions[0].type}:${suggestions[0].id}`;
+      if (suggestions[0].addr) {
+        assetRoute += `:${suggestions[0].addr}`
+      }
+      history.push(assetRoute);
     } else {
       alert("No matching stocks or cryptos");
     }
@@ -81,10 +82,11 @@ function SearchBar() {
       setKeyword(suggestions[i].symbol);
     });
     setSuggestions([]);
-    history.push(`/result/${suggestions[i].type}/${suggestions[i].id}`, {
-      symbol: suggestions[i].symbol,
-      addr: suggestions[i].addr,
-    });
+    var assetRoute = `/result/${suggestions[i].type}:${suggestions[i].id}`;
+    if (suggestions[i].addr) {
+      assetRoute += `:${suggestions[i].addr}`
+    }
+    history.push(assetRoute);
   }
 
   return (
