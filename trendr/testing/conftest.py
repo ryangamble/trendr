@@ -19,11 +19,6 @@ def app():
 def client(app):
     return app.test_client()
 
-    # with app.test_client() as client:
-    #     with app.app_context():
-    #         db.create_all()
-    #     yield client
-
 
 @pytest.fixture
 def db():
@@ -33,7 +28,6 @@ def db():
         username=test_user["username"],
         password=test_user["password"],
     )
-    # security.datastore.activate_user
     yield database
     database.drop_all()
 
