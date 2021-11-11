@@ -19,6 +19,7 @@ For more information on how to run the backend individually, see `trendr/README.
 For more information on how to run the frontend individually, see `react-frontend/README.md`
 
 ## Setup Pre-Commit Linters
+### Backend
 1. Copy `hooks/pre-commit` to `.git/hooks`
 2. When making a commit, make sure your trendr python venv is active and all packages are installed with
    `pip install -r requirements.txt`
@@ -26,3 +27,5 @@ For more information on how to run the frontend individually, see `react-fronten
 
 Note: This will likely break committing from Github desktop. Either make commits from the command line or don't setup
 the pre-commit and instead run `black trendr` from the root of the project to manually reformat the code
+
+### Frontend

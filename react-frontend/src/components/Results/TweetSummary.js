@@ -1,51 +1,51 @@
-import React, { useEffect, useState } from "react";
-import { Row, Container, Spinner, Col, Table } from "react-bootstrap";
-import { useSelector } from "react-redux";
-import axios from "axios";
-import "./Results.css";
+import React, { useEffect, useState } from 'react'
+import { Row, Container, Spinner, Col, Table } from 'react-bootstrap'
+import { useSelector } from 'react-redux'
+import axios from 'axios'
+import './Results.css'
 
-function TweetSummary(props) {
-  const currentTheme = useSelector((state) => state.theme.currentTheme);
+function TweetSummary (props) {
+  const currentTheme = useSelector((state) => state.theme.currentTheme)
 
-  const [summaryData, setSummaryData] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [summaryData, setSummaryData] = useState({})
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(true);
+    setLoading(true)
     axios
-      .get("http://localhost:5000/assets/tweet-summary/" + props.symbol)
+      .get('http://localhost:5000/assets/tweet-summary/' + props.symbol)
       .then((res) => {
-        setLoading(true);
-        return JSON.parse(JSON.stringify(res.data));
+        setLoading(true)
+        return JSON.parse(JSON.stringify(res.data))
       })
       .then((data) => {
         setSummaryData({
-            minFollowers: data["follower_stats"]["min"],
-            medianFollowers: data["follower_stats"]["median"],
-            maxFollowers: data["follower_stats"]["max"],
-            minFollowing: data["following_stats"]["min"],
-            medianFollowing: data["following_stats"]["median"],
-            maxFollowing: data["following_stats"]["max"],
-            minAccountAge: data["accounts_age_stats"]["min"],
-            medianAccountAge: data["accounts_age_stats"]["median"],
-            maxAccountAge: data["accounts_age_stats"]["max"],
-            verifiedCount: data["verified_count"]
-        });
+          minFollowers: data.follower_stats.min,
+          medianFollowers: data.follower_stats.median,
+          maxFollowers: data.follower_stats.max,
+          minFollowing: data.following_stats.min,
+          medianFollowing: data.following_stats.median,
+          maxFollowing: data.following_stats.max,
+          minAccountAge: data.accounts_age_stats.min,
+          medianAccountAge: data.accounts_age_stats.median,
+          maxAccountAge: data.accounts_age_stats.max,
+          verifiedCount: data.verified_count
+        })
       })
       .then(() => {
-        setLoading(false);
+        setLoading(false)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+        console.log(error)
+      })
+  }, [])
 
   if (loading) {
     return (
       <Container fluid>
         <Spinner animation="border" />
       </Container>
-    );
+    )
   } else {
     return (
       <Container className="tweetSummaryContainer">
@@ -107,8 +107,8 @@ function TweetSummary(props) {
           </Col>
         </Row>
       </Container>
-    );
+    )
   }
 }
 
-export default TweetSummary;
+export default TweetSummary

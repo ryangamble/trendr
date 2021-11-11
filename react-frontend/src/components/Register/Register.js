@@ -1,54 +1,54 @@
-import React, { useState } from "react";
-import { Form, Button, Col, Row, Card } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
-import MyNavBar from "../NavBar/MyNavBar";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import axios from "axios";
+import React, { useState } from 'react'
+import { Form, Button, Col, Row, Card } from 'react-bootstrap'
+import { useHistory, Link } from 'react-router-dom'
+import MyNavBar from '../NavBar/MyNavBar'
 
-function Register() {
-  const currentTheme = useSelector((state) => state.theme.currentTheme);
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password1, setPassword1] = useState("");
-  const [password2, setPassword2] = useState("");
+import { useSelector } from 'react-redux'
+import axios from 'axios'
 
-  const history = useHistory();
+function Register () {
+  const currentTheme = useSelector((state) => state.theme.currentTheme)
+  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
+  const [password1, setPassword1] = useState('')
+  const [password2, setPassword2] = useState('')
+
+  const history = useHistory()
 
   const handleSubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     if (password1 !== password2) {
-      alert("Passwords are not the same!");
-      return;
+      alert('Passwords are not the same!')
+      return
     }
 
     const json = JSON.stringify({
       email: email,
-      password: password1,
-    });
+      password: password1
+    })
     const config = {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json'
       },
-      withCredentials: true,
-    };
+      withCredentials: true
+    }
 
     axios
-      .post("http://localhost:5000/auth/register", json, config)
+      .post('http://localhost:5000/auth/register', json, config)
       .then((res) => {
-        history.push("/login");
+        history.push('/login')
       })
       .catch((error) => {
-        alert(JSON.stringify(error.response.data.response.errors));
-      });
-  };
+        alert(JSON.stringify(error.response.data.response.errors))
+      })
+  }
   return (
     <div
       style={{
         background: currentTheme.background,
         color: currentTheme.foreground,
-        height: "100vh",
+        height: '100vh'
       }}
     >
       <MyNavBar />
@@ -76,7 +76,7 @@ function Register() {
                     onChange={(e) => setEmail(e.target.value)}
                   />
                   <Form.Text className="text-muted">
-                    We'll never share your email with anyone else.
+                    We&apos;ll never share your email with anyone else.
                   </Form.Text>
                 </Form.Group>
 
@@ -143,7 +143,7 @@ function Register() {
         </Col>
       </Row>
     </div>
-  );
+  )
 }
 
-export default Register;
+export default Register
