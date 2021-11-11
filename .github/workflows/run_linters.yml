@@ -17,7 +17,7 @@ jobs:
         node-version: 16
 
     - name: Install Eslint
-      run: npm install -g eslint
+      run: npm install -g eslint && npm install eslint-plugin-react@latest --save-dev
 
     - name: Run Eslint
       run: eslint react-frontend/src/**/*.js
