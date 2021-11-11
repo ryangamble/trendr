@@ -18,7 +18,7 @@ jobs:
 
     - name: Install Eslint
       working-directory: react-frontend
-      run: yarn install
+      run: yarn install -g
 
     - name: Run Eslint
       run: eslint react-frontend/src/**/*.js
