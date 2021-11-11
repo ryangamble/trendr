@@ -24,7 +24,7 @@ from trendr.models.user_model import User, Role
 
 def create_app(for_celery=False):
     app = Flask(__name__)
-    app.config.from_object("trendr.config")
+    app.config.from_object('trendr.config')
 
     configure_extensions(app)
     configure_logging(app)
