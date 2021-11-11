@@ -18,14 +18,19 @@ For more information on how to run the backend individually, see `trendr/README.
 ### Running just the frontend
 For more information on how to run the frontend individually, see `react-frontend/README.md`
 
-## Setup Pre-Commit Linters
+## Linter Setup
+1. From `react-frontend` run `yarn install`
+2. Run `yarn global add eslint`
+3. Activate your trendr python venv and run `pip install -r requirements.txt`
+
+### Automatic pre-commit script
 1. Copy `hooks/pre-commit` to `.git/hooks`
-2. When making a commit, make sure your trendr python venv is active and all python/node packages are up to date with
-   `pip install -r requirements.txt` and from react-frontend `yarn install`
-3. On commit, black and eslint should automatically reformat what it can, or warn you of required changes
+
+On commit, black and eslint should automatically reformat what it can, or warn you of required changes
+
 
 ### Manual alternative
-This might break commiting from Github desktop and may have issues on Windows. If you would like to forgo using
-the pre-commit script, you can run the linters manually from the root of the project with:
-`black trendr`
-`eslint react-frontend/src/**/*.js --fix`
+The pre-commit script might break committing from Github desktop and may have issues on Windows. If you would like to 
+bypass using the pre-commit script, you can run the linters manually from the root of the project with:
+1. `black trendr`
+2. `eslint react-frontend/src/**/*.js --fix`
