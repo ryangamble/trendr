@@ -52,23 +52,25 @@ def configure_extensions(app):
 
 
 def configure_logging(app):
- 
+
     for handler in app.logger.handlers:
         app.logger.removeHandler(handler)
- 
+
     root = os.path.dirname(os.path.abspath(__file__))
-    logdir = os.path.join(root, 'logs')
+    logdir = os.path.join(root, "logs")
     if not os.path.exists(logdir):
         os.mkdir(logdir)
-    log_file = os.path.join(logdir, 'app.log')
+    log_file = os.path.join(logdir, "app.log")
     handler = logging.FileHandler(log_file)
-    
-    formatter = logging.Formatter('%(asctime)s - %(module)s: %(funcName)s - %(levelname)s - %(message)s')
+
+    formatter = logging.Formatter(
+        "%(asctime)s - %(module)s: %(funcName)s - %(levelname)s - %(message)s"
+    )
     handler.setFormatter(formatter)
 
     log_level = logging.DEBUG
     handler.setLevel(log_level)
-    
+
     app.logger.addHandler(handler)
     app.logger.setLevel(log_level)
 

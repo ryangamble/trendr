@@ -54,9 +54,7 @@ def perform_search(
                 store_tweets_mentioning_asset.signature(
                     kwargs={"asset_identifier": keyword, "search_id": search_id}
                 ),
-                analyze_by_ids.signature(
-                    kwargs={"social_type": SearchType.TWITTER}
-                ),
+                analyze_by_ids.signature(kwargs={"social_type": SearchType.TWITTER}),
             )
         elif search_type == SearchType.REDDIT_SUBMISSION:
             curr_chain = chain(
@@ -78,9 +76,7 @@ def perform_search(
     # wait for all chains to complete, then aggregate sentiment
     res_chord = chord(
         chains,
-        aggregate_sentiment_simple_mean_search.signature(
-            (search_id,), immutable=True
-        ),
+        aggregate_sentiment_simple_mean_search.signature((search_id,), immutable=True),
     )
 
     res_chord.delay()
@@ -90,9 +86,7 @@ def perform_search(
 def aggregate_sentiment_simple_mean_search(search_id: int):
     search = Search.query.filter_by(id=search_id).one()
     if search.tweets:
-        search.twitter_sentiment = aggregate_sentiment_simple_mean(
-            search.tweets
-        )
+        search.twitter_sentiment = aggregate_sentiment_simple_mean(search.tweets)
     if search.reddit_submissions:
         search.reddit_sentiment = aggregate_sentiment_simple_mean(
             search.reddit_submissions

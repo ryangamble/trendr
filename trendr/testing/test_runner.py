@@ -15,9 +15,7 @@ def create_parser():
     :return: argparse.ArgumentParser
     """
     parser = argparse.ArgumentParser(description="Process some integers.")
-    parser.add_argument(
-        "-u", action="store_true", default=False, help="Run unit tests"
-    )
+    parser.add_argument("-u", action="store_true", default=False, help="Run unit tests")
     parser.add_argument(
         "-i", action="store_true", default=False, help="Run integration tests"
     )

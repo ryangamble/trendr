@@ -46,9 +46,7 @@ def tweet_analysis_by_ids(*ids: list[int]):
 @celery.task
 def reddit_submission_analysis():
     print("Running reddit submission analysis")
-    submissions_to_analyze = RedditSubmission.query.filter_by(
-        polarity=None
-    ).all()
+    submissions_to_analyze = RedditSubmission.query.filter_by(polarity=None).all()
     print(f"Reddit submissions to analyze: {submissions_to_analyze}")
     for submission in submissions_to_analyze:
         polarity, subjectivity = pattern_analyzer(submission.text)
@@ -87,9 +85,7 @@ def reddit_comment_analysis():
 @celery.task
 def reddit_comment_analysis_by_ids(*ids: list[int]):
     print("Running reddit comment analysis")
-    comments_to_analyze = RedditComment.query.filter(
-        RedditComment.id.in_(ids)
-    ).all()
+    comments_to_analyze = RedditComment.query.filter(RedditComment.id.in_(ids)).all()
     print(f"Reddit comments to analyze: {comments_to_analyze}")
     for comment in comments_to_analyze:
         polarity, subjectivity = pattern_analyzer(comment.text)
