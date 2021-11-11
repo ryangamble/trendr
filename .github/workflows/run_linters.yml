@@ -17,7 +17,7 @@ jobs:
         node-version: 16
 
     - name: Install Eslint
-      run: yarn add eslint
+      run: npm install -g eslint
 
     - name: Run Eslint
       run: eslint react-frontend/src/**/*.js
