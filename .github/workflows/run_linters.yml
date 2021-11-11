@@ -18,6 +18,4 @@ jobs:
       run: yarn global add eslint
 
     - name: Run Eslint
-      uses: stefanoeb/eslint-action@1.0.2
-      with:
-        files: react-frontend/src/
+      run: eslint react-frontend/src/**/*.js --fix
