@@ -11,6 +11,9 @@ jobs:
     - name: Run Black
       uses: rickstaa/action-black@v1
 
+    - name: Run Yarn
+      run: yarn --cwd react-frontend install
+
     - name: Install Eslint
       run: yarn global add eslint
 
