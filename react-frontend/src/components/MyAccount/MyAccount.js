@@ -30,7 +30,9 @@ function MyAccount() {
       console.log("profile fetching user follow list....");
 
       axios
-        .get(`http://localhost:5000/users/assets-followed`, {withCredentials: true})
+        .get(`http://localhost:5000/users/assets-followed`, {
+          withCredentials: true,
+        })
         .then((res) => {
           return res.data;
         })
@@ -87,7 +89,9 @@ function MyAccount() {
                 </h3>
               </Col>
             </Row>
-
+            {list.length === 0 ? (
+              <p>You haven't followed any stocks/cryptos.</p>
+            ) : null}
             <Row>
               <Col xs={12}>
                 <ListGroup variant="flush" align="left">
@@ -99,17 +103,10 @@ function MyAccount() {
                     >
                       <Link
                         to={{
-                          pathname: `/result/${
-                            JSON.parse(localStorage.getItem(item)).type
-                          }/${item}`,
-                          state: {
-                            symbol: JSON.parse(localStorage.getItem(item))
-                              .symbol,
-                            addr: JSON.parse(localStorage.getItem(item)).addr,
-                          },
+                          pathname: `/result/${item}`,
                         }}
                       >
-                        {item.toUpperCase()}
+                        {item.split(":")[``].toUpperCase()}
                       </Link>
                       <FollowBtn
                         id={item}

@@ -6,7 +6,7 @@ import axios from "axios";
 
 // A reusable follow botton component that takes the stock/crypto id as props
 
-function FollowBtn({ id, isFollow, callback, type, symbol, addr }) {
+function FollowBtn({ id, isFollow, callback }) {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   //current user
   const currentUser = useSelector((state) => state.user);
@@ -70,14 +70,6 @@ function FollowBtn({ id, isFollow, callback, type, symbol, addr }) {
         .catch((error) => {
           alert(JSON.stringify(error.response.data.response.errors));
         });
-
-      // remember the cryto type temp fix
-      const obj = {
-        type: type,
-        symbol: symbol,
-        addr: addr,
-      };
-      localStorage.setItem(id, JSON.stringify(obj));
     }
   };
 
