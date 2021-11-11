@@ -11,15 +11,10 @@ jobs:
     - name: Run Black
       uses: rickstaa/action-black@v1
 
-    - name: Setup Node
-      uses: actions/setup-node@v2
-      with:
-        node-version: 16
-
     - name: Install Eslint
-      working-directory: react-frontend
-      run: yarn
+      run: yarn --cwd react-frontend install
 
     - name: Run Eslint
-      working-directory: react-frontend
-      run: eslint src/**/*.js
+      uses: stefanoeb/eslint-action@1.0.2
+      with:
+        files: react-frontend/src/
