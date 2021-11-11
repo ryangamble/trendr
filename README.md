@@ -22,7 +22,10 @@ For more information on how to run the frontend individually, see `react-fronten
 1. Copy `hooks/pre-commit` to `.git/hooks`
 2. When making a commit, make sure your trendr python venv is active and all python/node packages are up to date with
    `pip install -r requirements.txt` and from react-frontend `yarn install`
-3. On commit, black should automatically reformat the trendr subdirectory if needed
+3. On commit, black and eslint should automatically reformat what it can, or warn you of required changes
 
-Note: This will likely break committing from Github desktop. Either make commits from the command line or don't setup
-the pre-commit and instead run `black trendr` from the root of the project to manually reformat the code
+### Manual alternative
+This might break commiting from Github desktop and may have issues on Windows. If you would like to forgo using
+the pre-commit script, you can run the linters manually from the root of the project with:
+`black trendr`
+`eslint react-frontend/src/**/*.js --fix`
