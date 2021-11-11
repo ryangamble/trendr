@@ -23,5 +23,6 @@ For more information on how to run the frontend individually, see `react-fronten
 2. When making a commit, make sure your trendr python venv is active and all packages are installed with
    `pip install -r requirements.txt`
 3. On commit, black should automatically reformat the trendr subdirectory if needed
+
 Note: This will likely break committing from Github desktop. Either make commits from the command line or don't setup
 the pre-commit and instead run `black trendr` from the root of the project to manually reformat the code
