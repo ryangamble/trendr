@@ -1,7 +1,7 @@
 import React from 'react'
 import MyNavBar from '../NavBar/MyNavBar'
 import { useSelector } from 'react-redux'
-import { Container, Card, Row, Col, Form } from 'react-bootstrap'
+import { Container, Card, Row, Col } from 'react-bootstrap'
 
 function About () {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
