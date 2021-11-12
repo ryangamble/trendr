@@ -226,19 +226,24 @@ function CoinStatistics(props) {
   function renderExchanges() {
     if (crypto.exchanges.length == 0) {
       return("Not available");
-    }
-    return (
-      <div>
-        {crypto.exchanges[0]}
-        <OverlayTrigger
-          placement="auto"
-          overlay={renderTooltip()}
-        >
-          <div>...</div>
-        </OverlayTrigger>
-      </div>
-      
+    } else if (crypto.exchanges.length > 5) {
+      return (
+        <div>
+          {crypto.exchanges[0]}
+          <OverlayTrigger
+            placement="auto"
+            overlay={renderTooltip()}
+          >
+            <div>...</div>
+          </OverlayTrigger>
+        </div>
       );
+    }
+    var list = [];
+    for (var key in crypto.exchanges) {
+      list.push(<div>{crypto.exchanges[key]}<br/></div>);
+    }
+    return (list);
   }
 
   function renderTooltip() {

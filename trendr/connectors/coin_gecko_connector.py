@@ -116,7 +116,10 @@ def get_coin_live_stats(coin):
         "24HrPriceChange": info["market_data"]["price_change_percentage_24h"]
         if info["market_data"]["price_change_percentage_24h"] != None
         else None,
-        "exchanges": exchanges
+        "exchanges": exchanges,
+        "homepage": info["links"]["homepage"][0]
+        if len(info["links"]["homepage"][0]) > 0
+        else None
     }
     return coin_stats
 

@@ -180,7 +180,7 @@ def crypto_stats():
         current_app.logger.error("No id given")
         return json_response({"error": "Parameter 'id' is required"}, status=400)
 
-    response_body = cg.get_coin_live_stats(id) | cg.get_coin_links(id)
+    response_body = cg.get_coin_live_stats(id)
     current_app.logger.info("Getting crypto stats for " + id)
     return json_response(response_body, status=200)
 
