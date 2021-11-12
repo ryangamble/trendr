@@ -21,22 +21,30 @@ from trendr.models.tweet_model import Tweet
 from trendr.models.search_model import Search
 from trendr.models.user_model import User, Role
 
-
-def create_app(for_celery=False):
+def create_app(for_celery=False, for_testing=False):
     app = Flask(__name__)
     app.config.from_object("trendr.config")
 
+    if for_testing:
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
+        app.config["TESTING"] = True
+        app.config["SECURITY_CONFIRMABLE"] = False
+    else:
+        app.config["TESTING"] = False
+
     configure_extensions(app)
-    configure_logging(app)
+    if not for_testing:
+        configure_logging(app)
 
     if not for_celery:
         CORS(app, supports_credentials=True)
         register_blueprints(app)
         init_celery(app)
 
-    with app.app_context():
-        db.create_all()
-
+    if not for_testing:
+        with app.app_context():
+            db.create_all()
+    
     return app
 
 
