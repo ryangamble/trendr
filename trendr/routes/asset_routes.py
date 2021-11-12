@@ -139,48 +139,6 @@ def historic_fear_greed():
     return json_response(response_body, status=200)
 
 
-@assets.route("/stocks/official-channels", methods=["GET"])
-def stock_official_channels():
-    """
-    Gets the official channels (website) of a stock
-    :return: JSON response containing official channels
-    """
-    symbol = request.args.get("symbol")
-    if not symbol:
-        current_app.logger.error("No symbol given")
-        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
-
-    asset_ticker = yf.Ticker(symbol)
-    if not asset_ticker or not hasattr(asset_ticker, "info") or "website" not in asset_ticker.info:
-        current_app.logger.error("Couldn't retrieve official channels for " + symbol)
-        return json_response({"error": "Couldn't retrieve official channels"}, status=500)
-
-    response_body = {
-        'website': asset_ticker.info['website']
-    }
-
-    current_app.logger.info("Getting offical channels for " + symbol)
-
-    return json_response(response_body, status=200)
-
-
-@assets.route("/cryptos/official-channels", methods=["GET"])
-def cryptos_official_channels():
-    """
-    Gets the official channels (homepage, socials, etc.) of a crypto
-    :return: JSON response containing official channels
-    """
-    id = request.args.get("id")
-    if not id:
-        current_app.logger.error("No id given")
-        return json_response({"error": "Parameter 'name' is required"}, status=400)
-
-
-    response_body = cg.get_coin_links(id)
-    current_app.logger.info("Getting offical channels for " + id)
-    return json_response(response_body, status=200)
-
-
 @assets.route('/stocks/listed-exchanges', methods=['GET'])
 def stocks_listed_exchanges():
     """
@@ -211,20 +169,6 @@ def stocks_listed_exchanges():
     return json_response(exchangeList, status=200)
 
 
-@assets.route('/cryptos/listed-exchanges', methods=['GET'])
-def cryptos_listed_exchanges():
-    """
-    Gets the exchanges that list this crypto coin/token
-    :return: JSON response containing the exchanges
-    """
-    id = request.args.get('id')
-    if not id:
-        return json_response({"error": "Parameter 'id' is required"}, status=400)
-
-    response_body = cg.get_coin_exchanges(id)
-    return json_response(response_body, status=200)
-
-
 @assets.route('/crypto/stats', methods=['GET'])
 def crypto_stats():
     """
@@ -236,8 +180,7 @@ def crypto_stats():
         current_app.logger.error("No id given")
         return json_response({"error": "Parameter 'id' is required"}, status=400)
 
-
-    response_body = cg.get_coin_live_stats(id)
+    response_body = cg.get_coin_live_stats(id) | cg.get_coin_links(id)
     current_app.logger.info("Getting crypto stats for " + id)
     return json_response(response_body, status=200)
 

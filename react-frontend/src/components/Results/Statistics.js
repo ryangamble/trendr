@@ -54,23 +54,9 @@ function StockStatistics(props) {
           divYield: data["dividendYield"]
             ? (data["dividendYield"] * 100).toFixed(2)
             : "N/A",
+          website: data["website"]
         });
         props.currencyCallback(data["currency"]);
-
-        axios
-          .get(`http://localhost:5000/assets/stocks/official-channels`, {
-            method: "GET",
-            params: {
-              symbol: props.symbol
-            }
-          })
-          .then((res) => {
-            // setLink(res.data["website"]);
-            setAsset(prevData => { return {...prevData, website: res.data["website"]}})
-          })
-          .catch((error) => {
-            console.log(error);
-          });
 
         axios
           .get(`http://localhost:5000/assets/stocks/listed-exchanges`, {
@@ -108,34 +94,10 @@ function StockStatistics(props) {
 
   function renderExchanges() {
     var list = [];
-    for (var key in asset.exchanges.subarray(0, 2)) {
+    for (var key in asset.exchanges) {
       list.push(<div>{asset.exchanges[key]}<br/></div>);
     }
-
-    return (
-      <div>
-        {list}
-        <OverlayTrigger
-          placement="right"
-          overlay={renderTooltip}
-        >
-          ...
-        </OverlayTrigger>
-      </div>
-      
-      );
-  }
-
-  function renderTooltip() {
-    var list = [];
-    for (var key in asset.exchanges.subarray(2, asset.exchanges.length)) {
-      list.push(<div>{asset.exchanges[key]}<br/></div>);
-    }
-    return(
-      <Tooltip>
-        {list}
-      </Tooltip>
-    );
+    return (list);
   }
 
   if (loading) {
@@ -209,7 +171,7 @@ function StockStatistics(props) {
               </tr>
               <tr>
                 <td className="statName">Exchanges</td>
-                <td className="statValue">{renderExchanges()}</td>
+                <td className="statValue">{asset.exchanges ? renderExchanges() : <Spinner animation="border" size="sm"/>}</td>
               </tr>
             </tbody>
           </Table>
@@ -240,34 +202,6 @@ function CoinStatistics(props) {
         let data = res.data;
         console.log(data);
         setCrypto(data);
-        axios
-          .get(`http://localhost:5000/assets/cryptos/official-channels`, {
-            method: "GET",
-            params: {
-              id: props.id
-            }
-          })
-          .then((res) => {
-            setCrypto(prevData => { return {...prevData, website: res.data["homepage"]}});
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-
-        axios
-          .get(`http://localhost:5000/assets/cryptos/listed-exchanges`, {
-            method: "GET",
-            params: {
-              id: props.id
-            }
-          })
-          .then((res) => {
-            console.log(res.data)
-            setCrypto(prevData => { return {...prevData, exchanges: res.data}})
-          })
-          .catch((error) => {
-            console.log(error);
-          });
       })
       .then(() => {
         setLoading(false);
@@ -278,6 +212,7 @@ function CoinStatistics(props) {
   }, []);
 
   function formatPrice(num) {
+    if (num == null) return "Not available"
     if (num < 0.1) {
       return "$" + num.toFixed(7).toString()
     }
@@ -289,6 +224,9 @@ function CoinStatistics(props) {
   }
 
   function renderExchanges() {
+    if (crypto.exchanges.length == 0) {
+      return("Not available");
+    }
     return (
       <div>
         {crypto.exchanges[0]}
@@ -330,7 +268,7 @@ function CoinStatistics(props) {
           <Image src={crypto.Image} rounded />
           <h2>{crypto.Name}</h2>
           <p>{crypto.Symbol.toUpperCase()}</p>
-          {crypto.website && <a href={crypto.website} target="_blank">Homepage</a>}
+          {crypto.homepage && <a href={crypto.homepage} target="_blank">Homepage</a>}
         </Col>
         </Col>
         <Col>
@@ -350,15 +288,15 @@ function CoinStatistics(props) {
               </tr>
               <tr>
                 <td className="statName">Market Cap Rank</td>
-                <td className="statValue">{crypto['MarketCapRank'] ? crypto['MarketCapRank'] : "N/A"}</td>
+                <td className="statValue">{crypto['MarketCapRank'] ? crypto['MarketCapRank'] : "Not available"}</td>
               </tr>
               <tr>
-                <td className="statName">24 Hour Volume</td>
-                <td className="statValue">{crypto['24HrVolume']}</td>
+                <td className="statName">24 Hour Market Cap Change</td>
+                <td className="statValue">{crypto['24HrMarketCapChange'] ? crypto['24HrMarketCapChange'] + "%" : "Not available"}</td>
               </tr>
               <tr>
-                <td className="statName">24 Hour Change</td>
-                <td className="statValue">{crypto['24HrChange']}</td>
+                <td className="statName">24 Hour Price Change</td>
+                <td className="statValue">{crypto['24HrPriceChange'] ? crypto['24HrPriceChange'] + "%" : "Not available"}</td>
               </tr>
               <tr>
                 <td className="statName">Market Cap</td>
