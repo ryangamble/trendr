@@ -71,7 +71,8 @@ function BitcoinGraph(props) {
     };
 
     axios
-      .get("http://localhost:5000/crypto/bitcoin", requestBody)
+      .get("http://66.228.60.198:5000/crypto/bitcoin", requestBody)
+      // .get("http://localhost:5000/crypto/bitcoin", requestBody)
       .then((res) => {
         return JSON.parse(JSON.stringify(res.data));
       })

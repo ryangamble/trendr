@@ -3,7 +3,7 @@ import MyNavBar from "../NavBar/MyNavBar";
 import SearchBar from "../SearchBar/SearchBar";
 
 import { useSelector } from "react-redux";
-import FearGreed from "../FearGreed/FearGreed";
+import { FearGreed } from "../Results/Graph";
 import {GdowGraph} from "./gdow";
 import {BitcoinGraph} from "./bitcoin";
 import {SP500Graph} from "./sp500";

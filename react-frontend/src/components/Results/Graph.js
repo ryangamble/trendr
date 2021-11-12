@@ -878,7 +878,8 @@ function FearGreed() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/assets/historic-fear-greed")
+      .get("http://66.228.60.198:5000/assets/historic-fear-greed")
+      // .get("http://localhost:5000/assets/historic-fear-greed")
       .then((res) => {
         let data = JSON.parse(JSON.stringify(res.data));
 

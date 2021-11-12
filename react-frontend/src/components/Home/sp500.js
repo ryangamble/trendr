@@ -71,7 +71,8 @@ function SP500Graph(props) {
     };
 
     axios
-      .get("http://localhost:5000/stocks/sp500", requestBody)
+      .get("http://66.228.60.198:5000/stocks/sp500", requestBody)
+      // .get("http://localhost:5000/stocks/sp500", requestBody)
       .then((res) => {
         return JSON.parse(JSON.stringify(res.data));
       })

@@ -71,7 +71,8 @@ function GdowGraph(props) {
     };
 
     axios
-      .get("http://localhost:5000/assets/gdow", requestBody)
+      .get("http://66.228.60.198:5000/assets/gdow", requestBody)
+      // .get("http://localhost:5000/assets/gdow", requestBody)
       .then((res) => {
         return JSON.parse(JSON.stringify(res.data));
       })
