@@ -28,7 +28,10 @@ function Register() {
       password: password1,
     });
     const config = {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
     };
 
     axios

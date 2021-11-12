@@ -18,11 +18,32 @@ function MyNavBar() {
   const handleLoginClick = () => {
     //if user is not logged in, we redirect to login page
     if (currentUser.username === "" && currentUser.email === "") {
-      history.push("/login");
+      //TODO: remove this logout once session recovery is implemented
+      //make a logout request
+      axios
+        .post("http://localhost:5000/auth/logout", {}, {withCredentials: true})
+        .then((res) => {
+          //remove the global user
+          dispatch(removeUser());
+          
+          history.push("/login");
+        })
+        .catch((error) => {
+          alert(JSON.stringify(error.response.data.response.errors));
+
+          // if we get an error here we are already logged out...
+
+          //remove the global user
+          dispatch(removeUser());
+          
+          history.push("/login");
+        });
+
+        // history.push("/login");
     } else {
       //make a logout request
       axios
-        .post("http://localhost:5000/auth/logout")
+        .post("http://localhost:5000/auth/logout", {}, {withCredentials: true})
         .then((res) => {
           //remove the global user
           dispatch(removeUser());
@@ -32,6 +53,14 @@ function MyNavBar() {
         })
         .catch((error) => {
           alert(JSON.stringify(error.response.data.response.errors));
+
+          // if we get an error here we are already logged out...
+
+          //remove the global user
+          dispatch(removeUser());
+
+          alert("You have been logged out!");
+          history.push("/home");
         });
     }
   };
@@ -44,7 +73,7 @@ function MyNavBar() {
         variant="dark"
       >
         <Container>
-          <Navbar.Brand href="home" style={{ fontSize: "2em" }}>
+          <Navbar.Brand as={Link} to="/home" style={{ fontSize: "2em" }}>
             Trendr
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -56,6 +85,9 @@ function MyNavBar() {
               <Nav.Link as={Link} to="/myaccount">
                 MyAccount
               </Nav.Link>
+              <Nav.Link as={Link} to="/settings">
+                Settings
+              </Nav.Link>
               <Nav.Link as={Link} to="/report">
                 MyReport
               </Nav.Link>
@@ -66,13 +98,6 @@ function MyNavBar() {
                 {currentUser.username === "" && currentUser.email === ""
                   ? "Login/Register"
                   : "Log Out"}
-              </Button>
-
-              <Button
-                variant={currentTheme.variant}
-                onClick={() => dispatch(toggleTheme())}
-              >
-                {currentTheme.name} Mode
               </Button>
             </Nav>
           </Navbar.Collapse>

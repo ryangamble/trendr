@@ -1,12 +1,14 @@
 import tweepy
 from typing import Union
 from trendr.extensions import db
+from trendr.models.search_model import Search
 from trendr.models.tweet_model import Tweet
 
 
 def store_twitter_results(
     results: Union[tweepy.models.SearchResults, tweepy.models.Status],
     overwrite: bool = True,
+    search_id: int = None,
 ) -> list[int]:
     if not results:
         return []
@@ -16,6 +18,10 @@ def store_twitter_results(
 
     res_ids = []
     to_add = []
+
+    search = None
+    if search_id is not None:
+        search = Search.query.filter_by(id=search_id).one()
 
     for result in results:
         # do not accepted mixed-type results
@@ -33,6 +39,9 @@ def store_twitter_results(
                 existing.retweets = result.retweet_count
                 # TODO: determine if we should overwrite sentiment scores
                 existing.sentiment_score = None
+
+            if search:
+                search.tweets.append(existing)
         else:
             # generate new db row
             new_tweet = Tweet(
@@ -46,6 +55,10 @@ def store_twitter_results(
 
     # add batch
     db.session.add_all(to_add)
+
+    if search:
+        search.tweets.extend(to_add)
+
     db.session.commit()
 
     res_ids.extend([added.id for added in to_add])
