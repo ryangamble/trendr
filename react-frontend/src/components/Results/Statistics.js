@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Image, Table, Col, Spinner } from "react-bootstrap";
+import { Container, Image, Table, Col, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import "./Results.css";
@@ -108,10 +108,34 @@ function StockStatistics(props) {
 
   function renderExchanges() {
     var list = [];
-    for (var key in asset.exchanges) {
+    for (var key in asset.exchanges.subarray(0, 2)) {
       list.push(<div>{asset.exchanges[key]}<br/></div>);
     }
-    return (list);
+
+    return (
+      <div>
+        {list}
+        <OverlayTrigger
+          placement="right"
+          overlay={renderTooltip}
+        >
+          ...
+        </OverlayTrigger>
+      </div>
+      
+      );
+  }
+
+  function renderTooltip() {
+    var list = [];
+    for (var key in asset.exchanges.subarray(2, asset.exchanges.length)) {
+      list.push(<div>{asset.exchanges[key]}<br/></div>);
+    }
+    return(
+      <Tooltip>
+        {list}
+      </Tooltip>
+    );
   }
 
   if (loading) {
@@ -265,11 +289,31 @@ function CoinStatistics(props) {
   }
 
   function renderExchanges() {
+    return (
+      <div>
+        {crypto.exchanges[0]}
+        <OverlayTrigger
+          placement="auto"
+          overlay={renderTooltip()}
+        >
+          <div>...</div>
+        </OverlayTrigger>
+      </div>
+      
+      );
+  }
+
+  function renderTooltip() {
     var list = [];
     for (var key in crypto.exchanges) {
-      list.push(<div>{crypto.exchanges[key]}<br/></div>);
+      list.push(crypto.exchanges[key] + ", ");
     }
-    return (list);
+    list[list.length - 1] = list[list.length - 1].substring(0, list[list.length - 1].lastIndexOf(","))
+    return(
+      <Tooltip>
+        {list}
+      </Tooltip>
+    );
   }
 
   if (loading) {
@@ -322,7 +366,7 @@ function CoinStatistics(props) {
               </tr>
               <tr>
                 <td className="statName">Exchanges</td>
-                <td className="statValue">{renderExchanges()}</td>
+                <td className="statValue">{crypto.exchanges && renderExchanges()}</td>
               </tr>
             </tbody>
           </Table>

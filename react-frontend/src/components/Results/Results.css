@@ -4,6 +4,10 @@
   max-width: 90vh;
 }
 
+.col {
+  overflow: auto;
+}
+
 div.graphLayout.container {
   justify-content: center;
   align-items: center;
@@ -34,6 +38,8 @@ td.statValue {
   text-align: right;
   align-self: baseline;
   font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .chartTitle {
