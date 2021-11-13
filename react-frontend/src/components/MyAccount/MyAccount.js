@@ -91,7 +91,7 @@ function MyAccount() {
       })
       .catch((error) => {
         alert(
-          "Change password failed, make sure your old password is correct!"
+          "Change password failed, make sure your old password is correct and your new password is complex!"
         );
       });
   };
