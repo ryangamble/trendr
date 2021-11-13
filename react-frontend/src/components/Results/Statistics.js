@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Container, Image, Table, Col, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
+import {
+  Container,
+  Image,
+  Table,
+  Col,
+  Spinner,
+  OverlayTrigger,
+  Tooltip
+} from "react-bootstrap";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import "./Results.css";
@@ -100,85 +108,85 @@ function StockStatistics(props) {
     return (list);
   }
 
-  if (loading) {
-    return (
-      <Container fluid>
-        <Spinner animation="border" />
-      </Container>
-    );
-  } else {
-    return (
-      <Container fluid>
-        <Col>
-          <Image src={asset.logo} rounded alt="<no logo>"/>
-          <h2>{asset.companyName}</h2>
-          <p>{asset.symbol}</p>
-          { asset.website && <a href={asset.website} target="_blank" rel="noreferrer">Homepage</a>}
-        </Col>
-        <Col>
-          <Table size="sm" style={{ color: currentTheme.foreground }}>
-            <tbody>
-              <tr>
-                <td className="statName">Currency</td>
-                <td className="statValue">{asset.currency}</td>
-              </tr>
-              <tr>
-                <td className="statName">Day Open</td>
-                <td className="statValue">{formatPrice(asset.dayOpen)}</td>
-              </tr>
-              <tr>
-                <td className="statName">Day High</td>
-                <td className="statValue">{formatPrice(asset.dayHigh)}</td>
-              </tr>
-              <tr>
-                <td className="statName">Day Low</td>
-                <td className="statValue">{formatPrice(asset.dayLow)}</td>
-              </tr>
-              <tr>
-                <td className="statName">52 Week High</td>
-                <td className="statValue">
-                  {formatPrice(asset.fiftyTwoWeekHigh)}
-                </td>
-              </tr>
-              <tr>
-                <td className="statName">52 Week Low</td>
-                <td className="statValue">
-                  {formatPrice(asset.fiftyTwoWeekLow)}
-                </td>
-              </tr>
-              <tr>
-                <td className="statName">Volume</td>
-                <td className="statValue">{asset.volume}</td>
-              </tr>
-              <tr>
-                <td className="statName">Avg. Volume</td>
-                <td className="statValue">{asset.avgVolume}</td>
-              </tr>
-              <tr>
-                <td className="statName">Div/Yield</td>
-                <td className="statValue">{asset.divYield}</td>
-              </tr>
-              <tr>
-                <td className="statName">PEG ratio</td>
-                <td className="statValue">{asset.pegRatio}</td>
-              </tr>
-              <tr>
-                <td className="statName">Market Cap</td>
-                <td className="statValue">
-                  {formatPrice(Number(asset.marketCap.slice(0, -1))) +
-                    asset.marketCap.slice(-1)}
-                </td>
-              </tr>
-              <tr>
-                <td className="statName">Exchanges</td>
-                <td className="statValue">{asset.exchanges ? renderExchanges() : <Spinner animation="border" size="sm"/>}</td>
-              </tr>
-            </tbody>
-          </Table>
-        </Col>
-      </Container>
-    );
-  }
+  return (
+    <>
+      {loading ? (
+        <Container fluid>
+          <Spinner animation="border" />
+        </Container>
+      ) : (
+        <Container fluid>
+          <Col>
+            <Image src={asset.logo} rounded alt="<no logo>"/>
+            <h2>{asset.companyName}</h2>
+            <p>{asset.symbol}</p>
+            { asset.website && <a href={asset.website} target="_blank" rel="noreferrer">Homepage</a>}
+          </Col>
+          <Col>
+            <Table size="sm" style={{ color: currentTheme.foreground }}>
+              <tbody>
+                <tr>
+                  <td className="statName">Currency</td>
+                  <td className="statValue">{asset.currency}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Day Open</td>
+                  <td className="statValue">{formatPrice(asset.dayOpen)}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Day High</td>
+                  <td className="statValue">{formatPrice(asset.dayHigh)}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Day Low</td>
+                  <td className="statValue">{formatPrice(asset.dayLow)}</td>
+                </tr>
+                <tr>
+                  <td className="statName">52 Week High</td>
+                  <td className="statValue">
+                    {formatPrice(asset.fiftyTwoWeekHigh)}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="statName">52 Week Low</td>
+                  <td className="statValue">
+                    {formatPrice(asset.fiftyTwoWeekLow)}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="statName">Volume</td>
+                  <td className="statValue">{asset.volume}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Avg. Volume</td>
+                  <td className="statValue">{asset.avgVolume}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Div/Yield</td>
+                  <td className="statValue">{asset.divYield}</td>
+                </tr>
+                <tr>
+                  <td className="statName">PEG ratio</td>
+                  <td className="statValue">{asset.pegRatio}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Market Cap</td>
+                  <td className="statValue">
+                    {formatPrice(Number(asset.marketCap.slice(0, -1))) +
+                      asset.marketCap.slice(-1)}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="statName">Exchanges</td>
+                  <td className="statValue">{asset.exchanges ? renderExchanges() : <Spinner animation="border" size="sm"/>}</td>
+                </tr>
+              </tbody>
+            </Table>
+          </Col>
+        </Container>
+      )}
+    </>
+  );
 }
 
 function CoinStatistics(props) {
@@ -259,64 +267,64 @@ function CoinStatistics(props) {
     );
   }
 
-  if (loading) {
-    return (
-      <Container fluid>
-        <Spinner animation="border" />
-      </Container>
-    );
-  } else {
-    return(
-      <Container fluid>
-        <Col>
-        <Col>
-          <Image src={crypto.Image} rounded />
-          <h2>{crypto.Name}</h2>
-          <p>{crypto.Symbol.toUpperCase()}</p>
-          {crypto.homepage && <a href={crypto.homepage} target="_blank" rel="noreferrer">Homepage</a>}
-        </Col>
-        </Col>
-        <Col>
-          <Table size="sm" style={{ color: currentTheme.foreground }}>
-            <tbody>
-              <tr>
-                <td className="statName">Price</td>
-                <td className="statValue">{formatPrice(crypto.Price)}</td>
-              </tr>
-              <tr>
-                <td className="statName">Day High</td>
-                <td className="statValue">{formatPrice(crypto['DayHigh'])}</td>
-              </tr>
-              <tr>
-                <td className="statName">Day Low</td>
-                <td className="statValue">{formatPrice(crypto['DayLow'])}</td>
-              </tr>
-              <tr>
-                <td className="statName">Market Cap Rank</td>
-                <td className="statValue">{crypto['MarketCapRank'] ? crypto['MarketCapRank'] : "Not available"}</td>
-              </tr>
-              <tr>
-                <td className="statName">24 Hour Market Cap Change</td>
-                <td className="statValue">{crypto['24HrMarketCapChange'] ? crypto['24HrMarketCapChange'] + "%" : "Not available"}</td>
-              </tr>
-              <tr>
-                <td className="statName">24 Hour Price Change</td>
-                <td className="statValue">{crypto['24HrPriceChange'] ? crypto['24HrPriceChange'] + "%" : "Not available"}</td>
-              </tr>
-              <tr>
-                <td className="statName">Market Cap</td>
-                <td className="statValue">{formatPrice(crypto.MarketCap)}</td>
-              </tr>
-              <tr>
-                <td className="statName">Exchanges</td>
-                <td className="statValue">{crypto.exchanges && renderExchanges()}</td>
-              </tr>
-            </tbody>
-          </Table>
-        </Col>
-      </Container>
-    );
-  }
+  return (
+    <>
+      {loading ? (
+        <Container fluid>
+          <Spinner animation="border" />
+        </Container>
+      ) : (
+        <Container fluid>
+          <Col>
+          <Col>
+            <Image src={crypto.Image} rounded />
+            <h2>{crypto.Name}</h2>
+            <p>{crypto.Symbol.toUpperCase()}</p>
+            {crypto.homepage && <a href={crypto.homepage} target="_blank" rel="noreferrer">Homepage</a>}
+          </Col>
+          </Col>
+          <Col>
+            <Table size="sm" style={{ color: currentTheme.foreground }}>
+              <tbody>
+                <tr>
+                  <td className="statName">Price</td>
+                  <td className="statValue">{formatPrice(crypto.Price)}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Day High</td>
+                  <td className="statValue">{formatPrice(crypto['DayHigh'])}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Day Low</td>
+                  <td className="statValue">{formatPrice(crypto['DayLow'])}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Market Cap Rank</td>
+                  <td className="statValue">{crypto['MarketCapRank'] ? crypto['MarketCapRank'] : "Not available"}</td>
+                </tr>
+                <tr>
+                  <td className="statName">24 Hour Market Cap Change</td>
+                  <td className="statValue">{crypto['24HrMarketCapChange'] ? crypto['24HrMarketCapChange'] + "%" : "Not available"}</td>
+                </tr>
+                <tr>
+                  <td className="statName">24 Hour Price Change</td>
+                  <td className="statValue">{crypto['24HrPriceChange'] ? crypto['24HrPriceChange'] + "%" : "Not available"}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Market Cap</td>
+                  <td className="statValue">{formatPrice(crypto.MarketCap)}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Exchanges</td>
+                  <td className="statValue">{crypto.exchanges && renderExchanges()}</td>
+                </tr>
+              </tbody>
+            </Table>
+          </Col>
+        </Container>
+      )}
+    </>
+  );
 }
 
 function TokenStatistics(props) {
@@ -351,45 +359,45 @@ function TokenStatistics(props) {
       });
   }, [props.addr]);
 
-  if (loading) {
-    return (
-      <Container fluid>
-        <Spinner animation="border" />
-      </Container>
-    );
-  } else {
-    return(
-      <Container fluid>
-        <Col>
-          <h2 style={{textAlign: "left"}}>Token Info</h2>
-          <Table size="sm" style={{ color: currentTheme.foreground }}>
-            <tbody>
-              <tr>
-                <td className="statName">Address</td>
-                <td className="statValue">{token.address}</td>
-              </tr>
-              <tr>
-                <td className="statName">Total Holders</td>
-                <td className="statValue">{token.holdersCount}</td>
-              </tr>
-              <tr>
-                <td className="statName">Total Supply</td>
-                <td className="statValue">{getNumberUnit(token.totalSupply)}</td>
-              </tr>
-              <tr>
-                <td className="statName">Price</td>
-                <td className="statValue">{token.price.rate}</td>
-              </tr>
-              <tr>
-                <td className="statName">Total Operations</td>
-                <td className="statValue">{token.countOps}</td>
-              </tr>
-            </tbody>
-          </Table>
-        </Col>
-      </Container>
-    );
-  }
+  return (
+    <>
+      {loading ? (
+        <Container fluid>
+          <Spinner animation="border" />
+        </Container>
+      ) : (
+        <Container fluid>
+          <Col>
+            <h2 style={{textAlign: "left"}}>Token Info</h2>
+            <Table size="sm" style={{ color: currentTheme.foreground }}>
+              <tbody>
+                <tr>
+                  <td className="statName">Address</td>
+                  <td className="statValue">{token.address}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Total Holders</td>
+                  <td className="statValue">{token.holdersCount}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Total Supply</td>
+                  <td className="statValue">{getNumberUnit(token.totalSupply)}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Price</td>
+                  <td className="statValue">{token.price.rate}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Total Operations</td>
+                  <td className="statValue">{token.countOps}</td>
+                </tr>
+              </tbody>
+            </Table>
+          </Col>
+        </Container>
+      )}
+    </>  
+  );
 }
 
 export {

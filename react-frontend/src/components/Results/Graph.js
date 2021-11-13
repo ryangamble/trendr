@@ -23,8 +23,7 @@ import {
   Crosshair,
   Borders,
   DiscreteColorLegend,
-  makeVisFlexible,
-  Hint
+  makeVisFlexible
 } from "react-vis";
 
 import axios from "axios";
@@ -197,142 +196,142 @@ function StockGraph(props) {
     return num.toLocaleString("en-US", options);
   }
 
-  if (loadedCount < 5) {
-    return (
-      <Container fluid>
-        <Spinner animation="border" />
-      </Container>
-    );
-  } else {
-    return (
-      <Container className="graphLayout">
-        <Row>
-          <div className="chartTitle">
-            {props.graphType === "price" ? (
-              <h2>Price history</h2>
-            ) : (
-              <h2>Volume history</h2>
-            )}
-          </div>
-        </Row>
-        <Row>
-          <div className="chartContainer">
-            <FlexibleXYPlot
-              onMouseLeave={_onMouseLeave}
-              xType="ordinal"
-              yDomain={
-                props.graphType === "price"
-                  ? [0.98 * min, 1.02 * max]
-                  : [0.9 * min, 1.2 * max]
-              }
-            >
-              <HorizontalGridLines />
-              {/* <VerticalGridLines/> */}
-
-              <LineSeries
-                animation={true}
-                data={graphData[period]}
-                onNearestX={_onNearestX}
-                strokeWidth={2}
-                opacity={1}
-                color={props.color}
-              />
-              <Borders
-                style={{
-                  bottom: { fill: currentTheme.fill },
-                  left: { fill: currentTheme.fill },
-                  right: { fill: currentTheme.fill },
-                  top: { fill: currentTheme.fill },
-                }}
-              />
-
-              <YAxis />
-              <XAxis hideTicks />
-
-              <Crosshair
-                values={crosshairValues}
-                itemsFormat={
-                  props.graphType === "price"
-                    ? itemsFormatPrice
-                    : itemsFormatVol
-                }
-              />
-            </FlexibleXYPlot>
-          </div>
-        </Row>
-        <Row>
-          <Col>
-            <ButtonGroup size="sm">
-              <Button
-                variant="secondary"
-                className={props.graphType + "PeriodToggle"}
-                onClick={() => {
-                  setPeriod("1d");
-                }}
-              >
-                1D
-              </Button>
-              <Button
-                variant="secondary"
-                className={props.graphType + "PeriodToggle"}
-                onClick={() => setPeriod("5d")}
-              >
-                5D
-              </Button>
-              <Button
-                variant="secondary"
-                className={props.graphType + "PeriodToggle"}
-                onClick={() => setPeriod("1mo")}
-              >
-                1M
-              </Button>
-              <Button
-                variant="secondary"
-                className={props.graphType + "PeriodToggle"}
-                onClick={() => setPeriod("3mo")}
-              >
-                3M
-              </Button>
-              <Button
-                variant="secondary"
-                className={props.graphType + "PeriodToggle"}
-                onClick={() => setPeriod("1y")}
-              >
-                1Y
-              </Button>
-            </ButtonGroup>
-          </Col>
-          {props.graphType === "price" ? (
-            <Col>
-              {graphData[period][graphData[period].length - 1].y -
-                graphData[period][0].y >
-              0 ? (
-                <div className="priceUp">
-                  Up{" "}
-                  {formatPrice(
-                    graphData[period][graphData[period].length - 1].y -
-                      graphData[period][0].y
-                  )}{" "}
-                  {periodDisplay[period]}
-                </div>
+  return (
+    <>
+      {loadedCount < 5 ? (
+        <Container fluid>
+          <Spinner animation="border" />
+        </Container>
+      ) : (
+        <Container className="graphLayout">
+          <Row>
+            <div className="chartTitle">
+              {props.graphType === "price" ? (
+                <h2>Price history</h2>
               ) : (
-                <div className="priceDown">
-                  Down{" "}
-                  {formatPrice(
-                    graphData[period][graphData[period].length - 1].y -
-                      graphData[period][0].y
-                  )}{" "}
-                  {periodDisplay[period]}
-                </div>
+                <h2>Volume history</h2>
               )}
+            </div>
+          </Row>
+          <Row>
+            <div className="chartContainer">
+              <FlexibleXYPlot
+                onMouseLeave={_onMouseLeave}
+                xType="ordinal"
+                yDomain={
+                  props.graphType === "price"
+                    ? [0.98 * min, 1.02 * max]
+                    : [0.9 * min, 1.2 * max]
+                }
+              >
+                <HorizontalGridLines />
+                {/* <VerticalGridLines/> */}
+
+                <LineSeries
+                  animation={true}
+                  data={graphData[period]}
+                  onNearestX={_onNearestX}
+                  strokeWidth={2}
+                  opacity={1}
+                  color={props.color}
+                />
+                <Borders
+                  style={{
+                    bottom: { fill: currentTheme.fill },
+                    left: { fill: currentTheme.fill },
+                    right: { fill: currentTheme.fill },
+                    top: { fill: currentTheme.fill },
+                  }}
+                />
+
+                <YAxis />
+                <XAxis hideTicks />
+
+                <Crosshair
+                  values={crosshairValues}
+                  itemsFormat={
+                    props.graphType === "price"
+                      ? itemsFormatPrice
+                      : itemsFormatVol
+                  }
+                />
+              </FlexibleXYPlot>
+            </div>
+          </Row>
+          <Row>
+            <Col>
+              <ButtonGroup size="sm">
+                <Button
+                  variant="secondary"
+                  className={props.graphType + "PeriodToggle"}
+                  onClick={() => {
+                    setPeriod("1d");
+                  }}
+                >
+                  1D
+                </Button>
+                <Button
+                  variant="secondary"
+                  className={props.graphType + "PeriodToggle"}
+                  onClick={() => setPeriod("5d")}
+                >
+                  5D
+                </Button>
+                <Button
+                  variant="secondary"
+                  className={props.graphType + "PeriodToggle"}
+                  onClick={() => setPeriod("1mo")}
+                >
+                  1M
+                </Button>
+                <Button
+                  variant="secondary"
+                  className={props.graphType + "PeriodToggle"}
+                  onClick={() => setPeriod("3mo")}
+                >
+                  3M
+                </Button>
+                <Button
+                  variant="secondary"
+                  className={props.graphType + "PeriodToggle"}
+                  onClick={() => setPeriod("1y")}
+                >
+                  1Y
+                </Button>
+              </ButtonGroup>
             </Col>
-          ) : (
-            <Col></Col>
-          )}
-        </Row>
-      </Container>
-    );
-  }
+            {props.graphType === "price" ? (
+              <Col>
+                {graphData[period][graphData[period].length - 1].y -
+                  graphData[period][0].y >
+                0 ? (
+                  <div className="priceUp">
+                    Up{" "}
+                    {formatPrice(
+                      graphData[period][graphData[period].length - 1].y -
+                        graphData[period][0].y
+                    )}{" "}
+                    {periodDisplay[period]}
+                  </div>
+                ) : (
+                  <div className="priceDown">
+                    Down{" "}
+                    {formatPrice(
+                      graphData[period][graphData[period].length - 1].y -
+                        graphData[period][0].y
+                    )}{" "}
+                    {periodDisplay[period]}
+                  </div>
+                )}
+              </Col>
+            ) : (
+              <Col></Col>
+            )}
+          </Row>
+        </Container>
+      )}
+    </>
+  );
 }
 
 function CryptoGraph(props) {
@@ -476,141 +475,142 @@ function CryptoGraph(props) {
     return num.toLocaleString("en-US", options);
   }
 
-  if (loadedCount < 5) {
-    return (
-      <Container fluid>
-        <Spinner animation="border" />
-      </Container>
-    );
-  } else {
-    return (
-      <Container className="graphLayout">
-        <Row>
-          <div className="chartTitle">
-            {props.graphType === "price" ? (
-              <h2>Price history</h2>
-            ) : (
-              <h2>Volume history</h2>
-            )}
-          </div>
-        </Row>
-        <Row>
-          <div className="chartContainer">
-            <FlexibleXYPlot
-              onMouseLeave={_onMouseLeave}
-              xType="ordinal"
-              yDomain={
-                props.graphType === "price"
-                  ? [0.98 * min, 1.02 * max]
-                  : [0.9 * min, 1.2 * max]
-              }
-            >
-              <HorizontalGridLines />
-              {/* <VerticalGridLines /> */}
 
-              <LineSeries
-                animation={true}
-                data={graphData[period]}
-                onNearestX={_onNearestX}
-                strokeWidth={2}
-                opacity={1}
-                color={props.color}
-              />
-              <Borders
-                style={{
-                  bottom: { fill: currentTheme.fill },
-                  left: { fill: currentTheme.fill },
-                  right: { fill: currentTheme.fill },
-                  top: { fill: currentTheme.fill },
-                }}
-              />
-
-              <YAxis />
-              <XAxis hideTicks/>
-
-              <Crosshair
-                values={crosshairValues}
-                itemsFormat={props.graphType === "price"
-                ? itemsFormatPrice
-                : itemsFormatVol
-                }
-              />
-            </FlexibleXYPlot>
-          </div>
-        </Row>
-        <Row>
-          <Col>
-            <ButtonGroup size="sm">
-              <Button
-                variant="secondary"
-                className={props.graphType + "PeriodToggle"}
-                onClick={() => {
-                  setPeriod("1");
-                }}
-              >
-                1D
-              </Button>
-              <Button
-                variant="secondary"
-                className={props.graphType + "PeriodToggle"}
-                onClick={() => setPeriod("5")}
-              >
-                5D
-              </Button>
-              <Button
-                variant="secondary"
-                className={props.graphType + "PeriodToggle"}
-                onClick={() => setPeriod("30")}
-              >
-                1M
-              </Button>
-              <Button
-                variant="secondary"
-                className={props.graphType + "PeriodToggle"}
-                onClick={() => setPeriod("90")}
-              >
-                3M
-              </Button>
-              <Button
-                variant="secondary"
-                className={props.graphType + "PeriodToggle"}
-                onClick={() => setPeriod("365")}
-              >
-                1Y
-              </Button>
-            </ButtonGroup>
-          </Col>
-          {props.graphType === "price" ? (
-            <Col>
-              {graphData[period][graphData[period].length - 1].y -
-                graphData[period][0].y >
-              0 ? (
-                <div className="priceUp">
-                  Up{" "}
-                  {formatPrice(
-                    graphData[period][graphData[period].length - 1].y -
-                      graphData[period][0].y
-                  )}{" "}
-                  {periodDisplay[period]}
-                </div>
+  return (
+    <>
+      {loadedCount < 5 ? (
+        <Container fluid>
+          <Spinner animation="border" />
+        </Container>
+      ) : (
+        <Container className="graphLayout">
+          <Row>
+            <div className="chartTitle">
+              {props.graphType === "price" ? (
+                <h2>Price history</h2>
               ) : (
-                <div className="priceDown">
-                  Down{" "}
-                  {formatPrice(
-                    graphData[period][graphData[period].length - 1].y -
-                      graphData[period][0].y
-                  )}{" "}
-                  {periodDisplay[period]}
-                </div>
+                <h2>Volume history</h2>
               )}
+            </div>
+          </Row>
+          <Row>
+            <div className="chartContainer">
+              <FlexibleXYPlot
+                onMouseLeave={_onMouseLeave}
+                xType="ordinal"
+                yDomain={
+                  props.graphType === "price"
+                    ? [0.98 * min, 1.02 * max]
+                    : [0.9 * min, 1.2 * max]
+                }
+              >
+                <HorizontalGridLines />
+                {/* <VerticalGridLines /> */}
+
+                <LineSeries
+                  animation={true}
+                  data={graphData[period]}
+                  onNearestX={_onNearestX}
+                  strokeWidth={2}
+                  opacity={1}
+                  color={props.color}
+                />
+                <Borders
+                  style={{
+                    bottom: { fill: currentTheme.fill },
+                    left: { fill: currentTheme.fill },
+                    right: { fill: currentTheme.fill },
+                    top: { fill: currentTheme.fill },
+                  }}
+                />
+
+                <YAxis />
+                <XAxis hideTicks/>
+
+                <Crosshair
+                  values={crosshairValues}
+                  itemsFormat={props.graphType === "price"
+                  ? itemsFormatPrice
+                  : itemsFormatVol
+                  }
+                />
+              </FlexibleXYPlot>
+            </div>
+          </Row>
+          <Row>
+            <Col>
+              <ButtonGroup size="sm">
+                <Button
+                  variant="secondary"
+                  className={props.graphType + "PeriodToggle"}
+                  onClick={() => {
+                    setPeriod("1");
+                  }}
+                >
+                  1D
+                </Button>
+                <Button
+                  variant="secondary"
+                  className={props.graphType + "PeriodToggle"}
+                  onClick={() => setPeriod("5")}
+                >
+                  5D
+                </Button>
+                <Button
+                  variant="secondary"
+                  className={props.graphType + "PeriodToggle"}
+                  onClick={() => setPeriod("30")}
+                >
+                  1M
+                </Button>
+                <Button
+                  variant="secondary"
+                  className={props.graphType + "PeriodToggle"}
+                  onClick={() => setPeriod("90")}
+                >
+                  3M
+                </Button>
+                <Button
+                  variant="secondary"
+                  className={props.graphType + "PeriodToggle"}
+                  onClick={() => setPeriod("365")}
+                >
+                  1Y
+                </Button>
+              </ButtonGroup>
             </Col>
-          ) : (
-            <Col></Col>
-          )}
-        </Row>
-      </Container>
-    );
-  }
+            {props.graphType === "price" ? (
+              <Col>
+                {graphData[period][graphData[period].length - 1].y -
+                  graphData[period][0].y >
+                0 ? (
+                  <div className="priceUp">
+                    Up{" "}
+                    {formatPrice(
+                      graphData[period][graphData[period].length - 1].y -
+                        graphData[period][0].y
+                    )}{" "}
+                    {periodDisplay[period]}
+                  </div>
+                ) : (
+                  <div className="priceDown">
+                    Down{" "}
+                    {formatPrice(
+                      graphData[period][graphData[period].length - 1].y -
+                        graphData[period][0].y
+                    )}{" "}
+                    {periodDisplay[period]}
+                  </div>
+                )}
+              </Col>
+            ) : (
+              <Col></Col>
+            )}
+          </Row>
+        </Container>
+      )}
+    </>
+  );
 }
 
 function SentimentGraph(props) {
@@ -691,75 +691,75 @@ function SentimentGraph(props) {
     opacity: "0.4",
   }
 
-  if (loading) {
-    return (
-      <Container fluid>
-        <Spinner animation="border" />
-      </Container>
-    );
-  } else {
-    return (
-      <Container className="graphLayout">
-        <Row>
-          <div className="chartTitle">
-            <h2>Sentiment Data</h2>
-          </div>
-        </Row>
-        {twitterData.length > 0 || redditData.legnth > 0 ?
+  return (
+    <>
+      {loading ? (
+        <Container fluid>
+          <Spinner animation="border" />
+        </Container>
+      ) : (
+        <Container className="graphLayout">
           <Row>
-            <div className="chartContainer">
-              <FlexibleXYPlot
-                xDomain={[-1.0,1.0]}
-                yDomain={[0,1.0]}
-              >
-
-                <HorizontalGridLines />
-                <VerticalGridLines />
-                <XAxis
-                  title="Polarity"
-                  style={{title: {fill: currentTheme.foreground}}}
-                />
-                <YAxis
-                  title="Subjectivity"
-                  style={{title: {fill: currentTheme.foreground}}}
-                />
-                <DiscreteColorLegend
-                  orientation="horizontal"
-                  style={{position: "absolute", right: "0%", top: "0%", backgroundColor: "rgba(108,117,125, 0.7)", borderRadius: "5px"}}
-                  items={[
-                    {
-                      title: "Twitter",
-                      color: "#0D6EFD",
-                      strokeWidth: 5,
-                    },
-                    {
-                      title: "Reddit",
-                      color: "red",
-                      strokeWidth: 5
-                    }
-                  ]}
-                />
-                <MarkSeries
-                  {...markSeriesProps}
-                  data={twitterData}
-                  color="#0D6EFD"
-                />
-                <MarkSeries
-                  {...markSeriesProps}
-                  data={redditData}
-                  color="red"
-                />
-              </FlexibleXYPlot>
+            <div className="chartTitle">
+              <h2>Sentiment Data</h2>
             </div>
           </Row>
-        :
-          <div>
-            no data
-          </div>
-        }
-      </Container>
-    );
-  }
+          {twitterData.length > 0 || redditData.legnth > 0 ?
+            <Row>
+              <div className="chartContainer">
+                <FlexibleXYPlot
+                  xDomain={[-1.0,1.0]}
+                  yDomain={[0,1.0]}
+                >
+
+                  <HorizontalGridLines />
+                  <VerticalGridLines />
+                  <XAxis
+                    title="Polarity"
+                    style={{title: {fill: currentTheme.foreground}}}
+                  />
+                  <YAxis
+                    title="Subjectivity"
+                    style={{title: {fill: currentTheme.foreground}}}
+                  />
+                  <DiscreteColorLegend
+                    orientation="horizontal"
+                    style={{position: "absolute", right: "0%", top: "0%", backgroundColor: "rgba(108,117,125, 0.7)", borderRadius: "5px"}}
+                    items={[
+                      {
+                        title: "Twitter",
+                        color: "#0D6EFD",
+                        strokeWidth: 5,
+                      },
+                      {
+                        title: "Reddit",
+                        color: "red",
+                        strokeWidth: 5
+                      }
+                    ]}
+                  />
+                  <MarkSeries
+                    {...markSeriesProps}
+                    data={twitterData}
+                    color="#0D6EFD"
+                  />
+                  <MarkSeries
+                    {...markSeriesProps}
+                    data={redditData}
+                    color="red"
+                  />
+                </FlexibleXYPlot>
+              </div>
+            </Row>
+          :
+            <div>
+              no data
+            </div>
+          }
+        </Container>
+      )}
+    </>  
+  );
 }
 
 function TopTokenHolders(props) {
@@ -819,56 +819,57 @@ function TopTokenHolders(props) {
       share: value.subLabel.substring(value.subLabel.toString().indexOf(" "), value.subLabel.toString().length)
     });
   }
-  if (loading) {
-    return (
-      <Container fluid>
-        <Spinner animation="border" />
-      </Container>
-    );
-  } else {
-    return (
-      <Container className="graphLayout">
-        <Row>
-          <div className="chartTitle">
-            <h2>Top Token Holders</h2>
-          </div>
-        </Row>
-        <Row>
-          <div className="chartContainer">
-            <FlexRadialChart
-              className="pie-chart"
-              innerRadius={40}
-              radius={140}
-              getAngle={d => d.theta}
-              data={graphData}
-              onValueMouseOver={onNearestValue}
-              onSeriesMouseOut={() => setValue(false)}
-              padAngle={0.04}
-            >
-            </FlexRadialChart>
-          </div>
-        </Row>
-        <Col>
-          <Table size="sm" style={{ color: currentTheme.foreground }}>
-            <tbody>
-              <tr>
-                <td className="statName">Address:</td>
-                <td className="statValue">{value.address}</td>
-              </tr>
-              <tr>
-                <td className="statName">Balance:</td>
-              <td className="statValue">{value.balance}</td>
-              </tr>
-              <tr>
-                <td className="statName">Share:</td>
-                <td className="statValue">{value.share}</td>
-              </tr>
-            </tbody>
-          </Table>
-        </Col>
-      </Container>
-    );
-  }
+  
+  return (
+    <>
+      {loading ? (
+        <Container fluid>
+          <Spinner animation="border" />
+        </Container>
+      ) : (
+        <Container className="graphLayout">
+          <Row>
+            <div className="chartTitle">
+              <h2>Top Token Holders</h2>
+            </div>
+          </Row>
+          <Row>
+            <div className="chartContainer">
+              <FlexRadialChart
+                className="pie-chart"
+                innerRadius={40}
+                radius={140}
+                getAngle={d => d.theta}
+                data={graphData}
+                onValueMouseOver={onNearestValue}
+                onSeriesMouseOut={() => setValue(false)}
+                padAngle={0.04}
+              >
+              </FlexRadialChart>
+            </div>
+          </Row>
+          <Col>
+            <Table size="sm" style={{ color: currentTheme.foreground }}>
+              <tbody>
+                <tr>
+                  <td className="statName">Address:</td>
+                  <td className="statValue">{value.address}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Balance:</td>
+                <td className="statValue">{value.balance}</td>
+                </tr>
+                <tr>
+                  <td className="statName">Share:</td>
+                  <td className="statValue">{value.share}</td>
+                </tr>
+              </tbody>
+            </Table>
+          </Col>
+        </Container>
+      )}
+    </>
+  );
 }
 
 function FearGreed() {

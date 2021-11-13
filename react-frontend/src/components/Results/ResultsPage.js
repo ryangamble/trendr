@@ -195,10 +195,10 @@ function Results(props) {
               <TweetSummary symbol={symbol}/>
               <br />
               {addr && (
-                <div>
+                <>
                   <TopTokenHolders addr={addr} />
                   <br />
-                </div>
+                </>
               )}
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
@@ -207,10 +207,10 @@ function Results(props) {
               <CryptoGraph symbol={symbol} graphType="volume" color="orange" />
               <br />
               {addr && (
-                <div>
+                <>
                   <TokenStatistics addr={addr} />
                   <br />
-                </div>
+                </>
               )}
             </Col>
           </Row>
