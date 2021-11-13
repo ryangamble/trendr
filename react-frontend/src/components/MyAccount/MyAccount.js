@@ -199,8 +199,8 @@ function MyAccount() {
                       />
                     </Form.Group>
 
-                    <Row className="justify-content-sm-center">
-                      <Col sm="4">
+                    <Row>
+                      <Col>
                         <Button variant={currentTheme.variant} type="submit">
                           Change Password
                         </Button>
