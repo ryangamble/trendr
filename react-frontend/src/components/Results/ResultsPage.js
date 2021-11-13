@@ -8,12 +8,9 @@ import {
   SentimentGraph,
   StockGraph,
   CryptoGraph,
-  TopTokenHolders} from "./Graph";
-import {
-  StockStatistics,
-  CoinStatistics,
-  TokenStatistics,
-} from "./Statistics";
+  TopTokenHolders,
+} from "./Graph";
+import { StockStatistics, CoinStatistics, TokenStatistics } from "./Statistics";
 import FollowBtn from "../FollowButton/FollowBtn";
 import axios from "axios";
 
@@ -34,14 +31,15 @@ function Results(props) {
   };
 
   useEffect(() => {
-    console.log(id.substring(0, id.indexOf(":")))
+    console.log("id is", id);
+    console.log(id.substring(0, id.indexOf(":")));
     setType(id.substring(0, id.indexOf(":")));
     if (id.lastIndexOf(":") !== id.indexOf(":")) {
       setAddr(id.substring(id.lastIndexOf(":") + 1));
       setSymbol(id.substring(id.indexOf(":") + 1, id.lastIndexOf(":")));
     } else {
       setSymbol(id.substring(id.indexOf(":") + 1));
-      console.log(id.substring(id.indexOf(":") + 1))
+      console.log(id.substring(id.indexOf(":") + 1));
     }
   }, [id])
 
@@ -51,7 +49,9 @@ function Results(props) {
       console.log("fetching user follow list");
 
       axios
-        .get(`http://localhost:5000/users/assets-followed`, {withCredentials: true})
+        .get(`http://localhost:5000/users/assets-followed`, {
+          withCredentials: true,
+        })
         .then((res) => {
           return res.data;
         })
@@ -67,8 +67,8 @@ function Results(props) {
           alert(JSON.stringify(error.response.data.response.errors));
         });
     }
-  });
-  
+  }, []);
+
   if (type && symbol) {
     if (type === "crypto") {
       return renderCryptoResults();
@@ -76,7 +76,7 @@ function Results(props) {
       return renderStockResults();
     }
   } else {
-    return (null);
+    return null;
   }
 
   function renderStockResults() {
@@ -94,18 +94,10 @@ function Results(props) {
         <Container className="resultsContainer">
           <Row>
             <Col xs={12} className="resultsHeader">
-              <h3 style={{ marginRight: 10 }}>
-                Showing Results For: {symbol}
-              </h3>
+              <h3 style={{ marginRight: 10 }}>Showing Results For: {symbol}</h3>
               {currentUser.username === "" &&
               currentUser.email === "" ? null : (
-                <FollowBtn
-                  id={symbol}
-                  isFollow={isFollow}
-                  type={type}
-                  symbol={symbol}
-                  addr={addr}
-                />
+                <FollowBtn id={id} isFollow={isFollow} />
               )}
             </Col>
           </Row>
@@ -144,7 +136,6 @@ function Results(props) {
                 </Container>
               )}
               <br />
-
             </Col>
           </Row>
           <Link to="../../home" style={{ color: currentTheme.linkColor }}>
@@ -175,13 +166,7 @@ function Results(props) {
               </h3>
               {currentUser.username === "" &&
               currentUser.email === "" ? null : (
-                <FollowBtn
-                  id={symbol}
-                  isFollow={isFollow}
-                  type={type}
-                  symbol={symbol}
-                  addr={addr}
-                />
+                <FollowBtn id={id} isFollow={isFollow} />
               )}
             </Col>
           </Row>
