@@ -79,7 +79,7 @@ function StockStatistics(props) {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [props.symbol]);
 
   function formatPrice(num) {
     if (num < 0.1) {
@@ -95,7 +95,7 @@ function StockStatistics(props) {
   function renderExchanges() {
     var list = [];
     for (var key in asset.exchanges) {
-      list.push(<div>{asset.exchanges[key]}<br/></div>);
+      list.push(<div key={key}>{asset.exchanges[key]}<br/></div>);
     }
     return (list);
   }
@@ -110,10 +110,10 @@ function StockStatistics(props) {
     return (
       <Container fluid>
         <Col>
-          <Image src={asset.logo} rounded />
+          <Image src={asset.logo} rounded alt="<no logo>"/>
           <h2>{asset.companyName}</h2>
           <p>{asset.symbol}</p>
-          { asset.website && <a href={asset.website} target="_blank">Homepage</a>}
+          { asset.website && <a href={asset.website} target="_blank" rel="noreferrer">Homepage</a>}
         </Col>
         <Col>
           <Table size="sm" style={{ color: currentTheme.foreground }}>
@@ -209,7 +209,7 @@ function CoinStatistics(props) {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [props.id]);
 
   function formatPrice(num) {
     if (num == null) return "Not available"
@@ -224,7 +224,7 @@ function CoinStatistics(props) {
   }
 
   function renderExchanges() {
-    if (crypto.exchanges.length == 0) {
+    if (crypto.exchanges.length === 0) {
       return("Not available");
     } else if (crypto.exchanges.length > 5) {
       return (
@@ -241,7 +241,7 @@ function CoinStatistics(props) {
     }
     var list = [];
     for (var key in crypto.exchanges) {
-      list.push(<div>{crypto.exchanges[key]}<br/></div>);
+      list.push(<div key={key}>{crypto.exchanges[key]}<br/></div>);
     }
     return (list);
   }
@@ -273,7 +273,7 @@ function CoinStatistics(props) {
           <Image src={crypto.Image} rounded />
           <h2>{crypto.Name}</h2>
           <p>{crypto.Symbol.toUpperCase()}</p>
-          {crypto.homepage && <a href={crypto.homepage} target="_blank">Homepage</a>}
+          {crypto.homepage && <a href={crypto.homepage} target="_blank" rel="noreferrer">Homepage</a>}
         </Col>
         </Col>
         <Col>
@@ -349,7 +349,7 @@ function TokenStatistics(props) {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [props.addr]);
 
   if (loading) {
     return (

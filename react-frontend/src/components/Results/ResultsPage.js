@@ -36,14 +36,14 @@ function Results(props) {
   useEffect(() => {
     console.log(id.substring(0, id.indexOf(":")))
     setType(id.substring(0, id.indexOf(":")));
-    if (id.lastIndexOf(":") != id.indexOf(":")) {
+    if (id.lastIndexOf(":") !== id.indexOf(":")) {
       setAddr(id.substring(id.lastIndexOf(":") + 1));
       setSymbol(id.substring(id.indexOf(":") + 1, id.lastIndexOf(":")));
     } else {
       setSymbol(id.substring(id.indexOf(":") + 1));
       console.log(id.substring(id.indexOf(":") + 1))
     }
-  })
+  }, [id])
 
   useEffect(() => {
     // do this only if user is logged in
@@ -67,7 +67,7 @@ function Results(props) {
           alert(JSON.stringify(error.response.data.response.errors));
         });
     }
-  }, []);
+  });
   
   if (type && symbol) {
     if (type === "crypto") {
@@ -117,6 +117,10 @@ function Results(props) {
                 currencyCallback={setCurrencyCallback}
               />
               <br />
+              <SentimentGraph symbol={symbol} />
+              <br />
+              <TweetSummary symbol={symbol}/>
+              <br />
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
               {currency ? (
@@ -132,8 +136,6 @@ function Results(props) {
                 </Container>
               )}
               <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
               {currency ? (
                 <StockGraph symbol={symbol} graphType="volume" color="orange" />
               ) : (
@@ -142,14 +144,7 @@ function Results(props) {
                 </Container>
               )}
               <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
-              <SentimentGraph symbol={symbol} />
-              <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
-              <TweetSummary symbol={symbol}/>
-              <br />
+
             </Col>
           </Row>
           <Link to="../../home" style={{ color: currentTheme.linkColor }}>
@@ -176,7 +171,7 @@ function Results(props) {
           <Row>
             <Col xs={12} className="resultsHeader">
               <h3 style={{ marginRight: 10 }}>
-                Showing Results For: {symbol}
+                Showing Results For: {symbol.toUpperCase()}
               </h3>
               {currentUser.username === "" &&
               currentUser.email === "" ? null : (
@@ -195,34 +190,28 @@ function Results(props) {
             <Col xs={12} sm={12} md={12} lg={6}>
               <CoinStatistics id={symbol} />
               <br />
+              <SentimentGraph symbol={symbol} />
+              <br />
+              <TweetSummary symbol={symbol}/>
+              <br />
+              {addr && (
+                <div>
+                  <TopTokenHolders addr={addr} />
+                  <br />
+                </div>
+              )}
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
               <CryptoGraph symbol={symbol} graphType="price" color="#0D6EFD" />
               <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
               <CryptoGraph symbol={symbol} graphType="volume" color="orange" />
               <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
               {addr && (
-                <TokenStatistics addr={addr} />
+                <div>
+                  <TokenStatistics addr={addr} />
+                  <br />
+                </div>
               )}
-              <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
-              {addr && (
-                <TopTokenHolders addr={addr} />
-              )}
-              <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
-              <SentimentGraph symbol={symbol} />
-              <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
-              <TweetSummary symbol={symbol}/>
-              <br />
             </Col>
           </Row>
           <Link to="../../home" style={{ color: currentTheme.linkColor }}>

@@ -38,7 +38,7 @@ function TweetSummary(props) {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [props.symbol]);
 
   if (loading) {
     return (
@@ -50,7 +50,7 @@ function TweetSummary(props) {
     return (
       <Container className="tweetSummaryContainer">
         <Row>
-          <h2 className="chartTitle">Users Tweeting About {props.symbol}</h2>
+          <h2 className="chartTitle">Users Tweeting About {props.symbol.toUpperCase()}</h2>
         </Row>
         <Row>
           <Col>
