@@ -8,12 +8,9 @@ import {
   SentimentGraph,
   StockGraph,
   CryptoGraph,
-  TopTokenHolders} from "./Graph";
-import {
-  StockStatistics,
-  CoinStatistics,
-  TokenStatistics,
-} from "./Statistics";
+  TopTokenHolders,
+} from "./Graph";
+import { StockStatistics, CoinStatistics, TokenStatistics } from "./Statistics";
 import FollowBtn from "../FollowButton/FollowBtn";
 import axios from "axios";
 
@@ -22,13 +19,29 @@ function Results(props) {
   //current user
   const currentUser = useSelector((state) => state.user);
 
-  const { id, type } = useParams();
+  const { id } = useParams();
   const [currency, setCurrency] = useState(null);
   const [isFollow, setIsFollow] = useState(false);
+  const [type, setType] = useState(null);
+  const [symbol, setSymbol] = useState(null);
+  const [addr, setAddr] = useState(null);
 
   const setCurrencyCallback = (curr) => {
     setCurrency(curr);
   };
+
+  useEffect(() => {
+    console.log("id is", id);
+    console.log(id.substring(0, id.indexOf(":")));
+    setType(id.substring(0, id.indexOf(":")));
+    if (id.lastIndexOf(":") != id.indexOf(":")) {
+      setAddr(id.substring(id.lastIndexOf(":") + 1));
+      setSymbol(id.substring(id.indexOf(":") + 1, id.lastIndexOf(":")));
+    } else {
+      setSymbol(id.substring(id.indexOf(":") + 1));
+      console.log(id.substring(id.indexOf(":") + 1));
+    }
+  });
 
   useEffect(() => {
     // do this only if user is logged in
@@ -36,7 +49,9 @@ function Results(props) {
       console.log("fetching user follow list");
 
       axios
-        .get(`http://localhost:5000/users/assets-followed`, {withCredentials: true})
+        .get(`http://localhost:5000/users/assets-followed`, {
+          withCredentials: true,
+        })
         .then((res) => {
           return res.data;
         })
@@ -54,10 +69,14 @@ function Results(props) {
     }
   }, []);
 
-  if (type === "crypto") {
-    return renderCryptoResults();
+  if (type && symbol) {
+    if (type === "crypto") {
+      return renderCryptoResults();
+    } else {
+      return renderStockResults();
+    }
   } else {
-    return renderStockResults();
+    return null;
   }
 
   function renderStockResults() {
@@ -75,18 +94,10 @@ function Results(props) {
         <Container className="resultsContainer">
           <Row>
             <Col xs={12} className="resultsHeader">
-              <h3 style={{ marginRight: 10 }}>
-                Showing Results For: {props.location.state.symbol}
-              </h3>
+              <h3 style={{ marginRight: 10 }}>Showing Results For: {symbol}</h3>
               {currentUser.username === "" &&
               currentUser.email === "" ? null : (
-                <FollowBtn
-                  id={id}
-                  isFollow={isFollow}
-                  type={type}
-                  symbol={props.location.state.symbol}
-                  addr={props.location.state.addr}
-                />
+                <FollowBtn id={id} isFollow={isFollow} />
               )}
             </Col>
           </Row>
@@ -94,7 +105,7 @@ function Results(props) {
           <Row>
             <Col xs={12} sm={12} md={12} lg={6}>
               <StockStatistics
-                symbol={id}
+                symbol={symbol}
                 currencyCallback={setCurrencyCallback}
               />
               <br />
@@ -102,7 +113,7 @@ function Results(props) {
             <Col xs={12} sm={12} md={12} lg={6}>
               {currency ? (
                 <StockGraph
-                  symbol={id}
+                  symbol={symbol}
                   currency={currency}
                   graphType="price"
                   color="#0D6EFD"
@@ -116,7 +127,7 @@ function Results(props) {
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
               {currency ? (
-                <StockGraph symbol={id} graphType="volume" color="orange" />
+                <StockGraph symbol={symbol} graphType="volume" color="orange" />
               ) : (
                 <Container fluid>
                   <Spinner animation="border" />
@@ -125,11 +136,11 @@ function Results(props) {
               <br />
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
-              <SentimentGraph symbol={id} />
+              <SentimentGraph symbol={symbol} />
               <br />
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
-              <TweetSummary symbol={id}/>
+              <TweetSummary symbol={symbol} />
               <br />
             </Col>
           </Row>
@@ -156,53 +167,41 @@ function Results(props) {
         <Container className="resultsContainer">
           <Row>
             <Col xs={12} className="resultsHeader">
-              <h3 style={{ marginRight: 10 }}>
-                Showing Results For: {props.location.state.symbol}
-              </h3>
+              <h3 style={{ marginRight: 10 }}>Showing Results For: {symbol}</h3>
               {currentUser.username === "" &&
               currentUser.email === "" ? null : (
-                <FollowBtn
-                  id={id}
-                  isFollow={isFollow}
-                  type={type}
-                  symbol={props.location.state.symbol}
-                  addr={props.location.state.addr}
-                />
+                <FollowBtn id={id} isFollow={isFollow} />
               )}
             </Col>
           </Row>
           <br />
           <Row>
             <Col xs={12} sm={12} md={12} lg={6}>
-              <CoinStatistics id={id} />
+              <CoinStatistics id={symbol} />
               <br />
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
-              <CryptoGraph symbol={id} graphType="price" color="#0D6EFD" />
+              <CryptoGraph symbol={symbol} graphType="price" color="#0D6EFD" />
               <br />
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
-              <CryptoGraph symbol={id} graphType="volume" color="orange" />
+              <CryptoGraph symbol={symbol} graphType="volume" color="orange" />
               <br />
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
-              {props.location.state.addr && (
-                <TokenStatistics addr={props.location.state.addr} />
-              )}
+              {addr && <TokenStatistics addr={addr} />}
               <br />
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
-              {props.location.state.addr && (
-                <TopTokenHolders addr={props.location.state.addr} />
-              )}
+              {addr && <TopTokenHolders addr={addr} />}
               <br />
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
-              <SentimentGraph symbol={id} />
+              <SentimentGraph symbol={symbol} />
               <br />
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
-              <TweetSummary symbol={id}/>
+              <TweetSummary symbol={symbol} />
               <br />
             </Col>
           </Row>
