@@ -331,7 +331,7 @@ def get_reddit_comment_moving_average(days: int, posts:[RedditComment]) -> [floa
 
 
 '''
-Testing Code, will leave here for now
+Testing examples, will leave here for now
 '''
 
 # post = RedditComment()

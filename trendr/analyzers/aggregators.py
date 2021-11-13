@@ -11,40 +11,45 @@ from trendr.models.tweet_model import Tweet
 def aggregate_sentiment_simple_mean(
     socials, search_type:int
 ):
-    # averages = []
+    """
+    Gets a selection of socials posts, and returns a list with the moving average
+    for each day since the first post and until the latest post.
+
+    :param socials: social post list of types Tweet, RedditSubmission, or RedditComment.
+    :param search_type: integer identifier for the type of list passed to the
+                        1 is Tweet, 2 is RedditSubmission, 3 is RedditComment.
+    :return: a float list of moving average for each day since the first post.
+    """
+    averages = []
     days_MA = 3
     if search_type == 1:
-        res = get_tweets_moving_average(days_MA, socials)
-        return 3 * res[len(socials) - 1]
-        # averages.append(3 * res[len(s) - 1])
+        return get_tweets_moving_average(days_MA, socials)
+        # res =  get_tweets_moving_average(days_MA, socials)
+        # return 3 * res[len(socials) - 1]
     elif search_type == 2:
-        res = get_reddit_post_moving_average(days_MA, socials)
-        return 3 * res[len(socials) - 1]
+        return get_reddit_post_moving_average(days_MA, socials)
+        # res = get_reddit_post_moving_average(days_MA, socials)
+        # return 4 * res[len(socials) - 1]
     else:
-        res = get_reddit_comment_moving_average(days_MA, socials)
-        return 3 * res[len(socials) - 1]
-
-    # for s in socials:
-    #     if type(s) == list[Tweet]:
-    #         res = get_tweets_moving_average(days_MA, s)
-    #         averages.append(3 * res[len(s) - 1])
-    #     elif type(s) == list[RedditSubmission]:
-    #         res = get_reddit_post_moving_average(days_MA, s)
-    #         averages.append(4 * res[len(s) - 1])
-    #     elif type(s) == list[RedditComment]:
-    #         res = get_reddit_comment_moving_average(days_MA, s)
-    #         averages.append(1.5 * res[len(s) - 1])
+        return get_reddit_comment_moving_average(days_MA, socials)
+        # res = get_reddit_comment_moving_average(days_MA, socials)
+        # return 1.5 * res[len(socials) - 1]
 
     # return mean([s.polarity for s in socials])
     # return mean([x for s in averages])
 
 
+'''
+A hard-coded dictionary that gives a score for the time_delta weight, based
+on how many hours passed since the post was created.
+'''
 hours_time_delta_scores = {
     0:10, 1:9, 2:8, 3:8, 4:7, 5:7, 6:7, 7:7, 8:7, 9:7, 10:6, 11:6, 12:6, 13:6, 14:6
 }
-
 for i in range(14, 25):
     hours_time_delta_scores[i] = 6
+
+
 
 def time_delta_hours(date: datetime) -> int:
     """
@@ -72,10 +77,18 @@ def time_delta_days(date: datetime) -> int:
     days  = duration.days
     return days
 
+
 def tweet_score(tweet: Tweet, old_score: bool=False) -> float:
-    time_score = 5
+    """
+    Gets a Tweet, and returns a score for how impactful it is on the sentiment
+
+    :param tweet: Tweet
+    :return: a float value representing the effectiveness (includes the directions- Postitve/negative)
+    """
+
+    time_score = 5 # weight of time in the total score. the newer a post, the higher the weight
     time_delta = time_delta_hours(tweet.tweeted_at)
-    if old_score:
+    if old_score:  # If the tweet is part of a list(for calculating an old moving average)
         time_score = 6
     elif time_delta > 120:
         time_score = 2
@@ -86,7 +99,7 @@ def tweet_score(tweet: Tweet, old_score: bool=False) -> float:
     else:
         time_score = hours_time_delta_scores[time_delta]
 
-    retweet_score = 0
+    retweet_score = 0 # more retweets equal higher weighr. However, it's not a linear correlation
     if tweet.retweets > 100000:
         retweet_score = 100
     elif tweet.retweets > 50000:
@@ -120,7 +133,7 @@ def tweet_score(tweet: Tweet, old_score: bool=False) -> float:
     else:
         retweet_score = 0
 
-    likes_score = 0
+    likes_score = 0 # more likes equal higher weighr. However, it's not a linear correlation
     if tweet.likes > 100000:
         likes_score = 100
     elif tweet.likes > 50000:
@@ -154,24 +167,35 @@ def tweet_score(tweet: Tweet, old_score: bool=False) -> float:
     else:
         likes_score = 0
 
+    # formula for getting the score. Some factors are more important. Based on observation.
     score = (retweet_score * 2 + likes_score + tweet.subjectivity * 1.3) * tweet.polarity * time_score
-    print(score)
+    # print(score)
     return score
 
 
 def get_tweets_moving_average(days: int, tweetsList:[Tweet]) -> [float]:
+    """
+    Gets a list of Tweets, and returns a a list for the sentiment moving average, where each
+    each index represents a day. The first index is the date of the first post.
+
+    :param tweet: List of tweets Tweet
+    :return: a list of floats represning the moving average in each day.
+    """
+
     if len(tweetsList) < 1:
         return [0]
     elif len(tweetsList) == 1:
-        return [tweet_score(tweetsList[0])]
+        return [tweet_score(tweetsList[0])] # return the score of individual tweet
 
-    maxDays = 0
+    maxDays = 0 # number of days that we will calculate the moving average.
+                # it starts at the oldest post we receive.
     for tweet in tweetsList:
         time_delta = time_delta_days(tweet.tweeted_at)
         if time_delta > maxDays:
             maxDays = time_delta
 
-    tweetDaysDict = {}
+    tweetDaysDict = {} # dictionary for each day since the first post
+                        # we will place each post's score in its day
     for i in range(maxDays + 1):
         tweetDaysDict[i] = []
 
@@ -179,7 +203,7 @@ def get_tweets_moving_average(days: int, tweetsList:[Tweet]) -> [float]:
         time_delta = time_delta_days(tweet.tweeted_at)
         if time_delta < 0:
             continue
-        tweetDaysDict[time_delta].append(tweet_score(tweet))
+        tweetDaysDict[time_delta].append(tweet_score(tweet, old_score=True))
 
     daysAvg = []
     for day in tweetDaysDict:
@@ -203,6 +227,13 @@ def get_tweets_moving_average(days: int, tweetsList:[Tweet]) -> [float]:
 
 
 def reddit_post_score(post: RedditSubmission, old_score: bool=False) -> float:
+     """
+    Gets a RedditSubmission, and returns a score for how impactful it is on the sentiment
+
+    :param post: RedditSubmission
+    :return: a float value representing the effectiveness (includes the directions- Postitve/negative)
+    """
+
     time_score = 5
     time_delta = time_delta_hours(post.posted_at)
     if old_score:
@@ -239,12 +270,21 @@ def reddit_post_score(post: RedditSubmission, old_score: bool=False) -> float:
     return score
 
 def get_reddit_post_moving_average(days: int, posts:[RedditSubmission]) -> [float]:
+     """
+    Gets a list of RedditSubmission, and returns a a list for the sentiment moving average, where each
+    each index represents a day. The first index is the date of the first post.
+
+    :param posts: List of RedditSubmission
+    :return: a list of floats represning the moving average in each day.
+    """
+
     if len(posts) < 1:
         return [0]
     elif len(posts) == 1:
         return [reddit_post_score(posts[0])]
 
-    maxDays = 0
+    maxDays = 0 # number of days that we will calculate the moving average.
+                # it starts at the oldest post we receive.
     for post in posts:
         time_delta = time_delta_days(post.posted_at)
         if time_delta > maxDays:
@@ -258,7 +298,7 @@ def get_reddit_post_moving_average(days: int, posts:[RedditSubmission]) -> [floa
         time_delta = time_delta_days(post.posted_at)
         if time_delta < 0:
             continue
-        postDaysDict[time_delta].append(reddit_post_score(post))
+        postDaysDict[time_delta].append(reddit_post_score(post, old_score=True))
 
     daysAvg = []
     for day in postDaysDict:
@@ -284,6 +324,13 @@ def get_reddit_post_moving_average(days: int, posts:[RedditSubmission]) -> [floa
 
 
 def reddit_comment_score(post: RedditComment, old_score: bool=False) -> float:
+     """
+    Gets a RedditComment, and returns a score for how impactful it is on the sentiment
+
+    :param post: RedditComment
+    :return: a float value representing the effectiveness (includes the directions- Postitve/negative)
+    """
+
     time_score = 5
     time_delta = time_delta_hours(post.posted_at)
     if old_score:
@@ -297,7 +344,8 @@ def reddit_comment_score(post: RedditComment, old_score: bool=False) -> float:
     else:
         time_score = hours_time_delta_scores[time_delta]
 
-    subscribers_score = 1
+
+    subscribers_score = 1 # the weight used for each level of subscribers
     if post.subreddit.subscribers > 1000000:
         subscribers_score = 10
     elif post.subreddit.subscribers > 500000:
@@ -319,12 +367,21 @@ def reddit_comment_score(post: RedditComment, old_score: bool=False) -> float:
     return score
 
 def get_reddit_comment_moving_average(days: int, posts:[RedditComment]) -> [float]:
+     """
+    Gets a list of RedditSubmission, and returns a a list for the sentiment moving average, where each
+    each index represents a day. The first index is the date of the first post.
+
+    :param posts: List of RedditSubmission
+    :return: a list of floats represning the moving average in each day.
+    """
+
     if len(posts) < 1:
         return [0]
     elif len(posts) == 1:
         return [reddit_comment_score(posts[0])]
 
-    maxDays = 0
+    maxDays = 0 # number of days that we will calculate the moving average.
+                # it starts at the oldest post we receive.
     for post in posts:
         time_delta = time_delta_days(post.posted_at)
         if time_delta > maxDays:
@@ -338,7 +395,7 @@ def get_reddit_comment_moving_average(days: int, posts:[RedditComment]) -> [floa
         time_delta = time_delta_days(post.posted_at)
         if time_delta < 0:
             continue
-        postDaysDict[time_delta].append(reddit_comment_score(post))
+        postDaysDict[time_delta].append(reddit_comment_score(post, old_score=True))
 
     daysAvg = []
     for day in postDaysDict:
@@ -361,5 +418,3 @@ def get_reddit_comment_moving_average(days: int, posts:[RedditComment]) -> [floa
             movingAvg[i] = mean
 
     return movingAvg
-
-
