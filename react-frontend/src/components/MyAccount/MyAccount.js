@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MyNavBar from "../NavBar/MyNavBar";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Col,
@@ -16,8 +16,6 @@ import {
 import "./MyAccount.css";
 import FollowBtn from "../FollowButton/FollowBtn";
 import axios from "axios";
-import { removeUser } from "../Theme/userActions";
-import { useHistory } from "react-router-dom";
 
 function MyAccount() {
   //color theme
@@ -27,9 +25,6 @@ function MyAccount() {
 
   //List of followed stocks/cryptos
   const [list, setList] = useState([]);
-
-  const history = useHistory();
-  const dispatch = useDispatch();
 
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
