@@ -113,7 +113,7 @@ function SearchBar() {
             />
             {suggestions &&
               suggestions.map((suggestion, i) => (
-                <Table hover size="sm" className="suggestions">
+                <Table key={i} hover size="sm" className="suggestions">
                   <tbody>
                     <tr onClick={() => onSuggestionHandler(i)}>
                       <td

@@ -34,14 +34,14 @@ function Results(props) {
     console.log("id is", id);
     console.log(id.substring(0, id.indexOf(":")));
     setType(id.substring(0, id.indexOf(":")));
-    if (id.lastIndexOf(":") != id.indexOf(":")) {
+    if (id.lastIndexOf(":") !== id.indexOf(":")) {
       setAddr(id.substring(id.lastIndexOf(":") + 1));
       setSymbol(id.substring(id.indexOf(":") + 1, id.lastIndexOf(":")));
     } else {
       setSymbol(id.substring(id.indexOf(":") + 1));
       console.log(id.substring(id.indexOf(":") + 1));
     }
-  });
+  }, [id])
 
   useEffect(() => {
     // do this only if user is logged in
@@ -109,6 +109,10 @@ function Results(props) {
                 currencyCallback={setCurrencyCallback}
               />
               <br />
+              <SentimentGraph symbol={symbol} />
+              <br />
+              <TweetSummary symbol={symbol}/>
+              <br />
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
               {currency ? (
@@ -124,8 +128,6 @@ function Results(props) {
                 </Container>
               )}
               <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
               {currency ? (
                 <StockGraph symbol={symbol} graphType="volume" color="orange" />
               ) : (
@@ -133,14 +135,6 @@ function Results(props) {
                   <Spinner animation="border" />
                 </Container>
               )}
-              <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
-              <SentimentGraph symbol={symbol} />
-              <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
-              <TweetSummary symbol={symbol} />
               <br />
             </Col>
           </Row>
@@ -167,7 +161,9 @@ function Results(props) {
         <Container className="resultsContainer">
           <Row>
             <Col xs={12} className="resultsHeader">
-              <h3 style={{ marginRight: 10 }}>Showing Results For: {symbol}</h3>
+              <h3 style={{ marginRight: 10 }}>
+                Showing Results For: {symbol.toUpperCase()}
+              </h3>
               {currentUser.username === "" &&
               currentUser.email === "" ? null : (
                 <FollowBtn id={id} isFollow={isFollow} />
@@ -179,30 +175,28 @@ function Results(props) {
             <Col xs={12} sm={12} md={12} lg={6}>
               <CoinStatistics id={symbol} />
               <br />
+              <SentimentGraph symbol={symbol} />
+              <br />
+              <TweetSummary symbol={symbol}/>
+              <br />
+              {addr && (
+                <>
+                  <TopTokenHolders addr={addr} />
+                  <br />
+                </>
+              )}
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
               <CryptoGraph symbol={symbol} graphType="price" color="#0D6EFD" />
               <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
               <CryptoGraph symbol={symbol} graphType="volume" color="orange" />
               <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
-              {addr && <TokenStatistics addr={addr} />}
-              <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
-              {addr && <TopTokenHolders addr={addr} />}
-              <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
-              <SentimentGraph symbol={symbol} />
-              <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
-              <TweetSummary symbol={symbol} />
-              <br />
+              {addr && (
+                <>
+                  <TokenStatistics addr={addr} />
+                  <br />
+                </>
+              )}
             </Col>
           </Row>
           <Link to="../../home" style={{ color: currentTheme.linkColor }}>
