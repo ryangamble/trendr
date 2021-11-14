@@ -46,7 +46,7 @@ jobs:
         run: docker build -t registry.digitalocean.com/trendr/frontend:latest react-frontend
 
       - name: Build Backend Image
-        run: docker build -t registry.digitalocean.com/trendr/backend:latest -f compose/local/flask/Dockerfile
+        run: docker build -t registry.digitalocean.com/trendr/backend:latest . -f compose/local/flask/Dockerfile
 
       - name: Push Frontend Image to Digital Ocean Container Registry
         run: docker push registry.digitalocean.com/trendr/frontend:latest

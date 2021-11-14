@@ -14,9 +14,9 @@ RUN apt-get update \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
-# Requirements are installed here to ensure they will be cached.
-COPY ./requirements.txt /requirements.txt
-RUN pip install -r /requirements.txt
+# Copy the project files and pip install the python requirements
+COPY ./ /app
+RUN pip install -r /app/requirements.txt
 
 # COPY ./compose/local/flask/entrypoint /entrypoint
 # RUN sed -i 's/\r$//g' /entrypoint
