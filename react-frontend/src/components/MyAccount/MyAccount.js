@@ -10,6 +10,8 @@ import {
   Badge,
   Button,
   ListGroupItem,
+  Card,
+  Form,
 } from "react-bootstrap";
 import "./MyAccount.css";
 import FollowBtn from "../FollowButton/FollowBtn";
@@ -23,6 +25,10 @@ function MyAccount() {
 
   //List of followed stocks/cryptos
   const [list, setList] = useState([]);
+
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     // get the user follow list
@@ -49,6 +55,40 @@ function MyAccount() {
 
   const unfollowCallback = (item) => {
     setList(list.filter((x) => x !== item));
+  };
+
+  const handleChangePassword = (e) => {
+    e.preventDefault();
+    // check if 2 passwords are the same
+    if (confirmPassword !== newPassword) {
+      alert("Your new passwords are not the same!");
+      return;
+    }
+
+    const json = JSON.stringify({
+      password: oldPassword,
+      new_password: newPassword,
+      new_password_confirm: confirmPassword,
+    });
+    const config = {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
+    };
+    console.log("changing password");
+    axios
+      .post("http://localhost:5000/auth/change", json, config)
+      .then((res) => {
+        alert("Your password has been changed successfully!");
+        // Clear the input
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      })
+      .catch((error) => {
+        alert(
+          "Change password failed, make sure your old password is correct and your new password is complex!"
+        );
+      });
   };
 
   return (
@@ -106,7 +146,7 @@ function MyAccount() {
                           pathname: `/result/${item}`,
                         }}
                       >
-                        {item.split(":")[``].toUpperCase()}
+                        {item.split(":")[1].toUpperCase()}
                       </Link>
                       <FollowBtn
                         id={item}
@@ -119,6 +159,58 @@ function MyAccount() {
               </Col>
             </Row>
           </div>
+        )}
+        <br />
+        {currentUser.username === "" && currentUser.email === "" ? null : (
+          <Row>
+            <Col sm="12" md="6" lg="3">
+              <Card>
+                <Card.Header
+                  style={{ color: currentTheme.textColorLightBackground }}
+                >
+                  Change Your Password Here
+                </Card.Header>
+                <Card.Body>
+                  <Form onSubmit={handleChangePassword}>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                      <Form.Control
+                        type="password"
+                        placeholder="Enter your old password"
+                        required
+                        value={oldPassword}
+                        onChange={(e) => setOldPassword(e.target.value)}
+                        style={{ marginBottom: "5px" }}
+                      />
+
+                      <Form.Control
+                        type="password"
+                        placeholder="Enter your new password"
+                        required
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        style={{ marginBottom: "5px" }}
+                      />
+                      <Form.Control
+                        type="password"
+                        placeholder="Confirm your new password"
+                        required
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                    </Form.Group>
+
+                    <Row>
+                      <Col>
+                        <Button variant={currentTheme.variant} type="submit">
+                          Change Password
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
         )}
       </Container>
     </div>
