@@ -35,7 +35,7 @@ function SearchBar() {
     }
 
     axios
-      .get("http://localhost:5000/assets/search", {
+      .get("http://api:5000/assets/search", {
         method: "GET",
         params: {
           query: keyword,

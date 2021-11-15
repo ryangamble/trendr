@@ -8,7 +8,7 @@ function ConfirmEmail() {
   const history = useHistory();
 
   axios
-    .post("http://localhost:5000/auth/confirm/" + confirmCode.substring(1))
+    .post("http://api:5000/auth/confirm/" + confirmCode.substring(1))
     .then((res) => {
       history.push("/login");
     })

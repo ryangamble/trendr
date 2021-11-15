@@ -37,7 +37,7 @@ function FollowBtn({ id, isFollow, callback }) {
     if (followed) {
       console.log("Unfollowing ", id);
       axios
-        .post("http://localhost:5000/users/unfollow-asset", json, config)
+        .post("http://api:5000/users/unfollow-asset", json, config)
         .then((res) => {
           console.log(res);
           if (res.status == 200 && res.data.success == true) {
@@ -57,7 +57,7 @@ function FollowBtn({ id, isFollow, callback }) {
     } else {
       console.log("Following ", id);
       axios
-        .post("http://localhost:5000/users/follow-asset", json, config)
+        .post("http://api:5000/users/follow-asset", json, config)
         .then((res) => {
           if (res.status == 200 && res.data.success == true) {
             //toggle between follow/unfollow

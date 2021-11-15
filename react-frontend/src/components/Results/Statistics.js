@@ -27,7 +27,7 @@ function StockStatistics(props) {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:5000/assets/stock/stats", {
+      .get("http://api:5000/assets/stock/stats", {
         method: "GET",
         params: {
           symbol: props.symbol
@@ -58,7 +58,7 @@ function StockStatistics(props) {
         props.currencyCallback(data["currency"]);
 
         axios
-          .get(`http://localhost:5000/assets/stocks/official-channels`, {
+          .get(`http://api:5000/assets/stocks/official-channels`, {
             method: "GET",
             params: {
               symbol: props.symbol
@@ -73,7 +73,7 @@ function StockStatistics(props) {
           });
 
         axios
-          .get(`http://localhost:5000/assets/stocks/listed-exchanges`, {
+          .get(`http://api:5000/assets/stocks/listed-exchanges`, {
             method: "GET",
             params: {
               symbol: props.symbol
@@ -206,7 +206,7 @@ function CoinStatistics(props) {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:5000/assets/crypto/stats", {
+      .get("http://api:5000/assets/crypto/stats", {
         method: "GET",
         params: {
           id: props.id
@@ -217,7 +217,7 @@ function CoinStatistics(props) {
         console.log(data);
         setCrypto(data);
         axios
-          .get(`http://localhost:5000/assets/cryptos/official-channels`, {
+          .get(`http://api:5000/assets/cryptos/official-channels`, {
             method: "GET",
             params: {
               id: props.id
@@ -231,7 +231,7 @@ function CoinStatistics(props) {
           });
 
         axios
-          .get(`http://localhost:5000/assets/cryptos/listed-exchanges`, {
+          .get(`http://api:5000/assets/cryptos/listed-exchanges`, {
             method: "GET",
             params: {
               id: props.id
@@ -342,7 +342,7 @@ function TokenStatistics(props) {
     // console.log(props.addr)
     setLoading(true);
     axios
-      .get("http://localhost:5000/assets/token/info", {
+      .get("http://api:5000/assets/token/info", {
         method: "GET",
         params: {
           address: props.addr

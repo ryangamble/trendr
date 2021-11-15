@@ -19,3 +19,25 @@ spec:
           ports:
             - containerPort: 3000
       restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: registry.digitalocean.com/trendr/backend
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+      restartPolicy: Always

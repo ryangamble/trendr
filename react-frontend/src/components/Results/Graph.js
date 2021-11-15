@@ -70,7 +70,7 @@ function StockGraph(props) {
   async function fetchDataPoints(timePeriod) {
 
     axios
-      .get("http://localhost:5000/assets/stock/history", {
+      .get("http://api:5000/assets/stock/history", {
         method: "GET",
         params: {
           symbol: props.symbol,
@@ -370,9 +370,9 @@ function CryptoGraph(props) {
   async function fetchDataPoints(timePeriod) {
     let apiRoute = "";
     if (props.graphType === "price") {
-      apiRoute = "http://localhost:5000/assets/crypto/price-history";
+      apiRoute = "http://api:5000/assets/crypto/price-history";
     } else {
-      apiRoute = "http://localhost:5000/assets/crypto/volume-history";
+      apiRoute = "http://api:5000/assets/crypto/volume-history";
     }
 
     axios
@@ -650,7 +650,7 @@ function SentimentGraph(props) {
 
   // function fetchTwitterData() {
   //   axios
-  //     .get("http://localhost:5000/assets/twitter_sentiment", {
+  //     .get("http://api:5000/assets/twitter_sentiment", {
   //       method: "GET",
   //       params: {
   //         symbol: props.symbol,
@@ -773,7 +773,7 @@ function TopTokenHolders(props) {
     setLoading(true);
 
     axios
-      .get("http://localhost:5000/assets/token/top-holders", {
+      .get("http://api:5000/assets/token/top-holders", {
         method: "GET",
         params: {
           address: props.addr
@@ -888,7 +888,7 @@ function FearGreed() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/assets/historic-fear-greed")
+      .get("http://api:5000/assets/historic-fear-greed")
       .then((res) => {
         let data = JSON.parse(JSON.stringify(res.data));
 

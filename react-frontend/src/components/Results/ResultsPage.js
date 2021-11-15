@@ -49,7 +49,7 @@ function Results(props) {
       console.log("fetching user follow list");
 
       axios
-        .get(`http://localhost:5000/users/assets-followed`, {
+        .get(`http://api:5000/users/assets-followed`, {
           withCredentials: true,
         })
         .then((res) => {
