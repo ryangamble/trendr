@@ -17,7 +17,7 @@ jobs:
           touch .env/.env_dev
           echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env/.env_dev
           echo SQLALCHEMY_DATABASE_URI=${{ secrets.SQLALCHEMY_DATABASE_URI }} >> .env/.env_dev
-  
+
       - name: Create .env_apis
         run: |
           touch .env/.env_apis
