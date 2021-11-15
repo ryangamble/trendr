@@ -14,25 +14,23 @@ RUN apt-get update \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
-# Copy API files
+# Copy neccessary project files
+COPY ./.env/.env_apis /app/.env/.env_apis
+COPY ./.env/.env_dev /app/.env/.env_dev
+COPY ./migrations /app/migrations
 COPY ./trendr /app/trendr
 
 # Requirements are installed here to ensure they will be cached.
-COPY ./requirements.txt /app/trendr/requirements.txt
-RUN pip install -r /app/trendr/requirements.txt
+COPY ./requirements.txt /app/requirements.txt
+RUN pip install -r /app/requirements.txt
 
 # Copy start command
-COPY ./compose/local/flask/start /app/trendr/start
-RUN sed -i 's/\r$//g' /app/trendr/start
-RUN chmod +x /app/trendr/start
+COPY ./compose/local/flask/start /app/start
+RUN sed -i 's/\r$//g' /app/start
+RUN chmod +x /app/start
 
 EXPOSE 5000
-ARG FLASK_APP=/app/trendr/app.py
-ARG TWITTER_CONSUMER_KEY
-ARG TWITTER_CONSUMER_SECRET
-ARG ETHPLORER_KEY
-ARG FINNHUB_KEY
-ARG DATABASE_URL
-ARG SQLALCHEMY_DATABASE_URI
 
-ENTRYPOINT ["/app/trendr/start"]
+WORKDIR /app
+
+ENTRYPOINT ["/app/start"]
