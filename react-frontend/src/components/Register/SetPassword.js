@@ -32,7 +32,7 @@ function SetPassword() {
 
     axios
       .post(
-        "http://api:5000/auth/reset/" + resetCode.substring(1),
+        "http://localhost:5000/auth/reset/" + resetCode.substring(1),
         json,
         config
       )

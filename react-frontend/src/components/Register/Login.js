@@ -29,14 +29,14 @@ function Login() {
     };
 
     axios
-      .post("http://api:5000/auth/login", json, config)
+      .post("http://localhost:5000/auth/login", json, config)
       .then((res) => {
         //register the user to global user
         dispatch(registerUser("", email));
         history.push("/home");
         // TODO: replace when we get better settings storage
         axios
-        .get("http://api:5000/users/settings", { withCredentials: true })
+        .get("http://localhost:5000/users/settings", { withCredentials: true })
         .then(response => {
           console.log("Read theme from user settings");
           console.log("server: " + response.data.dark_mode + "\nclient: " + (currentTheme === themes.dark));

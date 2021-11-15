@@ -7,6 +7,8 @@ services:
     build:
       dockerfile: Dockerfile.dev
       context: ./react-frontend
+    ports:
+      - "3000:80"
     volumes:
       - "/app/node_modules"
       - "./react-frontend:/app"
@@ -31,17 +33,6 @@ services:
       - FLASK_APP=trendr.app
     depends_on:
       - redis
-
-  nginx:
-    depends_on:
-      - api
-      - client
-    restart: always
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./nginx
-    ports:
-      - "3000:80"
 
   redis:
     image: redis:latest
