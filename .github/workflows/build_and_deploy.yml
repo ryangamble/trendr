@@ -29,7 +29,7 @@ jobs:
         with:
           context: react-frontend
           push: true
-          tags: ${{ steps.frontend-metadata.outputs.tags }}
+          tags: latest
           labels: ${{ steps.frontend-metadata.outputs.labels }}
 
       - name: Extract metadata (tags, labels) for backend image
@@ -44,5 +44,5 @@ jobs:
           context: .
           file: compose/local/flask/Dockerfile
           push: true
-          tags: ${{ steps.backend-metadata.outputs.tags }}
+          tags: latest
           labels: ${{ steps.backend-metadata.outputs.labels }}
