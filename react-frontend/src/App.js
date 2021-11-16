@@ -16,6 +16,7 @@ import Settings from "./components/Settings/Settings";
 import { Provider } from "react-redux";
 import { store } from "./components/Theme/store";
 import MyAccount from "./components/MyAccount/MyAccount";
+import ConfirmationPage from "./components/Register/ConfirmationPage";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
             <Route path="/set-password:resetCode" component={SetPassword} />
             <Route path="/result/:id/" component={Result} />
             <Route path="/confirm-email:confirmCode" component={ConfirmEmail} />
+            <Route path="/confirmation" component={ConfirmationPage} />
             <Route path="/myaccount" component={MyAccount} />
             <Route path="/about" component={About} />
             <Route path="/settings" component={Settings} />
