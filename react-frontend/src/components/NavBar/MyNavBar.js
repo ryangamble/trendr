@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 import { removeUser } from "../Theme/userActions";
-import { useEffect } from "react";
 
 function MyNavBar() {
   //color theme
@@ -15,21 +14,6 @@ function MyNavBar() {
   const currentUser = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const history = useHistory();
-
-  // On initial render, check if the user is logged in or not, if not, log the user out
-  useEffect(() => {
-    const config = {
-      headers: { "Content-Type": "application/json" },
-      withCredentials: true,
-    };
-    // Initial render
-    axios
-      .get("http://localhost:5000/auth/login", config)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => console.log("error", err));
-  }, []);
 
   const handleLoginClick = () => {
     //if user is not logged in, we redirect to login page

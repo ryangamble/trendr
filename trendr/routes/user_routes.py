@@ -33,6 +33,7 @@ def delete_user(user_id):
 
 
 @users.route("/logged-in", methods=["GET"])
+@auth_required("session")
 def logged_in():
     if current_user is not None:
         return json_response(status=200, payload={"success": True})
