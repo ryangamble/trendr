@@ -59,6 +59,3 @@ def roberta_analyzer_dataframe(df):
         else:
             df.at[i,'predicted'] = 1
     return df
-
-# print(roberta_analyzer('the market is not looking good'))
-# print(roberta_analyzer_results('the market is not looking good'))
