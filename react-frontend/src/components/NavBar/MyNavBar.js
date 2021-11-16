@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 import { removeUser } from "../Theme/userActions";
+import { useEffect } from "react";
 
 function MyNavBar() {
   //color theme
@@ -15,17 +16,36 @@ function MyNavBar() {
   const dispatch = useDispatch();
   const history = useHistory();
 
+  // On initial render, check if the user is logged in or not, if not, log the user out
+  useEffect(() => {
+    const config = {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
+    };
+    // Initial render
+    axios
+      .get("http://localhost:5000/auth/login", config)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.log("error", err));
+  }, []);
+
   const handleLoginClick = () => {
     //if user is not logged in, we redirect to login page
     if (currentUser.username === "" && currentUser.email === "") {
       //TODO: remove this logout once session recovery is implemented
       //make a logout request
       axios
-        .post("http://localhost:5000/auth/logout", {}, {withCredentials: true})
+        .post(
+          "http://localhost:5000/auth/logout",
+          {},
+          { withCredentials: true }
+        )
         .then((res) => {
           //remove the global user
           dispatch(removeUser());
-          
+
           history.push("/login");
         })
         .catch((error) => {
@@ -35,15 +55,19 @@ function MyNavBar() {
 
           //remove the global user
           dispatch(removeUser());
-          
+
           history.push("/login");
         });
 
-        // history.push("/login");
+      // history.push("/login");
     } else {
       //make a logout request
       axios
-        .post("http://localhost:5000/auth/logout", {}, {withCredentials: true})
+        .post(
+          "http://localhost:5000/auth/logout",
+          {},
+          { withCredentials: true }
+        )
         .then((res) => {
           //remove the global user
           dispatch(removeUser());

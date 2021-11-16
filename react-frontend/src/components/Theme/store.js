@@ -42,6 +42,7 @@ function loadFromLocalStorage() {
 }
 
 const persistedState = loadFromLocalStorage();
+console.log("persisted state", persistedState);
 
 const rootReducer = combineReducers({
   theme: themeReducer,
