@@ -19,6 +19,10 @@ def create_parser():
     parser.add_argument(
         "-i", action="store_true", default=False, help="Run integration tests"
     )
+    parser.add_argument(
+        "-v", action="store_true", default=False, help="Verbose output"
+    
+    )
     return parser
 
 
@@ -36,22 +40,28 @@ def load_env_files():
                 os.environ[env_var_parts[0].strip()] = env_var_parts[1].strip()
 
 
-def run_unit_tests():
+def run_unit_tests(verbose=False):
     """
     Runs just the unit tests
     :return: integer result
     """
     print("RUNNING UNIT TESTS")
-    return pytest.main([str(TESTING_DIR / "unit_tests")])
+    args = [str(TESTING_DIR / "unit_tests")]
+    if verbose:
+        args.append("-s")
+    return pytest.main(args)
 
 
-def run_integration_tests():
+def run_integration_tests(verbose=False):
     """
     Runs just the integration tests
     :return: integer result
     """
     print("RUNNING INTEGRATION TESTS")
-    return pytest.main([str(TESTING_DIR / "integration_tests")])
+    args = [str(TESTING_DIR / "integration_tests")]
+    if verbose:
+        args.append("-s")
+    return pytest.main(args)
 
 
 def run_tests():
@@ -72,18 +82,18 @@ def run_tests():
 
     # If -u was provided, run the unit tests
     if args.u:
-        unit_result = run_unit_tests()
+        unit_result = run_unit_tests(args.v)
         print()
 
     # If -i was provided, run the integration tests
     elif args.i:
-        int_result = run_integration_tests()
+        int_result = run_integration_tests(args.v)
 
     # If neither flags were provided, run unit and integration tests
     else:
-        unit_result = run_unit_tests()
+        unit_result = run_unit_tests(args.v)
         print()
-        int_result = run_integration_tests()
+        int_result = run_integration_tests(args.v)
 
     if unit_result or int_result:
         return 1

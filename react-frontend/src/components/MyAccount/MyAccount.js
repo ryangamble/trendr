@@ -8,11 +8,14 @@ import {
   ListGroup,
   Row,
   Badge,
-  ListGroupItem
-} from 'react-bootstrap'
-import './MyAccount.css'
-import FollowBtn from '../FollowButton/FollowBtn'
-import axios from 'axios'
+  Button,
+  ListGroupItem,
+  Card,
+  Form,
+} from "react-bootstrap";
+import "./MyAccount.css";
+import FollowBtn from "../FollowButton/FollowBtn";
+import axios from "axios";
 
 function MyAccount () {
   // color theme
@@ -23,13 +26,19 @@ function MyAccount () {
   // List of followed stocks/cryptos
   const [list, setList] = useState([])
 
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   useEffect(() => {
     // get the user follow list
     if (currentUser.email !== '' || currentUser.username !== '') {
       console.log('profile fetching user follow list....')
 
       axios
-        .get('http://localhost:5000/users/assets-followed', { withCredentials: true })
+        .get(`http://localhost:5000/users/assets-followed`, {
+          withCredentials: true,
+        })
         .then((res) => {
           return res.data
         })
@@ -47,6 +56,40 @@ function MyAccount () {
   const unfollowCallback = (item) => {
     setList(list.filter((x) => x !== item))
   }
+
+  const handleChangePassword = (e) => {
+    e.preventDefault();
+    // check if 2 passwords are the same
+    if (confirmPassword !== newPassword) {
+      alert("Your new passwords are not the same!");
+      return;
+    }
+
+    const json = JSON.stringify({
+      password: oldPassword,
+      new_password: newPassword,
+      new_password_confirm: confirmPassword,
+    });
+    const config = {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
+    };
+    console.log("changing password");
+    axios
+      .post("http://localhost:5000/auth/change", json, config)
+      .then((res) => {
+        alert("Your password has been changed successfully!");
+        // Clear the input
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      })
+      .catch((error) => {
+        alert(
+          "Change password failed, make sure your old password is correct and your new password is complex!"
+        );
+      });
+  };
 
   return (
     <div
@@ -90,7 +133,9 @@ function MyAccount () {
                 </h3>
               </Col>
             </Row>
-
+            {list.length === 0 ? (
+              <p>You haven't followed any stocks/cryptos.</p>
+            ) : null}
             <Row>
               <Col xs={12}>
                 <ListGroup variant="flush" align="left">
@@ -102,17 +147,10 @@ function MyAccount () {
                     >
                       <Link
                         to={{
-                          pathname: `/result/${
-                            JSON.parse(localStorage.getItem(item)).type
-                          }/${item}`,
-                          state: {
-                            symbol: JSON.parse(localStorage.getItem(item))
-                              .symbol,
-                            addr: JSON.parse(localStorage.getItem(item)).addr
-                          }
+                          pathname: `/result/${item}`,
                         }}
                       >
-                        {item.toUpperCase()}
+                        {item.split(":")[1].toUpperCase()}
                       </Link>
                       <FollowBtn
                         id={item}
@@ -125,7 +163,59 @@ function MyAccount () {
               </Col>
             </Row>
           </div>
-            )}
+        )}
+        <br />
+        {currentUser.username === "" && currentUser.email === "" ? null : (
+          <Row>
+            <Col sm="12" md="6" lg="3">
+              <Card>
+                <Card.Header
+                  style={{ color: currentTheme.textColorLightBackground }}
+                >
+                  Change Your Password Here
+                </Card.Header>
+                <Card.Body>
+                  <Form onSubmit={handleChangePassword}>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                      <Form.Control
+                        type="password"
+                        placeholder="Enter your old password"
+                        required
+                        value={oldPassword}
+                        onChange={(e) => setOldPassword(e.target.value)}
+                        style={{ marginBottom: "5px" }}
+                      />
+
+                      <Form.Control
+                        type="password"
+                        placeholder="Enter your new password"
+                        required
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        style={{ marginBottom: "5px" }}
+                      />
+                      <Form.Control
+                        type="password"
+                        placeholder="Confirm your new password"
+                        required
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                    </Form.Group>
+
+                    <Row>
+                      <Col>
+                        <Button variant={currentTheme.variant} type="submit">
+                          Change Password
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        )}
       </Container>
     </div>
   )
