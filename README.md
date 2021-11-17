@@ -25,6 +25,8 @@ For more information on how to run the frontend individually, see `react-fronten
 
 ### Automatic pre-commit script
 1. Copy `hooks/pre-commit` to `.git/hooks`
+2. Modify script to point to bash executable or remove remainder of line on linux/wsl
+3. Make script executable `chmod +x pre-commit` for bash
 
 On commit, black and eslint should automatically reformat what it can, or warn you of required changes
 
