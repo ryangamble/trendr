@@ -129,24 +129,21 @@ def historic_fear_greed():
 
     # TODO: Figure out a way to get historic stock values
     crypto_values = fear_and_greed_connector.get_crypto_historic_values(days)
-    response_body = {
-        'crypto_values': crypto_values,
-        'stock_values': []
-    }
-    
+    response_body = {"crypto_values": crypto_values, "stock_values": []}
+
     current_app.logger.info("Getting historic fear greed values")
 
     return json_response(response_body, status=200)
 
 
-@assets.route('/stocks/listed-exchanges', methods=['GET'])
+@assets.route("/stocks/listed-exchanges", methods=["GET"])
 def stocks_listed_exchanges():
     """
     Gets the exchanges that list a stock.
     NOTE: Extremely slow
     :return: JSON response containing official channels
     """
-    symbol = request.args.get('symbol')
+    symbol = request.args.get("symbol")
     if not symbol:
         return json_response({"error": "Parameter 'symbol' is required"}, status=400)
 
@@ -154,22 +151,22 @@ def stocks_listed_exchanges():
     finnhub_client = finnhub.Client(api_key=FINNHUB_KEY)
 
     SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
-    exchangesPath = os.path.join(SITE_ROOT, '../connectors', 'FinnhubExchanges.csv')
+    exchangesPath = os.path.join(SITE_ROOT, "../connectors", "FinnhubExchanges.csv")
     df = pd.read_csv(exchangesPath)
 
     exchangeList = []
     try:
         for index, contents in df.iterrows():
-            exchangeCode = contents['code']
+            exchangeCode = contents["code"]
             for c in finnhub_client.stock_symbols(exchangeCode):
-                if c['symbol'] == symbol:
-                    exchangeList.append(contents['name'])
+                if c["symbol"] == symbol:
+                    exchangeList.append(contents["name"])
     except:
         return json_response("Time out", status=500)
     return json_response(exchangeList, status=200)
 
 
-@assets.route('/crypto/stats', methods=['GET'])
+@assets.route("/crypto/stats", methods=["GET"])
 def crypto_stats():
     """
     Gets general statistics for cryptos
@@ -251,7 +248,9 @@ def crypto_price_history():
         return json_response({"error": "Parameter 'days' is required"}, status=400)
 
     response_body = cg.get_historic_prices(id, days)
-    current_app.logger.info("Getting crypto price history for " + id + " over " + days + " days")
+    current_app.logger.info(
+        "Getting crypto price history for " + id + " over " + days + " days"
+    )
     return json_response(response_body, status=200)
 
 
@@ -267,7 +266,9 @@ def crypto_volume_history():
         return json_response({"error": "Parameter 'days' is required"}, status=400)
 
     response_body = cg.get_historic_volumes(id, days)
-    current_app.logger.info("Getting crypto volume history for " + id + " over " + days + " days")
+    current_app.logger.info(
+        "Getting crypto volume history for " + id + " over " + days + " days"
+    )
     return json_response(response_body, status=200)
 
 
@@ -300,7 +301,9 @@ def stock_history():
         current_app.logger.error("Couldn't retrieve history for " + symbol)
         return json_response({"error": "Couldn't retrieve history"}, status=500)
 
-    current_app.logger.info("Getting stock pirce and volume history for " + symbol + " over " + period)
+    current_app.logger.info(
+        "Getting stock pirce and volume history for " + symbol + " over " + period
+    )
     # TODO: Figure out how to return this like the other endpoints w/o breaking the frontend
     return asset_ticker.history(
         period=period,
@@ -336,7 +339,7 @@ def twitter_sentiment():
         # first number: polarity (-1.0 = very negative, 0 = neutral, 1.0 = very positive)
         # second number: subjectivity (0.0 = objective, 1.0 = subjective)
         response_body.append([text_clean, blob.sentiment])
-    
+
     current_app.logger.info("Getting twitter sentiment data for " + symbol)
     return json_response(response_body, status=200)
 
@@ -351,7 +354,11 @@ def reddit_sentiment_route():
     res_2 = store_submissions.delay(keywords=["apple"], limit=50)
     res_3 = store_comments.delay(keywords=["apple"], limit=50)
 
-    response_body = [res_1.get(timeout=100), res_2.get(timeout=100), res_3.get(timeout=100)]
+    response_body = [
+        res_1.get(timeout=100),
+        res_2.get(timeout=100),
+        res_3.get(timeout=100),
+    ]
     current_app.logger.info("Getting reddit sentiment")
     return json_response(response_body, status=200)
 
@@ -363,6 +370,8 @@ def tweet_summary(asset_identifier):
     :param asset_identifier: The asset identifier (AAPL, BTC) to generate a tweet summary for
     :return: JSON response containing tweet summary for the requested asset
     """
-    summary_data = twitter_connector.twitter_accounts_mentioning_asset_summary(asset_identifier)
+    summary_data = twitter_connector.twitter_accounts_mentioning_asset_summary(
+        asset_identifier
+    )
     current_app.logger.info("Getting twitter user statistics for " + asset_identifier)
     return json_response(summary_data, status=200)

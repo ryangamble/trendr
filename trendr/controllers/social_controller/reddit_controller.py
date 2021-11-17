@@ -153,9 +153,7 @@ def store_reddit_comments(
             new_comment = RedditComment(
                 reddit_id=result["id"],
                 text=result["body"],
-                posted_at=datetime.datetime.fromtimestamp(
-                    result["created_utc"]
-                ),
+                posted_at=datetime.datetime.fromtimestamp(result["created_utc"]),
                 score=result["score"],
             )
 
@@ -221,9 +219,7 @@ def store_reddit_submissions(
 
     for result in submissions:
 
-        existing = RedditSubmission.query.filter_by(
-            reddit_id=result["id"]
-        ).first()
+        existing = RedditSubmission.query.filter_by(reddit_id=result["id"]).first()
         if existing:
             res_ids.append(existing.id)
 
@@ -249,9 +245,7 @@ def store_reddit_submissions(
                     if result["selftext"]
                     else RedditSubmissionType.OTHER
                 ),
-                posted_at=datetime.datetime.fromtimestamp(
-                    result["created_utc"]
-                ),
+                posted_at=datetime.datetime.fromtimestamp(result["created_utc"]),
                 score=result["score"],
             )
 

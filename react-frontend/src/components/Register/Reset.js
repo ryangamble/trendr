@@ -1,43 +1,42 @@
-import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-import { useSelector } from "react-redux";
-import MyNavBar from "../NavBar/MyNavBar";
-import { Row, Col, Form, Button, Card } from "react-bootstrap";
-import axios from "axios";
+import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
+import MyNavBar from '../NavBar/MyNavBar'
+import { Row, Col, Form, Button, Card } from 'react-bootstrap'
+import axios from 'axios'
 
-function Reset() {
-  const currentTheme = useSelector((state) => state.theme.currentTheme);
-  const [email, setEmail] = useState("");
-  const [success, setSuccess] = useState(false);
+function Reset () {
+  const currentTheme = useSelector((state) => state.theme.currentTheme)
+  const [email, setEmail] = useState('')
+  const [success, setSuccess] = useState(false)
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-    setSuccess(false);
+    event.preventDefault()
+    setSuccess(false)
 
     const json = JSON.stringify({
-      email: email,
-    });
+      email: email
+    })
     const config = {
-      headers: { "Content-Type": "application/json" },
-      withCredentials: true,
-    };
+      headers: { 'Content-Type': 'application/json' },
+      withCredentials: true
+    }
 
     axios
-      .post("http://localhost:5000/auth/reset", json, config)
+      .post('http://localhost:5000/auth/reset', json, config)
       .then((res) => {
-        setSuccess(true);
+        setSuccess(true)
       })
       .catch((error) => {
-        alert(JSON.stringify(error.response.data.response.errors));
-      });
-  };
+        alert(JSON.stringify(error.response.data.response.errors))
+      })
+  }
 
   return (
     <div
       style={{
         background: currentTheme.background,
         color: currentTheme.foreground,
-        height: "100vh",
+        height: '100vh'
       }}
     >
       <MyNavBar />
@@ -79,7 +78,7 @@ function Reset() {
         </Col>
       </Row>
     </div>
-  );
+  )
 }
 
-export default Reset;
+export default Reset
