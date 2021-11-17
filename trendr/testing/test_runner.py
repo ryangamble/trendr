@@ -19,10 +19,7 @@ def create_parser():
     parser.add_argument(
         "-i", action="store_true", default=False, help="Run integration tests"
     )
-    parser.add_argument(
-        "-v", action="store_true", default=False, help="Verbose output"
-    
-    )
+    parser.add_argument("-v", action="store_true", default=False, help="Verbose output")
     return parser
 
 

@@ -21,6 +21,7 @@ from trendr.models.tweet_model import Tweet
 from trendr.models.search_model import Search
 from trendr.models.user_model import User, Role
 
+
 def create_app(for_celery=False, for_testing=False):
     app = Flask(__name__)
     app.config.from_object("trendr.config")
@@ -44,7 +45,7 @@ def create_app(for_celery=False, for_testing=False):
     if not for_testing:
         with app.app_context():
             db.create_all()
-    
+
     return app
 
 
