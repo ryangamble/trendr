@@ -66,9 +66,9 @@ const config = {
 };
 
 axios.get("http://localhost:5000/users/logged-in", config).catch((err) => {
-  // If user is not logged in, we will get a 401, then log the user out
-  if (err.response.status === 401) {
-    console.log("user not logged in");
+  // If user is not logged in, we will get a 401/400, then log the user out
+  if (err.response.status === 401 || err.response.status === 400) {
+    console.log("user not logged in!");
     store.dispatch(removeUser());
   }
 });
