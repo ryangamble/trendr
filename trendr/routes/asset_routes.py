@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 import json
 import os
 import re
@@ -7,18 +7,15 @@ import yahooquery as yq
 import finnhub
 import pandas as pd
 
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, current_app
 from textblob import TextBlob
 from trendr.controllers.search_controller import new_search
 
-from trendr.extensions import db
 from trendr.connectors import twitter_connector
 from trendr.connectors import fear_and_greed_connector
 from trendr.connectors import coin_gecko_connector as cg
 from trendr.connectors import defi_connector as df
-from trendr.models.reddit_model import RedditSubmission
-from trendr.models.search_model import Search, SearchType
-from trendr.models.tweet_model import Tweet
+from trendr.models.search_model import SearchType
 from trendr.tasks.social.twitter.gather import store_tweet_by_id
 from trendr.tasks.social.reddit.gather import store_comments, store_submissions
 from trendr.tasks.search import perform_search
@@ -345,7 +342,7 @@ def twitter_sentiment():
 
 
 @assets.route("/reddit_sentiment", methods=["GET"])
-def reddit_sentiment_route():
+def reddit_sentiment():
     """
     Gets reddit sentiment for an asset (stock or crypto)
     :return: JSON response containing reddit sentiment
