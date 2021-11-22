@@ -31,13 +31,6 @@ def test_historic_fear_greed(client):
     assert "stock_values" in resp_data
 
 
-def test_stocks_listed_exchanges(client):
-    response = asset_bindings.stocks_listed_exchanges(client, params={"symbol": "AAPL"})
-    assert response.status_code == 200
-    resp_data = response.json
-    assert len(resp_data) > 0
-
-
 def test_crypto_stats(client):
     response = asset_bindings.crypto_stats(client, params={"id": "bitcoin"})
     assert response.status_code == 200
