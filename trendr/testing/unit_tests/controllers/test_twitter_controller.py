@@ -10,7 +10,7 @@ from trendr.controllers.social_controller.tweet_controller import store_twitter_
         False
     ]
 )
-def test_store_twitter_results_no_existing(mocker, existing):
+def test_store_twitter_results(mocker, existing):
     result_mock = MagicMock()
     result_mock.id = 1
     result_mock.text = "text"

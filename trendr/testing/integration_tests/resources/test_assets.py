@@ -87,13 +87,6 @@ def test_twitter_sentiment(client):
     assert len(resp_data) > 0
 
 
-def test_reddit_sentiment(client):
-    response = asset_bindings.reddit_sentiment(client)
-    assert response.status_code == 200
-    resp_data = response.json
-    assert len(resp_data) > 0
-
-
 def test_tweet_summary(client):
     response = asset_bindings.tweet_summary(client, asset_identifier="AAPL")
     assert response.status_code == 200

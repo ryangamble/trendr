@@ -214,6 +214,7 @@ def store_reddit_submissions(
     res_ids = []
     to_add = []
 
+    search = None
     if search_id is not None:
         search = Search.query.filter_by(id=search_id).one()
 
