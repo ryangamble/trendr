@@ -1,37 +1,34 @@
-import json
-import pytest
-
-from trendr.testing.bindings.users import follow_asset_curr
+from trendr.testing.bindings import users as user_bindings
 
 
-# Positive tests
-
-# TODO: Figure out how to set current_user
-# @pytest.mark.parametrize(
-#     "req_body,follow_result", [
-#         ({"identifier": "AAPL"}, True),
-#         ({"identifier": "AAPL"}, False),
-#         ({"id": "AAPL"}, True),
-#         ({"id": "AAPL"}, False),
-#     ]
-# )
-# def test_follow_asset(client, mocker, req_body, follow_result):
-#     mocked_follow_asset = mocker.patch("trendr.controllers.user_controller.follow_asset", return_value=follow_result)
-#     response = follow_asset_curr(client, req_body)
-#     mocked_follow_asset.assert_not_called_once()
-#     if follow_result:
-#         assert response.status == 200
-#         assert response.payload == {"success": True}
-#     else:
-#         assert response.status == 400
-#         assert response.payload == {"success": False}
+def test_follow_asset_401(client):
+    response = user_bindings.follow_asset_curr(client, {"id": "AAPL"})
+    assert response.status_code == 401
+    assert response.json["response"]["error"] == 'You are not authenticated. Please supply the correct credentials.'
 
 
-# Negative tests
+def test_unfollow_asset_401(client):
+    response = user_bindings.unfollow_asset_curr(client, {"id": "AAPL"})
+    assert response.status_code == 401
+    assert response.json["response"]["error"] == 'You are not authenticated. Please supply the correct credentials.'
 
-def test_follow_asset_401(client, mocker):
-    mocked_follow_asset = mocker.patch("trendr.controllers.user_controller.follow_asset")
-    response = follow_asset_curr(client, {"id": "AAPL"})
-    mocked_follow_asset.assert_not_called()
+
+def test_get_followed_assets_curr_302(client):
+    response = user_bindings.get_followed_assets_curr(client)
+    assert response.status_code == 302
+
+
+def test_get_assets_followed_by_user_302(client):
+    response = user_bindings.get_assets_followed_by_user(client, "fake-username")
+    assert response.status_code == 302
+
+
+def test_get_settings_302(client):
+    response = user_bindings.get_settings(client)
+    assert response.status_code == 302
+
+
+def test_set_settings_401(client):
+    response = user_bindings.set_settings(client, {})
     assert response.status_code == 401
     assert response.json["response"]["error"] == 'You are not authenticated. Please supply the correct credentials.'
