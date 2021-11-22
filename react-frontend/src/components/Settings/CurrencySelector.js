@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { DropdownButton, Dropdown } from 'react-bootstrap'
 const currencyList = [
   'AED',
@@ -64,20 +64,39 @@ const currencyList = [
   'SATS'
 ]
 
-function renderCurrencies () {
-  const list = []
-  for (const key in currencyList) {
-    console.log(currencyList[key])
-    list.push(<Dropdown.Item key={key}>{currencyList[key]}</Dropdown.Item>)
-  }
-  return list
-}
-
 function CurrencySelector () {
+  const [currency, setCurrency] = useState()
+
+  function renderCurrencies () {
+    const list = []
+    for (const key in currencyList) {
+      // console.log(currencyList[key])
+      list.push(<Dropdown.Item key={key} eventKey={currencyList[key]}>{currencyList[key]}</Dropdown.Item>)
+    }
+    return list
+  }
+
+  // TODO: If logged in, fetch preferred currency from db and store in state
+
+  // TODO: If logged in, update user currency in db
+  const handleSelect = (e) => {
+    console.log('changed currency to:', e)
+    setCurrency(e)
+  }
+
   return (
-    <DropdownButton id="dropdown-basic-button" title="Currency">
-      {renderCurrencies()}
-    </DropdownButton>
+    <>
+      <div style={{ color: 'black' }}>Currency</div>
+      <DropdownButton
+        id="dropdown-basic-button"
+        title={currency || 'Select Currency'}
+        onSelect={handleSelect}
+      >
+        <div style={{ overflowY: 'scroll', height: '50vh' }}>
+        {renderCurrencies()}
+        </div>
+      </DropdownButton>
+    </>
   )
 }
 
