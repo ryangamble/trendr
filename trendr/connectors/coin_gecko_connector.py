@@ -163,7 +163,10 @@ def get_id_eth_address(id):
     tokens = json.loads(open(json_path, encoding="utf8").read())
     for token in tokens:
         if token["id"] == id:
-            if "ethereum" in token["platforms"] and len(token["platforms"]["ethereum"]) > 0:
+            if (
+                "ethereum" in token["platforms"]
+                and len(token["platforms"]["ethereum"]) > 0
+            ):
                 return token["platforms"]["ethereum"]
     return None
 

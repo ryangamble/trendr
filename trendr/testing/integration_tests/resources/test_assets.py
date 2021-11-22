@@ -18,7 +18,7 @@ def test_search(client):
     assert response.status_code == 200
     resp_data = response.json
     assert len(resp_data) > 0
-    assert "AAPL" in resp_data[0]['symbol']
+    assert "AAPL" in resp_data[0]["symbol"]
 
 
 def test_historic_fear_greed(client):
@@ -63,7 +63,9 @@ def test_crypto_eth_address(client):
 
 
 def test_crypto_price_history(client):
-    response = asset_bindings.crypto_price_history(client, params={"id": "bitcoin", "days": "1"})
+    response = asset_bindings.crypto_price_history(
+        client, params={"id": "bitcoin", "days": "1"}
+    )
     assert response.status_code == 200
     resp_data = response.json
     assert len(resp_data) > 0
@@ -72,7 +74,9 @@ def test_crypto_price_history(client):
 
 
 def test_crypto_volume_history(client):
-    response = asset_bindings.crypto_volume_history(client, params={"id": "bitcoin", "days": "1"})
+    response = asset_bindings.crypto_volume_history(
+        client, params={"id": "bitcoin", "days": "1"}
+    )
     assert response.status_code == 200
     resp_data = response.json
     assert len(resp_data) > 0

@@ -4,12 +4,7 @@ from unittest.mock import MagicMock
 from trendr.controllers.social_controller.tweet_controller import store_twitter_results
 
 
-@pytest.mark.parametrize(
-    "existing", [
-        True,
-        False
-    ]
-)
+@pytest.mark.parametrize("existing", [True, False])
 def test_store_twitter_results(mocker, existing):
     result_mock = MagicMock()
     result_mock.id = 1
@@ -19,10 +14,17 @@ def test_store_twitter_results(mocker, existing):
     result_mock.retweet_count = 1
     mock_results = result_mock
 
-    mocker.patch("trendr.controllers.social_controller.tweet_controller.isinstance", return_value=True)
+    mocker.patch(
+        "trendr.controllers.social_controller.tweet_controller.isinstance",
+        return_value=True,
+    )
     db_mock = mocker.patch("trendr.controllers.social_controller.tweet_controller.db")
-    search_mock = mocker.patch("trendr.controllers.social_controller.tweet_controller.Search")
-    tweet_mock = mocker.patch("trendr.controllers.social_controller.tweet_controller.Tweet")
+    search_mock = mocker.patch(
+        "trendr.controllers.social_controller.tweet_controller.Search"
+    )
+    tweet_mock = mocker.patch(
+        "trendr.controllers.social_controller.tweet_controller.Tweet"
+    )
 
     sub_tweet_filter_mock = MagicMock()
     tweet_mock.query.filter_by.return_value = sub_tweet_filter_mock
@@ -36,6 +38,8 @@ def test_store_twitter_results(mocker, existing):
     if existing:
         tweet_mock.assert_not_called()
     else:
-        tweet_mock.assert_called_once_with(tweet_id=1, text="text", tweeted_at=1, likes=1, retweets=1)
+        tweet_mock.assert_called_once_with(
+            tweet_id=1, text="text", tweeted_at=1, likes=1, retweets=1
+        )
     db_mock.session.add_all.assert_called_once()
     db_mock.session.commit.assert_called_once()

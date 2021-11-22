@@ -14,17 +14,20 @@ def test_find_user(mocker):
 
 
 @pytest.mark.parametrize(
-    "roles", [
+    "roles",
+    [
         None,
         ["mock_role"],
-    ]
+    ],
 )
 def test_create_user(mocker, roles):
     email = "test@test.com"
     password = "password"
     security_mock = mocker.patch("trendr.controllers.user_controller.security")
     db_mock = mocker.patch("trendr.controllers.user_controller.db")
-    hash_mock = mocker.patch("trendr.controllers.user_controller.hash_password", return_value=password)
+    hash_mock = mocker.patch(
+        "trendr.controllers.user_controller.hash_password", return_value=password
+    )
     user_controller.create_user(email, password, roles)
     hash_mock.assert_called_once_with(password)
     if roles:
@@ -39,12 +42,13 @@ def test_create_user(mocker, roles):
 
 
 @pytest.mark.parametrize(
-    "user_arg,asset_arg", [
+    "user_arg,asset_arg",
+    [
         (1, 1),
         ("test@test.com", 1),
         (1, "AAPL"),
         ("test@test.com", "AAPL"),
-    ]
+    ],
 )
 def test_follow_asset(mocker, user_arg, asset_arg):
     user = User()
@@ -76,12 +80,13 @@ def test_follow_asset(mocker, user_arg, asset_arg):
 
 
 @pytest.mark.parametrize(
-    "user_arg,asset_arg", [
+    "user_arg,asset_arg",
+    [
         (1, 1),
         ("test@test.com", 1),
         (1, "AAPL"),
         ("test@test.com", "AAPL"),
-    ]
+    ],
 )
 def test_unfollow_asset(mocker, user_arg, asset_arg):
     user = User()
@@ -114,18 +119,21 @@ def test_unfollow_asset(mocker, user_arg, asset_arg):
 
 
 @pytest.mark.parametrize(
-    "user_arg,user_returned", [
+    "user_arg,user_returned",
+    [
         (1, True),
         ("test@test.com", True),
         (1, False),
         ("test@test.com", False),
-    ]
+    ],
 )
 def test_get_followed_assets(mocker, user_arg, user_returned):
     user = User()
     asset = Asset(identifier="AAPL")
     user.assets.append(asset)
-    mocker.patch("trendr.controllers.user_controller.isinstance", return_value=user_returned)
+    mocker.patch(
+        "trendr.controllers.user_controller.isinstance", return_value=user_returned
+    )
     user_mock = mocker.patch("trendr.controllers.user_controller.User")
     if user_returned:
         sub_mock = MagicMock()
