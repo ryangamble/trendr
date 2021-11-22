@@ -28,6 +28,7 @@ from trendr.config import FINNHUB_KEY
 assets = Blueprint("assets", __name__, url_prefix="/assets")
 
 
+
 @assets.route("/fear-greed", methods=["GET"])
 def fear_greed():
     """
@@ -343,6 +344,20 @@ def twitter_sentiment():
     current_app.logger.info("Getting twitter sentiment data for " + symbol)
     return json_response(response_body, status=200)
 
+@assets.route("/twitter_mentions_count", methods=["GET"])
+def twitter_mentions_count():
+    """
+    Gets a list with the count data(start, end, tweet_count) for each hour for the previous 7 days.
+    symbol can be any keyword. ex. BTC or Bitcoin.
+    """
+    symbol = request.args.get("symbol")
+
+    if not symbol:
+        current_app.logger.error("No symbol given")
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
+
+    res = twitter_connector.tweet_count_mentioning_asset(asset_identifier="bitcoin")
+    return json_response(res, status=200)
 
 @assets.route("/reddit_sentiment", methods=["GET"])
 def reddit_sentiment_route():
@@ -375,3 +390,5 @@ def tweet_summary(asset_identifier):
     )
     current_app.logger.info("Getting twitter user statistics for " + asset_identifier)
     return json_response(summary_data, status=200)
+
+

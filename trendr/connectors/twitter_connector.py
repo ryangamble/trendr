@@ -9,7 +9,7 @@ from statistics import median
 import tweepy
 from tweepy import models
 
-from trendr.config import TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET
+from trendr.config import TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, TWITTER_BEARER_TOKEN
 from trendr.exceptions import ConnectorException
 
 
@@ -157,3 +157,22 @@ def twitter_accounts_mentioning_asset_summary(
         "accounts_age_stats": accounts_age_stats,
         "verified_count": verified_count,
     }
+
+
+def tweet_count_mentioning_asset(
+    asset_identifier: str, client: tweepy.Client = None
+):
+    """
+    Queries Twitter for the count of tweets mentioning the asset.
+
+    :param asset_identifier: The name of the asset (AAPL, BTC, Bitcoin, etc.)
+    :param clinet: An optional tweepy.Client object, if one is not provided it will be created
+    :return: a Python list with the count data(start, end, tweet_count) for each hour for the previous 7 days.
+    """
+    if not client:
+        client = client = tweepy.Client(bearer_token=TWITTER_BEARER_TOKEN)
+
+    results = client.get_recent_tweets_count(
+        query=asset_identifier,
+    )[0]
+    return results
