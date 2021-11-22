@@ -12,55 +12,103 @@ def perform_asset_search(client):
 
 
 def search(client, params):
-    return client.get("/assets/search", params=params)
+    param_string = "?"
+    for key, value in params.items():
+        param_string += f"{key}={value}&"
+    param_string = param_string[:-1]
+    return client.get(f"/assets/search{param_string}")
 
 
 def historic_fear_greed(client, params):
-    return client.get("/assets/historic-fear-greed", params=params)
+    param_string = "?"
+    for key, value in params.items():
+        param_string += f"{key}={value}&"
+    param_string = param_string[:-1]
+    return client.get(f"/assets/historic-fear-greed{param_string}")
 
 
 def stocks_listed_exchanges(client, params):
-    return client.get("/assets/stocks/listed-exchanges", params=params)
+    param_string = "?"
+    for key, value in params.items():
+        param_string += f"{key}={value}&"
+    param_string = param_string[:-1]
+    return client.get(f"/assets/stocks/listed-exchanges{param_string}")
 
 
 def crypto_stats(client, params):
-    return client.get("/assets/crypto/stats", params=params)
+    param_string = "?"
+    for key, value in params.items():
+        param_string += f"{key}={value}&"
+    param_string = param_string[:-1]
+    return client.get(f"/assets/crypto/stats{param_string}")
 
 
 def stock_stats(client, params):
-    return client.get("/assets/stock/stats", params=params)
+    param_string = "?"
+    for key, value in params.items():
+        param_string += f"{key}={value}&"
+    param_string = param_string[:-1]
+    return client.get(f"/assets/stock/stats{param_string}")
 
 
 def crypto_eth_address(client, params):
-    return client.get("/assets/crypto/eth-address", params=params)
+    param_string = "?"
+    for key, value in params.items():
+        param_string += f"{key}={value}&"
+    param_string = param_string[:-1]
+    return client.get(f"/assets/crypto/eth-address{param_string}")
 
 
 def token_info(client, params):
-    return client.get("/assets/token/info", params=params)
+    param_string = "?"
+    for key, value in params.items():
+        param_string += f"{key}={value}&"
+    param_string = param_string[:-1]
+    return client.get(f"/assets/token/info{param_string}")
 
 
 def token_top_holders(client, params):
-    return client.get("/assets/token/top-holders", params=params)
+    param_string = "?"
+    for key, value in params.items():
+        param_string += f"{key}={value}&"
+    param_string = param_string[:-1]
+    return client.get(f"/assets/token/top-holders{param_string}")
 
 
 def crypto_price_history(client, params):
-    return client.get("/assets/crypto/price-history", params=params)
+    param_string = "?"
+    for key, value in params.items():
+        param_string += f"{key}={value}&"
+    param_string = param_string[:-1]
+    return client.get(f"/assets/crypto/price-history{param_string}")
 
 
 def crypto_volume_history(client, params):
-    return client.get("/assets/crypto/volume-history", params=params)
+    param_string = "?"
+    for key, value in params.items():
+        param_string += f"{key}={value}&"
+    param_string = param_string[:-1]
+    return client.get(f"/assets/crypto/volume-history{param_string}")
 
 
 def stock_history(client, params):
-    return client.get("/assets/stock/history", params=params)
+    param_string = "?"
+    for key, value in params.items():
+        param_string += f"{key}={value}&"
+    param_string = param_string[:-1]
+    return client.get(f"/assets/stock/history{param_string}")
 
 
 def twitter_sentiment(client, params):
-    return client.get("/assets/twitter_sentiment", params=params)
+    param_string = "?"
+    for key, value in params.items():
+        param_string += f"{key}={value}&"
+    param_string = param_string[:-1]
+    return client.get(f"/assets/twitter_sentiment{param_string}")
 
 
-def reddit_sentiment(client, params):
-    return client.get("/assets/reddit_sentiment", params=params)
+def reddit_sentiment(client):
+    return client.get("/assets/reddit_sentiment")
 
 
 def tweet_summary(client, asset_identifier):

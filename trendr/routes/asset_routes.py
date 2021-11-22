@@ -70,7 +70,7 @@ def search():
 
     SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
     json_path = os.path.join(SITE_ROOT, "../connectors", "CoinGeckoCoins.json")
-    crypto_list = json.loads(open(json_path).read())
+    crypto_list = json.loads(open(json_path, encoding="utf8").read())
 
     crypto_filtered = [
         v
