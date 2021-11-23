@@ -31,6 +31,7 @@ def db():
     yield database
     database.drop_all()
 
+
 # @pytest.fixture(scope="session")
 # def db_engine():
 #     """yields a SQLAlchemy engine which is suppressed after the test session"""
