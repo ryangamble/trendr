@@ -10,6 +10,10 @@ import pandas as pd
 from flask import Blueprint, request, jsonify, current_app
 from textblob import TextBlob
 from trendr.controllers.search_controller import new_search
+from trendr.controllers.sentiment_data_point_controller import (
+    get_important_posts,
+    get_sentiment_scores,
+)
 
 from trendr.extensions import db
 from trendr.connectors import twitter_connector
@@ -18,7 +22,9 @@ from trendr.connectors import coin_gecko_connector as cg
 from trendr.connectors import defi_connector as df
 from trendr.models.reddit_model import RedditSubmission
 from trendr.models.search_model import Search, SearchType
+from trendr.models.sentiment_model import SentimentDataPoint
 from trendr.models.tweet_model import Tweet
+from trendr.models.asset_model import Asset
 from trendr.tasks.social.twitter.gather import store_tweet_by_id
 from trendr.tasks.social.reddit.gather import store_comments, store_submissions
 from trendr.tasks.search import perform_search
@@ -27,10 +33,6 @@ from trendr.config import FINNHUB_KEY
 
 assets = Blueprint("assets", __name__, url_prefix="/assets")
 
-@assets.route('/test', methods=['GET'])
-def test():
-    from trendr.analyzers import posts_weight
-    return "Test!"
 
 @assets.route("/fear-greed", methods=["GET"])
 def fear_greed():
@@ -50,16 +52,92 @@ def fear_greed():
     return json_response(response_body, status=200)
 
 
+@assets.route("/sentiment_values", methods=["POST"])
+def sentiment_values():
+    current_app.logger.info(f"Getting sentiment data points")
+
+    content = request.get_json()
+    params = {"asset_identifier": None, "start_timestamp": None, "end_timestamp": None}
+    for param in params:
+        if param in content:
+            val = content[param]
+            if param.endswith("timestamp"):
+                val = datetime.fromtimestamp(val)
+            params[param] = val
+        else:
+            current_app.logger.error(f"No {param} given")
+            return json_response(
+                {"error": f"Parameter '{param}' is required"}, status=400
+            )
+
+    current_app.logger.info(
+        f"Getting sentiment data points for {params['asset_identifier']} from {params['start_timestamp']} to {params['end_timestamp']}"
+    )
+    return json_response(
+        {
+            "data": get_sentiment_scores(
+                params["asset_identifier"],
+                params["start_timestamp"],
+                params["end_timestamp"],
+            )
+        }
+    )
+
+
+@assets.route("/sentiment_important_posts", methods=["POST"])
+def sentiment_important_posts():
+    current_app.logger.info(f"Getting sentiment data points")
+
+    content = request.get_json()
+    params = {"asset_identifier": None, "timestamp": None}
+    for param in params:
+        if param in content:
+            val = content[param]
+            if param.endswith("timestamp"):
+                val = datetime.fromtimestamp(val)
+            params[param] = val
+        else:
+            current_app.logger.error(f"No {param} given")
+            return json_response(
+                {"error": f"Parameter '{param}' is required"}, status=400
+            )
+
+    current_app.logger.info(
+        f"Getting post urls for {params['asset_identifier']} at {params['timestamp']}"
+    )
+    return json_response(
+        {
+            "data": get_important_posts(
+                params["asset_identifier"],
+                params["timestamp"],
+            )
+        }
+    )
+    # asset_identifier, start_time, end_time
+
+
 @assets.route("/perform_asset_search", methods=["GET"])
 def perform_asset_search():
-    search = new_search("apple")
+    # TODO: Remove block, it's temporary while we have no assets
+    asset = Asset.query.filter_by(id=1).first()
+    if asset is None:
+        asset = Asset(
+            identifier="AAPL", reddit_q="AAPL|apple", twitter_q="AAPL OR apple"
+        )
+        db.session.add(asset)
+        db.session.commit()
 
-    since = (search.ran_at - timedelta(days=1)).timestamp()
+    search = new_search(asset)
+    since = (search.ran_at - timedelta(days=5)).timestamp()
     perform_search.delay(
-        keyword="apple",
-        search_types=[SearchType.TWITTER, SearchType.REDDIT_SUBMISSION],
+        asset_id=asset.id,
+        search_types=[
+            SearchType.TWITTER,
+            SearchType.REDDIT_SUBMISSION,
+            SearchType.REDDIT_COMMENT,
+        ],
+        earliest_ts=since,
         search_id=search.id,
-        limit=10,
     )
     return json_response({"search_id": search.id}, status=200)
 
