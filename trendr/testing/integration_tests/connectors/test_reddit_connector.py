@@ -78,7 +78,7 @@ def test_get_post_mentioning_asset_positive(pmaw_api: pmaw.PushshiftAPI):
     after = int((datetime.datetime.now() - datetime.timedelta(days=7)).timestamp())
     keyword = "apple"
     submissions = reddit_connector.gather_submissions(
-        api=pmaw_api, keywords=[keyword], after=after, limit=1
+        api=pmaw_api, search_str=keyword, after=after, limit=1
     )
 
     assert len(submissions) >= 1
@@ -97,7 +97,7 @@ def test_get_comment_mentioning_asset_positive(pmaw_api: pmaw.PushshiftAPI):
     after = int((datetime.datetime.now() - datetime.timedelta(days=7)).timestamp())
     keyword = "apple"
     comments = reddit_connector.gather_comments(
-        api=pmaw_api, keywords=[keyword], after=after, limit=1
+        api=pmaw_api, search_str=keyword, after=after, limit=1
     )
 
     assert len(comments) >= 1
