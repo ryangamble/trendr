@@ -5,6 +5,7 @@ from trendr.models.search_model import Search
 from trendr.models.tweet_model import Tweet
 from tweepy.models import Status
 
+
 def store_twitter_results(
     results: Union[tweepy.models.SearchResults, tweepy.models.Status],
     overwrite: bool = True,
