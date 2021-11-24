@@ -1,11 +1,11 @@
-FROM node:14.14.0-alpine as builder
+FROM node:lts as build-deps
 WORKDIR /app
-COPY ./package.json ./
-RUN npm i
+COPY package.json yarn.lock ./
+RUN yarn
 COPY . .
-RUN npm run build
+RUN yarn build
 
-FROM nginx
+FROM nginx:alpine
+COPY --from=build-deps /app/build /usr/share/nginx/html
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 EXPOSE 3000
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/build /usr/share/nginx/html
