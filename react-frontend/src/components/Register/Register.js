@@ -35,7 +35,7 @@ function Register () {
     }
 
     axios
-      .post(`${process.env.REACT_APP_API_ROOT}/auth/register`, json, config)
+      .post(`/api/auth/register`, json, config)
       .then((res) => {
         history.push('/login')
       })

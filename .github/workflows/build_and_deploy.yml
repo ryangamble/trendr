@@ -1,7 +1,7 @@
 name: Build & Push Docker Images
 on:
   push:
-    branches: [ S37/S50-digital-ocean ]
+    branches: [ risky-refactor ]
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
@@ -9,10 +9,10 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v1
 
-      - name: Create react-frontend/.env
-        run: |
-          touch react-frontend/.env
-          echo REACT_APP_API_ROOT=http://api-service:5000 >> react-frontend/.env
+#      - name: Create react-frontend/.env
+#        run: |
+#          touch react-frontend/.env
+#          echo REACT_APP_API_ROOT=/api >> react-frontend/.env
 
       - name: Create .env/
         run: mkdir .env

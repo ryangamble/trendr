@@ -37,7 +37,7 @@ function FollowBtn ({ id, isFollow, callback }) {
     if (followed) {
       console.log('Unfollowing ', id)
       axios
-        .post(`${process.env.REACT_APP_API_ROOT}/users/unfollow-asset`, json, config)
+        .post(`/api/users/unfollow-asset`, json, config)
         .then((res) => {
           console.log(res)
           if (res.status === 200 && res.data.success === true) {
@@ -57,7 +57,7 @@ function FollowBtn ({ id, isFollow, callback }) {
     } else {
       console.log('Following ', id)
       axios
-        .post(`${process.env.REACT_APP_API_ROOT}/users/follow-asset`, json, config)
+        .post(`/api/users/follow-asset`, json, config)
         .then((res) => {
           if (res.status === 200 && res.data.success === true) {
             // toggle between follow/unfollow

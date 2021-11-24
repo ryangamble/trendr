@@ -6,11 +6,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: client
+      component: web
   template:
     metadata:
       labels:
-        app: client
+        component: web
     spec:
       containers:
         - name: client
@@ -23,24 +23,24 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-deployment
+  name: server-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api
+      component: server
   template:
     metadata:
       labels:
-        app: api
+        component: server
     spec:
       containers:
-        - name: api
+        - name: server
           image: registry.digitalocean.com/trendr/backend
           imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
           env:
             - name: FLASK_APP
               value: "/app/trendr/app.py"
-          ports:
-            - containerPort: 5000
       restartPolicy: Always

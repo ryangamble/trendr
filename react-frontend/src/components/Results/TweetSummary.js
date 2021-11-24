@@ -13,7 +13,7 @@ function TweetSummary (props) {
   useEffect(() => {
     setLoading(true)
     axios
-      .get(`${process.env.REACT_APP_API_ROOT}/assets/tweet-summary/` + props.symbol)
+      .get(`/api/assets/tweet-summary/` + props.symbol)
       .then((res) => {
         setLoading(true)
         return JSON.parse(JSON.stringify(res.data))
