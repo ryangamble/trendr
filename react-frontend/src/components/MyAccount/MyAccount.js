@@ -36,7 +36,7 @@ function MyAccount () {
       console.log('profile fetching user follow list....')
 
       axios
-        .get('http://localhost:5000/users/assets-followed', {
+        .get(`${process.env.REACT_APP_API_ROOT}/users/assets-followed`, {
           withCredentials: true
         })
         .then((res) => {
@@ -76,7 +76,7 @@ function MyAccount () {
     }
     console.log('changing password')
     axios
-      .post('http://localhost:5000/auth/change', json, config)
+      .post(`${process.env.REACT_APP_API_ROOT}/auth/change`, json, config)
       .then((res) => {
         alert('Your password has been changed successfully!')
         // Clear the input

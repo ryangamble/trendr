@@ -16,7 +16,7 @@ function Settings () {
   // function loadSettingsFromBackend () {
   //   if (currentUser.username === '' && currentUser.email === '') {
   //     axios
-  //       .get('http://localhost:5000/users/settings', { withCredentials: true })
+  //       .get(`${process.env.REACT_APP_API_ROOT}/users/settings`, { withCredentials: true })
   //       .then(response => {
   //         console.log('server: ' + response.data.dark_mode + '\nclient: ' + currentTheme.name)
   //         // false represents light, true represents dark
@@ -32,7 +32,7 @@ function Settings () {
   function storeThemeToBackend (currtheme) {
     if (currentUser.username !== '' || currentUser.email !== '') {
       axios
-        .put('http://localhost:5000/users/settings', { dark_mode: currtheme }, { withCredentials: true })
+        .put(`${process.env.REACT_APP_API_ROOT}/users/settings`, { dark_mode: currtheme }, { withCredentials: true })
         .then(response => {
           console.log('Saved theme: ' + (currtheme ? 'Dark' : 'Light'))
         })

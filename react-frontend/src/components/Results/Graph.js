@@ -68,7 +68,7 @@ function StockGraph (props) {
 
   async function fetchDataPoints (timePeriod) {
     axios
-      .get('http://localhost:5000/assets/stock/history', {
+      .get(`${process.env.REACT_APP_API_ROOT}/assets/stock/history`, {
         method: 'GET',
         params: {
           symbol: props.symbol,
@@ -376,9 +376,9 @@ function CryptoGraph (props) {
   async function fetchDataPoints (timePeriod) {
     let apiRoute = ''
     if (props.graphType === 'price') {
-      apiRoute = 'http://localhost:5000/assets/crypto/price-history'
+      apiRoute = `${process.env.REACT_APP_API_ROOT}/assets/crypto/price-history`
     } else {
-      apiRoute = 'http://localhost:5000/assets/crypto/volume-history'
+      apiRoute = `${process.env.REACT_APP_API_ROOT}/assets/crypto/volume-history`
     }
 
     axios
@@ -663,7 +663,7 @@ function SentimentGraph (props) {
 
   // function fetchTwitterData() {
   //   axios
-  //     .get("http://localhost:5000/assets/twitter_sentiment", {
+  //     .get(`${process.env.REACT_APP_API_ROOT}/assets/twitter_sentiment`, {
   //       method: "GET",
   //       params: {
   //         symbol: props.symbol,
@@ -787,7 +787,7 @@ function TopTokenHolders (props) {
     setLoading(true)
 
     axios
-      .get('http://localhost:5000/assets/token/top-holders', {
+      .get(`${process.env.REACT_APP_API_ROOT}/assets/token/top-holders`, {
         method: 'GET',
         params: {
           address: props.addr
@@ -904,7 +904,7 @@ function FearGreed () {
 
   useEffect(() => {
     axios
-      .get('http://localhost:5000/assets/historic-fear-greed')
+      .get(`${process.env.REACT_APP_API_ROOT}/assets/historic-fear-greed`)
       .then((res) => {
         const data = JSON.parse(JSON.stringify(res.data))
 
