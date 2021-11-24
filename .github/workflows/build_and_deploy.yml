@@ -9,6 +9,11 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v1
 
+      - name: Create react-frontend/.env
+        run: |
+          touch react-frontend/.env
+          echo REACT_APP_API_ROOT=http://api-service:5000 >> react-frontend/.env
+
       - name: Create .env/
         run: mkdir .env
 
@@ -47,8 +52,6 @@ jobs:
 
       - name: Push Frontend Image to Digital Ocean Container Registry
         run: docker push registry.digitalocean.com/trendr/frontend:latest
-        env:
-          REACT_APP_API_ROOT: http://api-service:5000
 
       - name: Build Backend Image
         run: docker build -t registry.digitalocean.com/trendr/backend:latest . -f compose/local/flask/Dockerfile
