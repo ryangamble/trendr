@@ -35,7 +35,7 @@ function StockStatistics (props) {
   useEffect(() => {
     setLoading(true)
     axios
-      .get(`/api/assets/stock/stats`, {
+      .get(`${process.env.REACT_APP_API_ROOT}/assets/stock/stats`, {
         method: 'GET',
         params: {
           symbol: props.symbol
@@ -67,7 +67,7 @@ function StockStatistics (props) {
         props.currencyCallback(data.currency)
 
         axios
-          .get(`/api/assets/stocks/listed-exchanges`, {
+          .get(`${process.env.REACT_APP_API_ROOT}/assets/stocks/listed-exchanges`, {
             method: 'GET',
             params: {
               symbol: props.symbol
@@ -200,7 +200,7 @@ function CoinStatistics (props) {
   useEffect(() => {
     setLoading(true)
     axios
-      .get(`/api/assets/crypto/stats`, {
+      .get(`${process.env.REACT_APP_API_ROOT}/assets/crypto/stats`, {
         method: 'GET',
         params: {
           id: props.id
@@ -339,7 +339,7 @@ function TokenStatistics (props) {
     // console.log(props.addr)
     setLoading(true)
     axios
-      .get(`/api/assets/token/info`, {
+      .get(`${process.env.REACT_APP_API_ROOT}/assets/token/info`, {
         method: 'GET',
         params: {
           address: props.addr

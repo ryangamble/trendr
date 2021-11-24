@@ -8,7 +8,7 @@ function ConfirmEmail () {
   const history = useHistory()
 
   axios
-    .post(`/api/auth/confirm/` + confirmCode.substring(1))
+    .post(`${process.env.REACT_APP_API_ROOT}/auth/confirm/` + confirmCode.substring(1))
     .then((res) => {
       history.push('/login')
     })

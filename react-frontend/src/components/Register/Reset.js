@@ -22,7 +22,7 @@ function Reset () {
     }
 
     axios
-      .post(`/api/auth/reset`, json, config)
+      .post(`${process.env.REACT_APP_API_ROOT}/auth/reset`, json, config)
       .then((res) => {
         setSuccess(true)
       })

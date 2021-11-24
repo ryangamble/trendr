@@ -32,7 +32,7 @@ function SetPassword () {
 
     axios
       .post(
-        `/api/auth/reset/` + resetCode.substring(1),
+        `${process.env.REACT_APP_API_ROOT}/auth/reset/` + resetCode.substring(1),
         json,
         config
       )

@@ -35,7 +35,7 @@ function SearchBar () {
     }
 
     axios
-      .get(`/api/assets/search`, {
+      .get(`${process.env.REACT_APP_API_ROOT}/assets/search`, {
         method: 'GET',
         params: {
           query: keyword

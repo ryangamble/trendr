@@ -9,10 +9,10 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v1
 
-#      - name: Create react-frontend/.env
-#        run: |
-#          touch react-frontend/.env
-#          echo REACT_APP_API_ROOT=/api >> react-frontend/.env
+      - name: Create react-frontend/.env
+        run: |
+          touch react-frontend/.env
+          echo REACT_APP_API_ROOT=/api >> react-frontend/.env
 
       - name: Create .env/
         run: mkdir .env
