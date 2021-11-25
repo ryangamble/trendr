@@ -1,7 +1,7 @@
 name: Build & Push Docker Images
 on:
   push:
-    branches: [ S37/S50-digital-ocean ]
+    branches: [ risky-refactor ]
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
@@ -12,7 +12,7 @@ jobs:
       - name: Create react-frontend/.env
         run: |
           touch react-frontend/.env
-          echo REACT_APP_API_ROOT=http://api-service:5000 >> react-frontend/.env
+          echo REACT_APP_API_ROOT=/api >> react-frontend/.env
 
       - name: Create .env/
         run: mkdir .env
@@ -20,8 +20,10 @@ jobs:
       - name: Create .env_dev
         run: |
           touch .env/.env_dev
-          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env/.env_dev
-          echo SQLALCHEMY_DATABASE_URI=${{ secrets.SQLALCHEMY_DATABASE_URI }} >> .env/.env_dev
+          echo DATABASE_URL=${{ secrets.DO_DATABASE_URI }} >> .env/.env_dev
+          echo SQLALCHEMY_DATABASE_URI=${{ secrets.DO_DATABASE_URI }} >> .env/.env_dev
+          echo CELERY_BROKER_URL=redis://redis-cluster-ip-service.default.svc.cluster.local:6379/0 >> .env/.env_dev
+          echo CELERY_RESULT_BACKEND=redis://redis-cluster-ip-service.default.svc.cluster.local:6379/0 >> .env/.env_dev
 
       - name: Create .env_apis
         run: |
@@ -29,6 +31,7 @@ jobs:
           echo TWITTER_CONSUMER_KEY=${{ secrets.TWITTER_CONSUMER_KEY }} >> .env/.env_apis
           echo TWITTER_CONSUMER_SECRET=${{ secrets.TWITTER_CONSUMER_SECRET }} >> .env/.env_apis
           echo ETHPLORER_KEY=${{ secrets.ETHPLORER_KEY }} >> .env/.env_apis
+          echo FINNHUB_KEY=${{ secrets.FINNHUB_KEY }} >> .env/.env_apis
 
       - name: Create .env_mail_secrets
         run: |
@@ -55,13 +58,6 @@ jobs:
 
       - name: Build Backend Image
         run: docker build -t registry.digitalocean.com/trendr/backend:latest . -f compose/local/flask/Dockerfile
-        env:
-          TWITTER_CONSUMER_KEY: ${{ secrets.TWITTER_CONSUMER_KEY }}
-          TWITTER_CONSUMER_SECRET: ${{ secrets.TWITTER_CONSUMER_SECRET }}
-          ETHPLORER_KEY: ${{ secrets.ETHPLORER_KEY }}
-          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
 
       - name: Push Backend Image to Digital Ocean Container Registry
         run: docker push registry.digitalocean.com/trendr/backend:latest
