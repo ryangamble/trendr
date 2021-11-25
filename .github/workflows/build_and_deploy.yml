@@ -58,13 +58,6 @@ jobs:
 
       - name: Build Backend Image
         run: docker build -t registry.digitalocean.com/trendr/backend:latest . -f compose/local/flask/Dockerfile
-        env:
-          TWITTER_CONSUMER_KEY: ${{ secrets.TWITTER_CONSUMER_KEY }}
-          TWITTER_CONSUMER_SECRET: ${{ secrets.TWITTER_CONSUMER_SECRET }}
-          ETHPLORER_KEY: ${{ secrets.ETHPLORER_KEY }}
-          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
 
       - name: Push Backend Image to Digital Ocean Container Registry
         run: docker push registry.digitalocean.com/trendr/backend:latest
