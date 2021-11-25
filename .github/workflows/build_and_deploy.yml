@@ -20,8 +20,10 @@ jobs:
       - name: Create .env_dev
         run: |
           touch .env/.env_dev
-          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env/.env_dev
-          echo SQLALCHEMY_DATABASE_URI=${{ secrets.SQLALCHEMY_DATABASE_URI }} >> .env/.env_dev
+          echo DATABASE_URL=${{ secrets.DO_DATABASE_URI }} >> .env/.env_dev
+          echo SQLALCHEMY_DATABASE_URI=${{ secrets.DO_DATABASE_URI }} >> .env/.env_dev
+          echo CELERY_BROKER_URL=redis://redis-cluster-ip-service.default.svc.cluster.local:6379/0 >> .env/.env_dev
+          echo CELERY_RESULT_BACKEND=redis://redis-cluster-ip-service.default.svc.cluster.local:6379/0 >> .env/.env_dev
 
       - name: Create .env_apis
         run: |
@@ -29,6 +31,7 @@ jobs:
           echo TWITTER_CONSUMER_KEY=${{ secrets.TWITTER_CONSUMER_KEY }} >> .env/.env_apis
           echo TWITTER_CONSUMER_SECRET=${{ secrets.TWITTER_CONSUMER_SECRET }} >> .env/.env_apis
           echo ETHPLORER_KEY=${{ secrets.ETHPLORER_KEY }} >> .env/.env_apis
+          echo FINNHUB_KEY=${{ secrets.FINNHUB_KEY }} >> .env/.env_apis
 
       - name: Create .env_mail_secrets
         run: |
