@@ -1,7 +1,7 @@
 name: Build & Push Docker Images
 on:
   push:
-    branches: [ risky-refactor ]
+    branches: [ S37/S50-digital-ocean ]
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
@@ -22,8 +22,6 @@ jobs:
           touch .env/.env_dev
           echo DATABASE_URL=${{ secrets.DO_DATABASE_URI }} >> .env/.env_dev
           echo SQLALCHEMY_DATABASE_URI=${{ secrets.DO_DATABASE_URI }} >> .env/.env_dev
-          echo CELERY_BROKER_URL=redis://redis-cluster-ip-service.default.svc.cluster.local:6379/0 >> .env/.env_dev
-          echo CELERY_RESULT_BACKEND=redis://redis-cluster-ip-service.default.svc.cluster.local:6379/0 >> .env/.env_dev
 
       - name: Create .env_apis
         run: |
@@ -58,6 +56,9 @@ jobs:
 
       - name: Build Backend Image
         run: docker build -t registry.digitalocean.com/trendr/backend:latest . -f compose/local/flask/Dockerfile
+        env:
+          DATABASE_URL: ${{ secrets.DO_DATABASE_URI }}
+          SQLALCHEMY_DATABASE_URI: ${{ secrets.DO_DATABASE_URI }}
 
       - name: Push Backend Image to Digital Ocean Container Registry
         run: docker push registry.digitalocean.com/trendr/backend:latest
