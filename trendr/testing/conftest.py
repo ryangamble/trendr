@@ -1,6 +1,4 @@
 import pytest
-from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
 from trendr.extensions import security, db as database
 from trendr.app import create_app
 from trendr.testing.data import test_user
