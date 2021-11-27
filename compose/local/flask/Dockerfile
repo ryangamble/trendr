@@ -25,7 +25,7 @@ COPY ./trendr /app/trendr
 COPY ./requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
 
-# Copy start command
+# Copy start commands
 COPY ./compose/local/flask/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start

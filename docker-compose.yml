@@ -16,7 +16,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: ./compose/local/flask/Dockerfile.dev
+      dockerfile: ./compose/local/flask/Dockerfile
     image: flask_backend
     # '/start' is the shell script used to run the service
     command: /start
@@ -42,7 +42,7 @@ services:
   celery_worker_general:
     build:
       context: .
-      dockerfile: ./compose/local/flask/Dockerfile.dev
+      dockerfile: ./compose/local/flask/Dockerfile
     image: flask_celery_worker_general
     command: /start-celeryworker-general
     volumes:
@@ -59,7 +59,7 @@ services:
   celery_worker_social:
     build:
       context: .
-      dockerfile: ./compose/local/flask/Dockerfile.dev
+      dockerfile: ./compose/local/flask/Dockerfile
     image: flask_celery_worker_social
     command: /start-celeryworker-social
     volumes:
@@ -76,7 +76,7 @@ services:
   celery_worker_sentiment:
     build:
       context: .
-      dockerfile: ./compose/local/flask/Dockerfile.dev
+      dockerfile: ./compose/local/flask/Dockerfile
     image: flask_celery_worker_sentiment
     command: /start-celeryworker-sentiment
     volumes:
@@ -90,7 +90,7 @@ services:
   celery_worker_search:
     build:
       context: .
-      dockerfile: ./compose/local/flask/Dockerfile.dev
+      dockerfile: ./compose/local/flask/Dockerfile
     image: flask_celery_worker_search
     command: /start-celeryworker-search
     volumes:
@@ -104,7 +104,7 @@ services:
   celery_beat:
     build:
       context: .
-      dockerfile: ./compose/local/flask/Dockerfile.dev
+      dockerfile: ./compose/local/flask/Dockerfile
     image: flask_celery_beat
     command: /start-celerybeat
     volumes:
