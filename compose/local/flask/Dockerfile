@@ -17,6 +17,7 @@ RUN apt-get update \
 # Copy neccessary project files
 COPY ./.env/.env_apis /app/.env/.env_apis
 COPY ./.env/.env_dev /app/.env/.env_dev
+COPY ./.env/.env_mail_secrets /app/.env/.env_mail_secrets
 COPY ./migrations /app/migrations
 COPY ./trendr /app/trendr
 
