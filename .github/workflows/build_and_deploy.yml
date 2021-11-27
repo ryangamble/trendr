@@ -1,7 +1,7 @@
 name: Build & Push Docker Images
 on:
   push:
-    branches: [ redis-celery-flower-dev-env ]
+    branches: [ S37/S50-digital-ocean ]
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
