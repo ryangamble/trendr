@@ -3,6 +3,12 @@
 set -o errexit
 set -o nounset
 
+set -o allexport
+source /app/.env/.env_apis
+source /app/.env/.env_dev
+source /app/.env/.env_mail_secrets
+set +o allexport
+
 worker_ready() {
     celery -A trendr.celery inspect ping
 }

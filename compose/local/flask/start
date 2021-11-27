@@ -4,5 +4,11 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+set -o allexport
+source /app/.env/.env_apis
+source /app/.env/.env_dev
+source /app/.env/.env_mail_secrets
+set +o allexport
+
 flask db upgrade
 flask run --host=0.0.0.0

@@ -3,5 +3,11 @@
 set -o errexit
 set -o nounset
 
+set -o allexport
+source /app/.env/.env_apis
+source /app/.env/.env_dev
+source /app/.env/.env_mail_secrets
+set +o allexport
+
 rm -f './celerybeat.pid'
 celery -A trendr.celery.celerybeat.celery beat -l info

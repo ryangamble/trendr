@@ -3,4 +3,10 @@
 set -o errexit
 set -o nounset
 
+set -o allexport
+source /app/.env/.env_apis
+source /app/.env/.env_dev
+source /app/.env/.env_mail_secrets
+set +o allexport
+
 celery -A trendr.celery.workers.social.celery worker --hostname=celery-social@%h --loglevel=info -Q social

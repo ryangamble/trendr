@@ -1,7 +1,7 @@
 name: Build & Push Docker Images
 on:
   push:
-    branches: [ S37/S50-digital-ocean ]
+    branches: [ redis-celery-flower-dev-env ]
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
@@ -56,9 +56,6 @@ jobs:
 
       - name: Build Backend Image
         run: docker build -t registry.digitalocean.com/trendr/backend:latest . -f compose/local/flask/Dockerfile
-        env:
-          DATABASE_URL: ${{ secrets.DO_DATABASE_URI }}
-          SQLALCHEMY_DATABASE_URI: ${{ secrets.DO_DATABASE_URI }}
 
       - name: Push Backend Image to Digital Ocean Container Registry
         run: docker push registry.digitalocean.com/trendr/backend:latest
