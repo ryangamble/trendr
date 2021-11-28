@@ -13,10 +13,10 @@ import SetPassword from './components/Register/SetPassword'
 import ConfirmEmail from './components/Register/ConfirmEmail'
 import About from './components/About/About'
 import Settings from './components/Settings/Settings'
-import { Provider } from "react-redux";
-import { store } from "./components/Theme/store";
-import MyAccount from "./components/MyAccount/MyAccount";
-import ConfirmationPage from "./components/Register/ConfirmationPage";
+import { Provider } from 'react-redux'
+import { store } from './components/Theme/store'
+import MyAccount from './components/MyAccount/MyAccount'
+import ConfirmationPage from './components/Register/ConfirmationPage'
 
 function App () {
   return (

@@ -1,12 +1,10 @@
-import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { registerConfirmation, registerUser } from "../Theme/userActions";
-import { toggleTheme, themes } from "../Theme/themeActions";
-import MyNavBar from "../NavBar/MyNavBar";
-import { Row, Col, Form, Button, Card } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import axios from "axios";
+import React, { useState } from 'react'
+import { useHistory, Link } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { registerConfirmation, registerUser } from '../Theme/userActions'
+import { toggleTheme, themes } from '../Theme/themeActions'
+import MyNavBar from '../NavBar/MyNavBar'
+import { Row, Col, Form, Button, Card } from 'react-bootstrap'
 
 import axios from 'axios'
 
@@ -38,17 +36,17 @@ function Login () {
         history.push('/home')
         // TODO: replace when we get better settings storage
         axios
-          .get("http://localhost:5000/users/settings", {
-            withCredentials: true,
+          .get('http://localhost:5000/users/settings', {
+            withCredentials: true
           })
           .then((response) => {
-            console.log("Read theme from user settings");
+            console.log('Read theme from user settings')
             console.log(
-              "server: " +
+              'server: ' +
                 response.data.dark_mode +
-                "\nclient: " +
+                '\nclient: ' +
                 (currentTheme === themes.dark)
-            );
+            )
             // false represents light, true represents dark
             if (
               (response.data.dark_mode === false &&
@@ -56,23 +54,23 @@ function Login () {
               (response.data.dark_mode === true &&
                 currentTheme === themes.light)
             ) {
-              dispatch(toggleTheme());
+              dispatch(toggleTheme())
             }
           })
           .catch((err) => {
-            console.log(err);
-          });
+            console.log(err)
+          })
       })
       .catch((error) => {
         // alert(JSON.stringify(error.response.data.response.errors));
-        console.log(error.response.data.response.errors);
-        //If the user hasn't confirmed email, we will redirect to confirmation page
+        console.log(error.response.data.response.errors)
+        // If the user hasn't confirmed email, we will redirect to confirmation page
         if (error.response.data.response.errors.email) {
-          dispatch(registerConfirmation(email));
-          history.push("/confirmation");
+          dispatch(registerConfirmation(email))
+          history.push('/confirmation')
         }
-      });
-  };
+      })
+  }
 
   return (
     <div

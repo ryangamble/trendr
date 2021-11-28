@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Form, Button, Col, Row, Card } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
-import MyNavBar from "../NavBar/MyNavBar";
-import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { registerConfirmation } from "../Theme/userActions";
-import axios from "axios";
+import React, { useState } from 'react'
+import { Form, Button, Col, Row, Card } from 'react-bootstrap'
+import { useHistory, Link } from 'react-router-dom'
+import MyNavBar from '../NavBar/MyNavBar'
+
+import { useSelector, useDispatch } from 'react-redux'
+import { registerConfirmation } from '../Theme/userActions'
+import axios from 'axios'
 
 function Register () {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
@@ -40,8 +40,8 @@ function Register () {
       .post('http://localhost:5000/auth/register', json, config)
       .then((res) => {
         // After successully register the user, save the email and go to confirmation page
-        dispatch(registerConfirmation(email));
-        history.push("/confirmation");
+        dispatch(registerConfirmation(email))
+        history.push('/confirmation')
       })
       .catch((error) => {
         alert(JSON.stringify(error.response.data.response.errors))
