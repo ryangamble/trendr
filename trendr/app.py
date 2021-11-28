@@ -120,8 +120,10 @@ def init_celery(app=None):
 
 
 def load_env_files():
-    env_path = pathlib.Path(__file__).parent.resolve() / '../.env'
-    env_files = [join(env_path, f) for f in listdir(env_path) if isfile(join(env_path, f))]
+    env_path = pathlib.Path(__file__).parent.resolve() / "../.env"
+    env_files = [
+        join(env_path, f) for f in listdir(env_path) if isfile(join(env_path, f))
+    ]
     for env_file in env_files:
         with open(env_file) as f:
             for line in f:

@@ -12,7 +12,10 @@ from textblob import TextBlob
 from trendr.controllers.search_controller import new_search
 
 from trendr.connectors import (
-    twitter_connector, fear_and_greed_connector, coin_gecko_connector as cg, defi_connector as df
+    twitter_connector,
+    fear_and_greed_connector,
+    coin_gecko_connector as cg,
+    defi_connector as df,
 )
 from trendr.models.search_model import SearchType
 from trendr.tasks.social.twitter.gather import store_tweet_by_id

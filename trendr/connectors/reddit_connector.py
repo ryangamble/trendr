@@ -68,12 +68,16 @@ def get_latest_submission_timestamp(asset_identifier: str) -> int or None:
     :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
     :return: A tweet id
     """
-    submission = RedditSubmission.query\
-        .filter(RedditSubmission.text.ilike(f'%{asset_identifier}%'))\
-        .order_by(desc(RedditSubmission.tweeted_at))\
-        .limit(1).all()
+    submission = (
+        RedditSubmission.query.filter(
+            RedditSubmission.text.ilike(f"%{asset_identifier}%")
+        )
+        .order_by(desc(RedditSubmission.tweeted_at))
+        .limit(1)
+        .all()
+    )
     if submission:
-        return (submission[0].posted_at  - datetime.datetime(1970,1,1)).total_seconds()
+        return (submission[0].posted_at - datetime.datetime(1970, 1, 1)).total_seconds()
     return None
 
 
@@ -84,10 +88,12 @@ def get_latest_comment_timestamp(asset_identifier: str) -> int or None:
     :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
     :return: A tweet id
     """
-    comment = RedditComment.query\
-        .filter(RedditComment.text.ilike(f'%{asset_identifier}%'))\
-        .order_by(desc(RedditComment.tweeted_at))\
-        .limit(1).all()
+    comment = (
+        RedditComment.query.filter(RedditComment.text.ilike(f"%{asset_identifier}%"))
+        .order_by(desc(RedditComment.tweeted_at))
+        .limit(1)
+        .all()
+    )
     if comment:
         return (comment[0].posted_at - datetime.datetime(1970, 1, 1)).total_seconds()
     return None
@@ -98,7 +104,7 @@ def gather_items(
     item: RedditItem,
     keywords: List[str],
     subreddits: List[str] = None,
-    **kwargs
+    **kwargs,
 ) -> list:
     """
     Gather all reddit comments/submissions from subreddits between

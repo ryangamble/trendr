@@ -51,7 +51,7 @@ def test_store_twitter_results(mocker, existing):
             tweeter_num_followers=1,
             tweeter_num_following=1,
             tweeter_created_at=1,
-            tweeter_verified=1
+            tweeter_verified=1,
         )
     db_mock.session.add_all.assert_called_once()
     db_mock.session.commit.assert_called_once()
