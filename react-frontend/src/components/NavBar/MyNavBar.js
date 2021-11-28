@@ -21,15 +21,15 @@ function MyNavBar () {
       // make a logout request
       axios
         .post(
-          "http://localhost:5000/auth/logout",
+          'http://localhost:5000/auth/logout',
           {},
           { withCredentials: true }
         )
         .then((res) => {
-          //remove the global user
-          dispatch(removeUser());
+          // remove the global user
+          dispatch(removeUser())
 
-          history.push("/login");
+          history.push('/login')
         })
         .catch((error) => {
           alert(JSON.stringify(error.response.data.response.errors))
@@ -47,7 +47,7 @@ function MyNavBar () {
       // make a logout request
       axios
         .post(
-          "http://localhost:5000/auth/logout",
+          'http://localhost:5000/auth/logout',
           {},
           { withCredentials: true }
         )

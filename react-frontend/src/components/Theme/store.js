@@ -1,9 +1,6 @@
-import { initialThemeState, themeReducer } from "./themeActions";
-import { initialUserState, userReducer } from "./userActions";
-import axios from "axios";
-import { removeUser } from "./userActions";
+import axios from 'axios'
+import { removeUser, initialUserState, userReducer } from './userActions'
 import { initialThemeState, themeReducer } from './themeActions'
-import { initialUserState, userReducer } from './userActions'
 
 const redux = require('redux')
 const createStore = redux.createStore
@@ -58,18 +55,18 @@ console.log('initial state', store.getState())
 
 store.subscribe(() => console.log('updated state', store.getState()))
 
-store.subscribe(() => saveToLocalStorage(store.getState()));
+store.subscribe(() => saveToLocalStorage(store.getState()))
 
 // On app first launch, check if the user is logged in or not, if not, log the user out
 const config = {
-  headers: { "Content-Type": "application/json" },
-  withCredentials: true,
-};
+  headers: { 'Content-Type': 'application/json' },
+  withCredentials: true
+}
 
-axios.get("http://localhost:5000/users/logged-in", config).catch((err) => {
+axios.get('http://localhost:5000/users/logged-in', config).catch((err) => {
   // If user is not logged in, we will get a 401/400, then log the user out
   if (err.response.status === 401 || err.response.status === 400) {
-    console.log("user not logged in!");
-    store.dispatch(removeUser());
+    console.log('user not logged in!')
+    store.dispatch(removeUser())
   }
-});
+})
