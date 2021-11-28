@@ -646,8 +646,8 @@ function SentimentGraph (props) {
   function fetchSentimentData (source) {
     let url = ''
     source === 'reddit'
-      ? url = 'http://localhost:5000/assets/reddit_sentiment'
-      : url = 'http://localhost:5000/assets/twitter_sentiment'
+      ? url = 'http://localhost:5000/assets/reddit-sentiment'
+      : url = 'http://localhost:5000/assets/twitter-sentiment'
 
     axios
       .get(url, {
@@ -689,7 +689,7 @@ function SentimentGraph (props) {
 
   // function fetchTwitterData() {
   //   axios
-  //     .get("http://localhost:5000/assets/twitter_sentiment", {
+  //     .get("http://localhost:5000/assets/twitter-sentiment", {
   //       method: "GET",
   //       params: {
   //         symbol: props.symbol,

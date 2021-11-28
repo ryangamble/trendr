@@ -1,24 +1,22 @@
 from datetime import timedelta
 import json
 import os
-import re
 import yfinance as yf
 import yahooquery as yq
 import finnhub
 import pandas as pd
 
-from flask import Blueprint, request, jsonify, current_app, redirect
+from flask import Blueprint, request, current_app, redirect
 from trendr.controllers.search_controller import new_search
 
 from trendr.connectors import twitter_connector
 from trendr.connectors import fear_and_greed_connector
 from trendr.connectors import coin_gecko_connector as cg
 from trendr.connectors import defi_connector as df
-from trendr.models.reddit_model import RedditComment, RedditSubmission
+from trendr.extensions import db
+from trendr.models.reddit_model import RedditComment
 from trendr.models.search_model import Search, SearchType
 from trendr.models.tweet_model import Tweet
-from trendr.tasks.social.twitter.gather import store_tweet_by_id
-from trendr.tasks.social.reddit.gather import store_comments, store_submissions
 from trendr.tasks.search import perform_search
 from trendr.routes.helpers.json_response import json_response
 from trendr.config import FINNHUB_KEY
@@ -44,7 +42,7 @@ def fear_greed():
     return json_response(response_body, status=200)
 
 
-@assets.route("/perform_asset_search", methods=["GET"])
+@assets.route("/perform-asset-search", methods=["GET"])
 def perform_asset_search():
     query = request.args.get("query")
     search = new_search(query)
@@ -312,7 +310,7 @@ def stock_history():
     ).to_json()
 
 
-@assets.route("/twitter_sentiment", methods=["GET"])
+@assets.route("/twitter-sentiment", methods=["GET"])
 def twitter_sentiment():
     """
     Gets twitter sentiment for an asset (stock or crypto)
@@ -356,7 +354,7 @@ def twitter_sentiment():
         current_app.logger.info(
             "Sending request to get Twitter sentiment data for " + query
         )
-        return redirect("/assets/perform_asset_search?query=" + query)
+        return redirect("/assets/perform-asset-search?query=" + query)
 
     # Gets the Tweets of the given search id
     results = (
@@ -372,7 +370,7 @@ def twitter_sentiment():
         current_app.logger.info(
             "Sending request to get Twitter sentiment data for " + query
         )
-        return redirect("/assets/perform_asset_search?query=" + query)
+        return redirect("/assets/perform-asset-search?query=" + query)
 
     response_body = []
     for result in results:
@@ -382,7 +380,7 @@ def twitter_sentiment():
     return json_response(response_body, status=200)
 
 
-@assets.route("/reddit_sentiment", methods=["GET"])
+@assets.route("/reddit-sentiment", methods=["GET"])
 def reddit_sentiment():
     """
     Gets reddit sentiment for an asset (stock or crypto)
@@ -428,7 +426,7 @@ def reddit_sentiment():
         current_app.logger.info(
             "Sending request to get Reddit sentiment data for " + query
         )
-        return redirect("/assets/perform_asset_search?query=" + query)
+        return redirect("/assets/perform-asset-search?query=" + query)
 
     # Gets the reddit submissions of the given search id
     results = (
@@ -446,7 +444,7 @@ def reddit_sentiment():
         current_app.logger.info(
             "Sending request to get Reddit sentiment data for " + query
         )
-        return redirect("/assets/perform_asset_search?query=" + query)
+        return redirect("/assets/perform-asset-search?query=" + query)
 
     response_body = []
     for result in results:
