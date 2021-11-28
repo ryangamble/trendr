@@ -1,22 +1,22 @@
-import React from "react";
-import MyNavBar from "../NavBar/MyNavBar";
-import { useSelector } from "react-redux";
-import { Container, Card, Row, Col } from "react-bootstrap";
+import React from 'react'
+import MyNavBar from '../NavBar/MyNavBar'
+import { useSelector } from 'react-redux'
+import { Container, Card, Row, Col } from 'react-bootstrap'
 
-function About() {
-  const currentTheme = useSelector((state) => state.theme.currentTheme);
+function About () {
+  const currentTheme = useSelector((state) => state.theme.currentTheme)
 
   return (
     <div
       style={{
         background: currentTheme.background,
         color: currentTheme.foreground,
-        height: "100vh",
+        height: '100vh'
       }}
     >
       <MyNavBar />
       <Container>
-        <div style={{ justifyContent: "left" }}>
+        <div style={{ justifyContent: 'left' }}>
           <h1>Welcome to Trendr</h1>
         </div>
         <br />
@@ -46,7 +46,7 @@ function About() {
           </Col>
         </Row>
         <br />
-        <Row style={{ margin: "0.5rem" }}>
+        <Row style={{ margin: '0.5rem' }}>
           <Card bg={currentTheme.variant} text="white">
             <Card.Body>
               <Card.Title>Sentiment Analysis</Card.Title>
@@ -60,7 +60,7 @@ function About() {
         <br />
       </Container>
     </div>
-  );
+  )
 }
 
-export default About;
+export default About

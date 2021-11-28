@@ -32,6 +32,15 @@ def delete_user(user_id):
     pass
 
 
+@users.route("/logged-in", methods=["GET"])
+@auth_required("session")
+def logged_in():
+    if current_user is not None:
+        return json_response(status=200, payload={"success": True})
+    else:
+        return json_response(status=400, payload={"success": False})
+
+
 @users.route("/follow-asset", methods=["POST"])
 @auth_required("session")
 def follow_asset_curr():
@@ -71,9 +80,7 @@ def unfollow_asset_curr():
 @auth_required("session")
 def get_followed_assets_curr():
     current_app.logger.info("Getting assets follwed for " + str(current_user.id))
-    return json_response(
-        payload={"assets": get_followed_assets(user=current_user)}
-    )
+    return json_response(payload={"assets": get_followed_assets(user=current_user)})
 
 
 @users.route("/assets-followed/<username>", methods=["GET"])
@@ -89,13 +96,13 @@ def get_assets_followed_by_user(username):
 
 @users.route("/settings", methods=["GET"])
 @auth_required("session")
-def get_settings_route():
+def get_settings():
     return json_response(get_settings(current_user))
 
 
 @users.route("/settings", methods=["PUT"])
 @auth_required("session")
-def set_settings_route():
+def set_settings():
     content = request.get_json()
 
     set_settings(current_user, content)

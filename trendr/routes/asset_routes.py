@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 import json
 import os
 import re
@@ -10,7 +10,6 @@ import pandas as pd
 from flask import Blueprint, request, jsonify, current_app, redirect
 from trendr.controllers.search_controller import new_search
 
-from trendr.extensions import db
 from trendr.connectors import twitter_connector
 from trendr.connectors import fear_and_greed_connector
 from trendr.connectors import coin_gecko_connector as cg
@@ -72,7 +71,7 @@ def search():
 
     SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
     json_path = os.path.join(SITE_ROOT, "../connectors", "CoinGeckoCoins.json")
-    crypto_list = json.loads(open(json_path).read())
+    crypto_list = json.loads(open(json_path, encoding="utf8").read())
 
     crypto_filtered = [
         v
@@ -128,66 +127,21 @@ def historic_fear_greed():
 
     # TODO: Figure out a way to get historic stock values
     crypto_values = fear_and_greed_connector.get_crypto_historic_values(days)
-    response_body = {
-        'crypto_values': crypto_values,
-        'stock_values': []
-    }
-    
+    response_body = {"crypto_values": crypto_values, "stock_values": []}
+
     current_app.logger.info("Getting historic fear greed values")
 
     return json_response(response_body, status=200)
 
 
-@assets.route("/stocks/official-channels", methods=["GET"])
-def stock_official_channels():
-    """
-    Gets the official channels (website) of a stock
-    :return: JSON response containing official channels
-    """
-    symbol = request.args.get("symbol")
-    if not symbol:
-        current_app.logger.error("No symbol given")
-        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
-
-    asset_ticker = yf.Ticker(symbol)
-    if not asset_ticker or not hasattr(asset_ticker, "info") or "website" not in asset_ticker.info:
-        current_app.logger.error("Couldn't retrieve official channels for " + symbol)
-        return json_response({"error": "Couldn't retrieve official channels"}, status=500)
-
-    response_body = {
-        'website': asset_ticker.info['website']
-    }
-
-    current_app.logger.info("Getting offical channels for " + symbol)
-
-    return json_response(response_body, status=200)
-
-
-@assets.route("/cryptos/official-channels", methods=["GET"])
-def cryptos_official_channels():
-    """
-    Gets the official channels (homepage, socials, etc.) of a crypto
-    :return: JSON response containing official channels
-    """
-    id = request.args.get("id")
-    if not id:
-        current_app.logger.error("No id given")
-        return json_response({"error": "Parameter 'name' is required"}, status=400)
-
-
-    response_body = cg.get_coin_links(id)
-    current_app.logger.info("Getting offical channels for " + id)
-    return json_response(response_body, status=200)
-
-
-@assets.route('/stocks/listed-exchanges', methods=['GET'])
+@assets.route("/stocks/listed-exchanges", methods=["GET"])
 def stocks_listed_exchanges():
     """
     Gets the exchanges that list a stock.
     NOTE: Extremely slow
     :return: JSON response containing official channels
     """
-    symbol = request.args.get('symbol')
+    symbol = request.args.get("symbol")
     if not symbol:
         return json_response({"error": "Parameter 'symbol' is required"}, status=400)
 
@@ -195,36 +149,22 @@ def stocks_listed_exchanges():
     finnhub_client = finnhub.Client(api_key=FINNHUB_KEY)
 
     SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
-    exchangesPath = os.path.join(SITE_ROOT, '../connectors', 'FinnhubExchanges.csv')
+    exchangesPath = os.path.join(SITE_ROOT, "../connectors", "FinnhubExchanges.csv")
     df = pd.read_csv(exchangesPath)
 
     exchangeList = []
     try:
         for index, contents in df.iterrows():
-            exchangeCode = contents['code']
+            exchangeCode = contents["code"]
             for c in finnhub_client.stock_symbols(exchangeCode):
-                if c['symbol'] == symbol:
-                    exchangeList.append(contents['name'])
+                if c["symbol"] == symbol:
+                    exchangeList.append(contents["name"])
     except:
         return json_response("Time out", status=500)
     return json_response(exchangeList, status=200)
 
 
-@assets.route('/cryptos/listed-exchanges', methods=['GET'])
-def cryptos_listed_exchanges():
-    """
-    Gets the exchanges that list this crypto coin/token
-    :return: JSON response containing the exchanges
-    """
-    id = request.args.get('id')
-    if not id:
-        return json_response({"error": "Parameter 'id' is required"}, status=400)
-
-    response_body = cg.get_coin_exchanges(id)
-    return json_response(response_body, status=200)
-
-
-@assets.route('/crypto/stats', methods=['GET'])
+@assets.route("/crypto/stats", methods=["GET"])
 def crypto_stats():
     """
     Gets general statistics for cryptos
@@ -234,7 +174,6 @@ def crypto_stats():
     if not id:
         current_app.logger.error("No id given")
         return json_response({"error": "Parameter 'id' is required"}, status=400)
-
 
     response_body = cg.get_coin_live_stats(id)
     current_app.logger.info("Getting crypto stats for " + id)
@@ -307,7 +246,9 @@ def crypto_price_history():
         return json_response({"error": "Parameter 'days' is required"}, status=400)
 
     response_body = cg.get_historic_prices(id, days)
-    current_app.logger.info("Getting crypto price history for " + id + " over " + days + " days")
+    current_app.logger.info(
+        "Getting crypto price history for " + id + " over " + days + " days"
+    )
     return json_response(response_body, status=200)
 
 
@@ -323,7 +264,9 @@ def crypto_volume_history():
         return json_response({"error": "Parameter 'days' is required"}, status=400)
 
     response_body = cg.get_historic_volumes(id, days)
-    current_app.logger.info("Getting crypto volume history for " + id + " over " + days + " days")
+    current_app.logger.info(
+        "Getting crypto volume history for " + id + " over " + days + " days"
+    )
     return json_response(response_body, status=200)
 
 
@@ -356,7 +299,9 @@ def stock_history():
         current_app.logger.error("Couldn't retrieve history for " + symbol)
         return json_response({"error": "Couldn't retrieve history"}, status=500)
 
-    current_app.logger.info("Getting stock pirce and volume history for " + symbol + " over " + period)
+    current_app.logger.info(
+        "Getting stock pirce and volume history for " + symbol + " over " + period
+    )
     # TODO: Figure out how to return this like the other endpoints w/o breaking the frontend
     return asset_ticker.history(
         period=period,
@@ -377,7 +322,7 @@ def twitter_sentiment():
         current_app.logger.error("No query given")
         return json_response({"error": "Parameter 'query' is required"}, status=400)
 
-    # If the last two searches failed to return any tweets, return error 
+    # If the last two searches failed to return any tweets, return error
     recent_searches = db.session.query(Search
         ).filter(Search.search_string == query
         ).order_by(Search.ran_at.desc()
@@ -387,7 +332,7 @@ def twitter_sentiment():
     for search in recent_searches:
         if search.twitter_sentiment == None:
             failed_searches += 1
-    
+
     if failed_searches >= 2:
         current_app.logger.error("Cannot get Twitter sentiment for " + query)
         return json_response({"error": "Cannot get Twitter sentiment for " + query}, status=400)
@@ -419,13 +364,13 @@ def twitter_sentiment():
     response_body = []
     for result in results:
         response_body.append([result.text, result.polarity, result.subjectivity])
-    
+
     current_app.logger.info("Getting twitter sentiment data for " + query)
     return json_response(response_body, status=200)
 
 
 @assets.route("/reddit_sentiment", methods=["GET"])
-def reddit_sentiment_route():
+def reddit_sentiment():
     """
     Gets reddit sentiment for an asset (stock or crypto)
     :return: JSON response containing reddit sentiment
@@ -436,8 +381,8 @@ def reddit_sentiment_route():
         current_app.logger.error("No query given")
         return json_response({"error": "Parameter 'query' is required"}, status=400)
 
-    
-    # If the last two searches failed to return any comments, return error 
+
+    # If the last two searches failed to return any comments, return error
     recent_searches = db.session.query(Search
         ).filter(Search.search_string == query
         ).order_by(Search.ran_at.desc()
@@ -447,7 +392,7 @@ def reddit_sentiment_route():
     for search in recent_searches:
         if search.reddit_sentiment == None:
             failed_searches += 1
-    
+
     if failed_searches >= 2:
         current_app.logger.error("Cannot get Reddit sentiment for " + query)
         return json_response({"error": "Cannot get Reddit sentiment for " + query}, status=400)
@@ -492,6 +437,8 @@ def tweet_summary(asset_identifier):
     :param asset_identifier: The asset identifier (AAPL, BTC) to generate a tweet summary for
     :return: JSON response containing tweet summary for the requested asset
     """
-    summary_data = twitter_connector.twitter_accounts_mentioning_asset_summary(asset_identifier)
+    summary_data = twitter_connector.twitter_accounts_mentioning_asset_summary(
+        asset_identifier
+    )
     current_app.logger.info("Getting twitter user statistics for " + asset_identifier)
     return json_response(summary_data, status=200)

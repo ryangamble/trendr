@@ -1,55 +1,55 @@
-import React, { useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import MyNavBar from "../NavBar/MyNavBar";
-import { Row, Col, Form, Button, Card } from "react-bootstrap";
-import axios from "axios";
+import React, { useState } from 'react'
+import { useHistory, useParams } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import MyNavBar from '../NavBar/MyNavBar'
+import { Row, Col, Form, Button, Card } from 'react-bootstrap'
+import axios from 'axios'
 
-function SetPassword() {
-  const { resetCode } = useParams();
-  const currentTheme = useSelector((state) => state.theme.currentTheme);
-  const [password1, setPassword1] = useState("");
-  const [password2, setPassword2] = useState("");
+function SetPassword () {
+  const { resetCode } = useParams()
+  const currentTheme = useSelector((state) => state.theme.currentTheme)
+  const [password1, setPassword1] = useState('')
+  const [password2, setPassword2] = useState('')
 
-  const history = useHistory();
+  const history = useHistory()
 
   const handleSubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     if (password1 !== password2) {
-      alert("Passwords are not the same!");
-      return;
+      alert('Passwords are not the same!')
+      return
     }
 
     const json = JSON.stringify({
       password: password1,
-      password_confirm: password2,
-    });
+      password_confirm: password2
+    })
     const config = {
-      headers: { "Content-Type": "application/json" },
-      withCredentials: true,
-    };
+      headers: { 'Content-Type': 'application/json' },
+      withCredentials: true
+    }
 
     axios
       .post(
-        "http://localhost:5000/auth/reset/" + resetCode.substring(1),
+        'http://localhost:5000/auth/reset/' + resetCode.substring(1),
         json,
         config
       )
       .then((res) => {
-        history.push("/login");
+        history.push('/login')
       })
       .catch((error) => {
-        alert(JSON.stringify(error.response.data.response.errors));
-      });
-  };
+        alert(JSON.stringify(error.response.data.response.errors))
+      })
+  }
 
   return (
     <div
       style={{
         background: currentTheme.background,
         color: currentTheme.foreground,
-        height: "100vh",
+        height: '100vh'
       }}
     >
       <MyNavBar />
@@ -106,7 +106,7 @@ function SetPassword() {
         </Col>
       </Row>
     </div>
-  );
+  )
 }
 
-export default SetPassword;
+export default SetPassword

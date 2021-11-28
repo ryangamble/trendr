@@ -1,69 +1,76 @@
-import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { toggleTheme } from "../Theme/themeActions";
-import { Navbar, Container, Nav, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { useHistory } from "react-router-dom";
-import axios from "axios";
-import { removeUser } from "../Theme/userActions";
+import React from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { Navbar, Container, Nav, Button } from 'react-bootstrap'
+import { Link, useHistory } from 'react-router-dom'
 
-function MyNavBar() {
-  //color theme
-  const currentTheme = useSelector((state) => state.theme.currentTheme);
-  //current user
-  const currentUser = useSelector((state) => state.user);
-  const dispatch = useDispatch();
-  const history = useHistory();
+import axios from 'axios'
+import { removeUser } from '../Theme/userActions'
+
+function MyNavBar () {
+  // color theme
+  const currentTheme = useSelector((state) => state.theme.currentTheme)
+  // current user
+  const currentUser = useSelector((state) => state.user)
+  const dispatch = useDispatch()
+  const history = useHistory()
 
   const handleLoginClick = () => {
-    //if user is not logged in, we redirect to login page
-    if (currentUser.username === "" && currentUser.email === "") {
-      //TODO: remove this logout once session recovery is implemented
-      //make a logout request
+    // if user is not logged in, we redirect to login page
+    if (currentUser.username === '' && currentUser.email === '') {
+      // TODO: remove this logout once session recovery is implemented
+      // make a logout request
       axios
-        .post("http://localhost:5000/auth/logout", {}, {withCredentials: true})
+        .post(
+          'http://localhost:5000/auth/logout',
+          {},
+          { withCredentials: true }
+        )
         .then((res) => {
-          //remove the global user
-          dispatch(removeUser());
-          
-          history.push("/login");
+          // remove the global user
+          dispatch(removeUser())
+
+          history.push('/login')
         })
         .catch((error) => {
-          alert(JSON.stringify(error.response.data.response.errors));
+          alert(JSON.stringify(error.response.data.response.errors))
 
           // if we get an error here we are already logged out...
 
-          //remove the global user
-          dispatch(removeUser());
-          
-          history.push("/login");
-        });
+          // remove the global user
+          dispatch(removeUser())
 
-        // history.push("/login");
+          history.push('/login')
+        })
+
+      // history.push("/login");
     } else {
-      //make a logout request
+      // make a logout request
       axios
-        .post("http://localhost:5000/auth/logout", {}, {withCredentials: true})
+        .post(
+          'http://localhost:5000/auth/logout',
+          {},
+          { withCredentials: true }
+        )
         .then((res) => {
-          //remove the global user
-          dispatch(removeUser());
+          // remove the global user
+          dispatch(removeUser())
 
-          alert("You have been logged out!");
-          history.push("/home");
+          alert('You have been logged out!')
+          history.push('/home')
         })
         .catch((error) => {
-          alert(JSON.stringify(error.response.data.response.errors));
+          alert(JSON.stringify(error.response.data.response.errors))
 
           // if we get an error here we are already logged out...
 
-          //remove the global user
-          dispatch(removeUser());
+          // remove the global user
+          dispatch(removeUser())
 
-          alert("You have been logged out!");
-          history.push("/home");
-        });
+          alert('You have been logged out!')
+          history.push('/home')
+        })
     }
-  };
+  }
   return (
     <div fixed="top">
       <Navbar
@@ -73,7 +80,7 @@ function MyNavBar() {
         variant="dark"
       >
         <Container>
-          <Navbar.Brand as={Link} to="/home" style={{ fontSize: "2em" }}>
+          <Navbar.Brand as={Link} to="/home" style={{ fontSize: '2em' }}>
             Trendr
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -95,9 +102,9 @@ function MyNavBar() {
                 About
               </Nav.Link>
               <Button variant={currentTheme.variant} onClick={handleLoginClick}>
-                {currentUser.username === "" && currentUser.email === ""
-                  ? "Login/Register"
-                  : "Log Out"}
+                {currentUser.username === '' && currentUser.email === ''
+                  ? 'Login/Register'
+                  : 'Log Out'}
               </Button>
             </Nav>
           </Navbar.Collapse>
@@ -105,7 +112,7 @@ function MyNavBar() {
       </Navbar>
       <br />
     </div>
-  );
+  )
 }
 
-export default MyNavBar;
+export default MyNavBar
