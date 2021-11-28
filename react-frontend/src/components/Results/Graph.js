@@ -630,61 +630,60 @@ function CryptoGraph (props) {
 function SentimentGraph (props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
 
-  const [twitterData, setTwitterData] = useState([]);
-  const [redditData, setRedditData] = useState([]);
-  const [redditError, setRedditError] = useState(false);
-  const [twitterError, setTwitterError] = useState(false);
+  const [twitterData, setTwitterData] = useState([])
+  const [redditData, setRedditData] = useState([])
+  const [redditError, setRedditError] = useState(false)
+  const [twitterError, setTwitterError] = useState(false)
 
-  useEffect (() => {
-    fetchSentimentData("twitter")
-    fetchSentimentData("reddit")
+  useEffect(() => {
+    fetchSentimentData('twitter')
+    fetchSentimentData('reddit')
   }, [])
 
   /*
     attempts to fetch the data, if its not there, backend calls perform_search_asset
   */
-  function fetchSentimentData(source) {
-    var url = ""
-    source == "reddit" ?
-      url = "http://localhost:5000/assets/reddit_sentiment"
-    :
-      url = "http://localhost:5000/assets/twitter_sentiment"
+  function fetchSentimentData (source) {
+    let url = ''
+    source === 'reddit'
+      ? url = 'http://localhost:5000/assets/reddit_sentiment'
+      : url = 'http://localhost:5000/assets/twitter_sentiment'
 
     axios
       .get(url, {
-        method: "GET",
+        method: 'GET',
         params: {
-          query: props.symbol,
+          query: props.symbol
         }
       })
       .then((res) => {
         console.log(res.data)
-        return JSON.parse(JSON.stringify(res.data));
+        return JSON.parse(JSON.stringify(res.data))
       })
       .then((data) => {
         console.log(data)
-        var points = [];
+        const points = []
         if (data.length > 1) {
-          for (var i = 0; i < data.length; i++) {
+          for (let i = 0; i < data.length; i++) {
             points.push({
               x: parseFloat(data[i.toString()]['1']),
               y: parseFloat(data[i.toString()]['2']),
-              size: 1,
-            });
+              size: 1
+            })
           }
         } else {
           setTimeout(() => fetchSentimentData(source), 20000)
         }
-        console.log(source + " sentiment analysis points")
+        console.log(source + ' sentiment analysis points')
         console.log(points)
-        return points;
+        return points
       })
       .then((points) => {
-        return source == "reddit" ? setRedditData(points) : setTwitterData(points)
+        return source === 'reddit' ? setRedditData(points) : setTwitterData(points)
       })
-      .catch((error)=> {
+      .catch((error) => {
         console.log(error)
-        source == "reddit" ? setRedditError(true) : setTwitterError(true)
+        source === 'reddit' ? setRedditError(true) : setTwitterError(true)
       })
   }
 
@@ -736,13 +735,13 @@ function SentimentGraph (props) {
       <Container fluid>
         <div>Could not retrieve sentiment data</div>
       </Container>
-    );
-  } else if (redditData.length == 0 && twitterData.length == 0) {
+    )
+  } else if (redditData.length === 0 && twitterData.length === 0) {
     return (
       <Container fluid>
         <Spinner animation="border" />
       </Container>
-    );
+    )
   } else {
     return (
       <Container className="graphLayout">
@@ -754,32 +753,32 @@ function SentimentGraph (props) {
         <Row>
           <div className="chartContainer">
             <FlexibleXYPlot
-              xDomain={[-1.0,1.0]}
-              yDomain={[0,1.0]}
+              xDomain={[-1.0, 1.0]}
+              yDomain={[0, 1.0]}
             >
 
               <HorizontalGridLines />
               <VerticalGridLines />
               <XAxis
                 title="Polarity"
-                style={{title: {fill: currentTheme.foreground}}}
+                style={{ title: { fill: currentTheme.foreground } }}
               />
               <YAxis
                 title="Subjectivity"
-                style={{title: {fill: currentTheme.foreground}}}
+                style={{ title: { fill: currentTheme.foreground } }}
               />
               <DiscreteColorLegend
                 orientation="horizontal"
-                style={{position: "absolute", right: "0%", top: "0%", backgroundColor: "rgba(108,117,125, 0.7)", borderRadius: "5px"}}
+                style={{ position: 'absolute', right: '0%', top: '0%', backgroundColor: 'rgba(108,117,125, 0.7)', borderRadius: '5px' }}
                 items={[
                   {
-                    title: "Twitter",
-                    color: "#0D6EFD",
-                    strokeWidth: 5,
+                    title: 'Twitter',
+                    color: '#0D6EFD',
+                    strokeWidth: 5
                   },
                   {
-                    title: "Reddit",
-                    color: "red",
+                    title: 'Reddit',
+                    color: 'red',
                     strokeWidth: 5
                   }
                 ]}
@@ -799,16 +798,16 @@ function SentimentGraph (props) {
         </Row>
         {redditError &&
           <Row>
-            <div>couldn't get Reddit sentiment data</div>
+            <div>couldn&apos;t get Reddit sentiment data</div>
           </Row>
         }
         {twitterError &&
           <Row>
-            <div>couldn't get Twitter sentiment data</div>
+            <div>couldn&apos;t get Twitter sentiment data</div>
           </Row>
         }
       </Container>
-    );
+    )
   }
 }
 

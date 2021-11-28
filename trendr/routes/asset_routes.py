@@ -25,6 +25,7 @@ from trendr.config import FINNHUB_KEY
 
 assets = Blueprint("assets", __name__, url_prefix="/assets")
 
+
 @assets.route("/fear-greed", methods=["GET"])
 def fear_greed():
     """
@@ -323,10 +324,12 @@ def twitter_sentiment():
         return json_response({"error": "Parameter 'query' is required"}, status=400)
 
     # If the last two searches failed to return any tweets, return error
-    recent_searches = db.session.query(Search
-        ).filter(Search.search_string == query
-        ).order_by(Search.ran_at.desc()
-        ).limit(2)
+    recent_searches = (
+        db.session.query(Search)
+        .filter(Search.search_string == query)
+        .order_by(Search.ran_at.desc())
+        .limit(2)
+    )
 
     failed_searches = 0
     for search in recent_searches:
@@ -335,30 +338,40 @@ def twitter_sentiment():
 
     if failed_searches >= 2:
         current_app.logger.error("Cannot get Twitter sentiment for " + query)
-        return json_response({"error": "Cannot get Twitter sentiment for " + query}, status=400)
+        return json_response(
+            {"error": "Cannot get Twitter sentiment for " + query}, status=400
+        )
 
     # Gets the most recent search for given keyword
-    most_recent_search_id = db.session.query(Search.id
-        ).filter(Search.search_string == query
-        ).order_by(Search.ran_at.desc()
-        ).limit(1
-        ).all()
+    most_recent_search_id = (
+        db.session.query(Search.id)
+        .filter(Search.search_string == query)
+        .order_by(Search.ran_at.desc())
+        .limit(1)
+        .all()
+    )
 
     if not most_recent_search_id:
         current_app.logger.warning("No Tweets for " + query)
-        current_app.logger.info("Sending request to get Twitter sentiment data for " + query)
+        current_app.logger.info(
+            "Sending request to get Twitter sentiment data for " + query
+        )
         return redirect("/assets/perform_asset_search?query=" + query)
 
     # Gets the Tweets of the given search id
-    results = db.session.query(Tweet
-        ).select_from(Search
-        ).join(Search.tweets
-        ).filter(Search.id == most_recent_search_id[0][0]
-        ).all()
+    results = (
+        db.session.query(Tweet)
+        .select_from(Search)
+        .join(Search.tweets)
+        .filter(Search.id == most_recent_search_id[0][0])
+        .all()
+    )
 
     if len(results) == 0:
         current_app.logger.warning("No Tweets for most recent search of " + query)
-        current_app.logger.info("Sending request to get Twitter sentiment data for " + query)
+        current_app.logger.info(
+            "Sending request to get Twitter sentiment data for " + query
+        )
         return redirect("/assets/perform_asset_search?query=" + query)
 
     response_body = []
@@ -381,12 +394,13 @@ def reddit_sentiment():
         current_app.logger.error("No query given")
         return json_response({"error": "Parameter 'query' is required"}, status=400)
 
-
     # If the last two searches failed to return any comments, return error
-    recent_searches = db.session.query(Search
-        ).filter(Search.search_string == query
-        ).order_by(Search.ran_at.desc()
-        ).limit(2)
+    recent_searches = (
+        db.session.query(Search)
+        .filter(Search.search_string == query)
+        .order_by(Search.ran_at.desc())
+        .limit(2)
+    )
 
     failed_searches = 0
     for search in recent_searches:
@@ -395,31 +409,43 @@ def reddit_sentiment():
 
     if failed_searches >= 2:
         current_app.logger.error("Cannot get Reddit sentiment for " + query)
-        return json_response({"error": "Cannot get Reddit sentiment for " + query}, status=400)
+        return json_response(
+            {"error": "Cannot get Reddit sentiment for " + query}, status=400
+        )
 
     # Gets the most recent search for given keyword
-    most_recent_search_id = db.session.query(Search.id
-        ).filter(Search.search_string == query
-        ).order_by(Search.ran_at.desc()
-        ).filter(Search.reddit_sentiment != None
-        ).limit(1
-        ).all()
+    most_recent_search_id = (
+        db.session.query(Search.id)
+        .filter(Search.search_string == query)
+        .order_by(Search.ran_at.desc())
+        .filter(Search.reddit_sentiment != None)
+        .limit(1)
+        .all()
+    )
 
     if not most_recent_search_id:
         current_app.logger.warning("No Reddit comments for " + query)
-        current_app.logger.info("Sending request to get Reddit sentiment data for " + query)
+        current_app.logger.info(
+            "Sending request to get Reddit sentiment data for " + query
+        )
         return redirect("/assets/perform_asset_search?query=" + query)
 
     # Gets the reddit submissions of the given search id
-    results = db.session.query(RedditComment
-        ).select_from(Search
-        ).join(Search.reddit_comments
-        ).filter(Search.id == most_recent_search_id[0][0]
-        ).all()
+    results = (
+        db.session.query(RedditComment)
+        .select_from(Search)
+        .join(Search.reddit_comments)
+        .filter(Search.id == most_recent_search_id[0][0])
+        .all()
+    )
 
     if len(results) == 0:
-        current_app.logger.warning("No Reddit comments for most recent search of " + query)
-        current_app.logger.info("Sending request to get Reddit sentiment data for " + query)
+        current_app.logger.warning(
+            "No Reddit comments for most recent search of " + query
+        )
+        current_app.logger.info(
+            "Sending request to get Reddit sentiment data for " + query
+        )
         return redirect("/assets/perform_asset_search?query=" + query)
 
     response_body = []
