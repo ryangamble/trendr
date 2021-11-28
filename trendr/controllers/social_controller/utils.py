@@ -1,8 +1,6 @@
-from re import search
 import tweepy
 import pmaw
 import functools
-import inspect
 from typing import Union
 
 from .reddit_controller import store_reddit_results
@@ -19,8 +17,6 @@ def store_results(
     :param results: list of social posts (or single twitter post) to add to database (ALL MUST BE SAME TYPE)
     :return: list of db ids of newly added objects
     """
-    print(f"type: {type(results)}")
-    print(f"results: {results}")
 
     if isinstance(results, tweepy.models.SearchResults) or isinstance(
         results, tweepy.models.Status

@@ -47,6 +47,7 @@ def get_latest_tweet_id(asset_identifier: str) -> int or None:
     return None
 
 
+@store_in_db()
 def get_tweet_by_id(tweet_id: int, api: tweepy.API = None) -> tweepy.models.Status:
     """
     Gets all the information available for given tweet.
@@ -75,6 +76,17 @@ def get_tweets_mentioning_asset(asset_identifier: str, api: tweepy.API = None) -
 
     # 100 is the allowed max
     return api.search_tweets(q=asset_identifier, lang="en", result_type="mixed", since_id=latest_tweet_id, count=100)
+
+
+def get_stored_tweet_by_id(tweet_id: int) -> Tweet or None:
+    """
+    Gets all stored information available for given tweet.
+
+    :param tweet_id: The Twitter id for the tweet
+    :return: A Tweet model object
+    """
+    get_tweet_by_id(tweet_id)
+    return Tweet.query.filter_by(tweet_id=tweet_id).one()
 
 
 def get_stored_tweets_mentioning_asset(asset_identifier: str) -> [Tweet]:

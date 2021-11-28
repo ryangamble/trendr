@@ -14,17 +14,17 @@ from trendr.models.tweet_model import Tweet
 # Positive tests
 
 
-def test_get_tweet_by_id_positive():
+def test_get_tweet_by_id_positive(client, db):
     """
     Tests that if you attempt to get a tweet by id, then you get that tweet back
     """
     tweet_id = 1464764077666881542
     expected_tweet_text = "Just checked, and AAPL’s at $156.81. (It dropped $5.13.)"
-    tweet = twitter_connector.get_tweet_by_id(tweet_id)
+    tweet = twitter_connector.get_stored_tweet_by_id(tweet_id)
     assert tweet
-    assert isinstance(tweet, tweepy.models.Status)
-    assert tweet.__getattribute__("id") == tweet_id
-    assert tweet.__getattribute__("text") == expected_tweet_text
+    assert isinstance(tweet, Tweet)
+    assert tweet.tweet_id == tweet_id
+    assert tweet.text == expected_tweet_text
 
 
 def test_get_tweets_mentioning_asset_positive(client, db):
@@ -32,7 +32,7 @@ def test_get_tweets_mentioning_asset_positive(client, db):
     Tests that if you attempt to get tweets with a search string, then you get some results back
     """
     search_term = "apple"
-    tweets = twitter_connector.get_tweets_mentioning_asset(search_term)
+    tweets = twitter_connector.get_stored_tweets_mentioning_asset(search_term)
     assert tweets
     assert isinstance(tweets, list)
     for tweet in tweets:

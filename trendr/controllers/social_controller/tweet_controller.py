@@ -73,14 +73,3 @@ def store_twitter_results(
 
     # return ids
     return res_ids
-
-
-# def db_datetime(time_string: str) -> datetime.datetime:
-#     """
-#     Takes a datetime from twitter and converts it to a form that can be stored in the database
-#
-#     :param time_string: The string representing the time to convert
-#     :return: The db datetime representation
-#     """
-#     datetime_object = datetime.datetime.strptime(time_string, '%a %b %d %H:%M:%S %z %Y')
-#     return datetime_object

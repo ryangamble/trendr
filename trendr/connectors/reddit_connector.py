@@ -1,12 +1,16 @@
 from typing import List
+import datetime
 import praw
 import pmaw
 from enum import Enum
+from sqlalchemy import desc
+
 from trendr.config import (
     REDDIT_CLIENT_ID,
     REDDIT_CLIENT_SECRET,
     REDDIT_USER_AGENT,
 )
+from trendr.models.reddit_model import RedditComment, RedditSubmission
 
 
 class RedditItem(Enum):
@@ -55,6 +59,38 @@ def create_pmaw_api() -> pmaw.PushshiftAPI:
     """
 
     return pmaw.PushshiftAPI()
+
+
+def get_latest_submission_timestamp(asset_identifier: str) -> int or None:
+    """
+    Returns the timestamp of the latest submission stored in the database for a given identifier
+
+    :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
+    :return: A tweet id
+    """
+    submission = RedditSubmission.query\
+        .filter(RedditSubmission.text.ilike(f'%{asset_identifier}%'))\
+        .order_by(desc(RedditSubmission.tweeted_at))\
+        .limit(1).all()
+    if submission:
+        return (submission[0].posted_at  - datetime.datetime(1970,1,1)).total_seconds()
+    return None
+
+
+def get_latest_comment_timestamp(asset_identifier: str) -> int or None:
+    """
+    Returns the timestamp of the latest comment stored in the database for a given identifier
+
+    :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
+    :return: A tweet id
+    """
+    comment = RedditComment.query\
+        .filter(RedditComment.text.ilike(f'%{asset_identifier}%'))\
+        .order_by(desc(RedditComment.tweeted_at))\
+        .limit(1).all()
+    if comment:
+        return (comment[0].posted_at - datetime.datetime(1970, 1, 1)).total_seconds()
+    return None
 
 
 def gather_items(
@@ -114,6 +150,10 @@ def gather_submissions(**kwargs) -> list:
     :return: res
     :rtype: list[pmaw.PushshiftAPI.submission]
     """
+    if kwargs["keywords"] and not kwargs["after"]:
+        timestamp = get_latest_submission_timestamp(kwargs["keywords"][0])
+        if timestamp:
+            kwargs["after"] = timestamp
 
     kwargs["item"] = RedditItem.SUBMISSION
     return gather_items(**kwargs)
@@ -135,6 +175,10 @@ def gather_comments(**kwargs) -> list:
     :return: res
     :rtype: list[pmaw.PushshiftAPI.comment]
     """
+    if kwargs["keywords"] and not kwargs["after"]:
+        timestamp = get_latest_comment_timestamp(kwargs["keywords"][0])
+        if timestamp:
+            kwargs["after"] = timestamp
 
     kwargs["item"] = RedditItem.COMMENT
     return gather_items(**kwargs)
