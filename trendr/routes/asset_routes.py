@@ -321,7 +321,7 @@ def twitter_sentiment():
         return json_response({"error": "Parameter 'symbol' is required"}, status=400)
 
     response_body = []
-    results = twitter_connector.get_tweets_mentioning_asset(symbol)
+    results = twitter_connector.get_stored_tweets_mentioning_asset(symbol)
     for result in results:
         text_clean = re.sub(r"@[A-Za-z0-9]+", "", result.text)
         text_clean = re.sub(r"#", "", text_clean)

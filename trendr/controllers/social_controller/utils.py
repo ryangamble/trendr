@@ -19,6 +19,8 @@ def store_results(
     :param results: list of social posts (or single twitter post) to add to database (ALL MUST BE SAME TYPE)
     :return: list of db ids of newly added objects
     """
+    print(f"type: {type(results)}")
+    print(f"results: {results}")
 
     if isinstance(results, tweepy.models.SearchResults) or isinstance(
         results, tweepy.models.Status

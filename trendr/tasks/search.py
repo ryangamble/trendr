@@ -52,7 +52,7 @@ def perform_search(
         if search_type == SearchType.TWITTER:
             curr_chain = chain(
                 store_tweets_mentioning_asset.signature(
-                    kwargs={"asset_identifier": keyword}
+                    kwargs={"asset_identifier": keyword, "search_id": search_id}
                 ),
                 analyze_by_ids.signature(kwargs={"social_type": SearchType.TWITTER}),
             )

@@ -39,6 +39,10 @@ def store_twitter_results(
                 existing.retweets = result.retweet_count
                 # TODO: determine if we should overwrite sentiment scores
                 existing.sentiment_score = None
+                existing.tweeter_num_followers = result.user.followers_count,
+                existing.tweeter_num_following = result.user.friends_count,
+                existing.tweeter_created_at = result.user.created_at,
+                existing.tweeter_verified = result.user.verified
 
             if search:
                 search.tweets.append(existing)
@@ -50,6 +54,10 @@ def store_twitter_results(
                 tweeted_at=result.created_at,
                 likes=result.favorite_count,
                 retweets=result.retweet_count,
+                tweeter_num_followers=result.user.followers_count,
+                tweeter_num_following=result.user.friends_count,
+                tweeter_created_at=result.user.created_at,
+                tweeter_verified=result.user.verified
             )
             to_add.append(new_tweet)
 
@@ -65,3 +73,14 @@ def store_twitter_results(
 
     # return ids
     return res_ids
+
+
+# def db_datetime(time_string: str) -> datetime.datetime:
+#     """
+#     Takes a datetime from twitter and converts it to a form that can be stored in the database
+#
+#     :param time_string: The string representing the time to convert
+#     :return: The db datetime representation
+#     """
+#     datetime_object = datetime.datetime.strptime(time_string, '%a %b %d %H:%M:%S %z %Y')
+#     return datetime_object
