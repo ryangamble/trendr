@@ -8,9 +8,7 @@ def convert_time(unix_time) -> str:
     :param unix_time: time unix_time format
     :return: time as a datetime object
     """
-    return datetime.utcfromtimestamp(unix_time).strftime(
-        "%a, %d %b %Y %H:%M:%S GMT"
-    )
+    return datetime.utcfromtimestamp(unix_time).strftime("%a, %d %b %Y %H:%M:%S GMT")
 
 
 def get_current_crypto_fear_and_greed():
@@ -46,9 +44,7 @@ def get_crypto_historic_values(days: int = 365):
     """
     if days == 0:
         days = 1
-    response = requests.get(
-        "https://api.alternative.me/fng/?limit=" + str(days)
-    )
+    response = requests.get("https://api.alternative.me/fng/?limit=" + str(days))
     value_list = []
     for stamp in response.json()["data"]:
         values = {

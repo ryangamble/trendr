@@ -19,18 +19,14 @@ def twitter_api() -> tweepy.API:
     """
     Creates a tweepy.API object to be used by
     """
-    yield twitter_connector.auth_to_api(
-        TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET
-    )
+    yield twitter_connector.auth_to_api(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
 
 
 def test_get_tweet_by_id_positive(twitter_api: tweepy.API):
     """
     Tests that if you attempt to get a tweet by id, then you get that tweet back
     """
-    tweets = twitter_connector.get_tweets_mentioning_asset(
-        "and", api=twitter_api
-    )
+    tweets = twitter_connector.get_tweets_mentioning_asset("and", api=twitter_api)
     tweet_id = tweets[0].__getattribute__("id")
     tweet = twitter_connector.get_tweet_by_id(tweet_id, api=twitter_api)
     assert tweet
@@ -43,9 +39,7 @@ def test_get_tweets_mentioning_asset_positive(twitter_api: tweepy.API):
     Tests that if you attempt to get tweets with a search string, then you get some results back
     """
     search_term = "apple"
-    tweets = twitter_connector.get_tweets_mentioning_asset(
-        search_term, api=twitter_api
-    )
+    tweets = twitter_connector.get_tweets_mentioning_asset(search_term, api=twitter_api)
     assert tweets
     assert isinstance(tweets, tweepy.models.SearchResults)
     assert tweets.__getattribute__("count") >= 1
