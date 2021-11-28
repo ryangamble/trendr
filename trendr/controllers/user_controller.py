@@ -4,30 +4,25 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from trendr.extensions import db, security
 from trendr.models.asset_model import Asset
-from trendr.models.association_tables import user_asset_association
-from trendr.models.user_model import User, Role
-
-user_datastore = security.datastore
+from trendr.models.user_model import User
 
 
 def find_user(email):
-    return user_datastore.find_user(email=email)
+    return security.datastore.find_user(email=email)
 
 
 def create_user(email, password, roles=None, **kwargs):
     if roles is not None:
         kwargs["roles"] = roles
 
-    new_user = user_datastore.create_user(
+    new_user = security.datastore.create_user(
         email=email, password=hash_password(password), **kwargs
     )
     db.session.commit()
     return new_user
 
 
-def follow_asset(
-    user: Union[User, str, int], asset: Union[Asset, str, int]
-) -> bool:
+def follow_asset(user: Union[User, str, int], asset: Union[Asset, str, int]) -> bool:
     """
     Follows asset for user
 
@@ -50,9 +45,7 @@ def follow_asset(
     elif type(asset) == int:
         asset = Asset.query.filter_by(id=asset).one()
 
-    if (user and isinstance(user, User)) and (
-        asset and isinstance(asset, Asset)
-    ):
+    if (user and isinstance(user, User)) and (asset and isinstance(asset, Asset)):
         user.assets.append(asset)
         db.session.commit()
         return True
@@ -60,9 +53,7 @@ def follow_asset(
     return False
 
 
-def unfollow_asset(
-    user: Union[User, str, int], asset: Union[Asset, str, int]
-) -> bool:
+def unfollow_asset(user: Union[User, str, int], asset: Union[Asset, str, int]) -> bool:
     """
     Unfollows asset for user
 
@@ -81,9 +72,7 @@ def unfollow_asset(
     elif type(asset) == int:
         asset = Asset.query.filter_by(id=asset).one()
 
-    if (user and isinstance(user, User)) and (
-        asset and isinstance(asset, Asset)
-    ):
+    if (user and isinstance(user, User)) and (asset and isinstance(asset, Asset)):
         user.assets.remove(asset)
         db.session.commit()
         return True

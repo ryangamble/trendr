@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react'
 import {
   Container,
   Image,
@@ -7,114 +7,116 @@ import {
   Spinner,
   OverlayTrigger,
   Tooltip
-} from "react-bootstrap";
-import { useSelector } from "react-redux";
-import axios from "axios";
-import "./Results.css";
+} from 'react-bootstrap'
+import { useSelector } from 'react-redux'
+import axios from 'axios'
+import './Results.css'
 
 const getNumberUnit = (num) => {
   if (num < 1000000) {
-    return num;
+    return num
   }
-  var units = ["M", "B", "T"];
-  var unit = Math.floor((num / 1.0e1).toFixed(0).toString().length);
-  var r = unit % 3;
-  var x = Math.abs(Number(num)) / Number("1.0e+" + (unit - r)).toFixed(2);
+  const units = ['M', 'B', 'T']
+  const unit = Math.floor((num / 1.0e1).toFixed(0).toString().length)
+  const r = unit % 3
+  const x = Math.abs(Number(num)) / Number('1.0e+' + (unit - r)).toFixed(2)
   if (units[Math.floor(unit / 3) - 2] === undefined) {
-    return Number.parseInt(num).toExponential(4);
+    return Number.parseInt(num).toExponential(4)
   }
-  return x.toFixed(2) + " " + units[Math.floor(unit / 3) - 2];
+  return x.toFixed(2) + ' ' + units[Math.floor(unit / 3) - 2]
 }
 
-function StockStatistics(props) {
-  const currentTheme = useSelector((state) => state.theme.currentTheme);
+function StockStatistics (props) {
+  const currentTheme = useSelector((state) => state.theme.currentTheme)
 
-  const [asset, setAsset] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [asset, setAsset] = useState({})
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(true);
+    setLoading(true)
     axios
-      .get("http://localhost:5000/assets/stock/stats", {
-        method: "GET",
+      .get('http://localhost:5000/assets/stock/stats', {
+        method: 'GET',
         params: {
           symbol: props.symbol
         }
       })
       .then((res) => {
-        let data = res.data;
+        const data = res.data
         setAsset({
-          companyName: data["longName"] ? data["longName"] : data["shortName"],
-          logo: data["logo_url"],
-          symbol: data["symbol"],
-          currency: data["currency"] ? data["currency"] : "USD",
-          dayOpen: data["open"],
-          dayHigh: data["dayHigh"],
-          dayLow: data["dayLow"],
-          fiftyTwoWeekHigh: data["fiftyTwoWeekHigh"],
-          fiftyTwoWeekLow: data["fiftyTwoWeekLow"],
-          volume: data["volume"].toLocaleString("en-US"),
-          avgVolume: data["averageVolume"].toLocaleString("en-US"),
-          marketCap: data["marketCap"]
-            ? getNumberUnit(data["marketCap"])
-            : "N/A",
-          pegRatio: data["pegRatio"] ? data["pegRatio"].toFixed(2) : "N/A",
-          divYield: data["dividendYield"]
-            ? (data["dividendYield"] * 100).toFixed(2)
-            : "N/A",
-          website: data["website"]
-        });
-        props.currencyCallback(data["currency"]);
+          companyName: data.longName ? data.longName : data.shortName,
+          logo: data.logo_url,
+          symbol: data.symbol,
+          currency: data.currency ? data.currency : 'USD',
+          dayOpen: data.open,
+          dayHigh: data.dayHigh,
+          dayLow: data.dayLow,
+          fiftyTwoWeekHigh: data.fiftyTwoWeekHigh,
+          fiftyTwoWeekLow: data.fiftyTwoWeekLow,
+          volume: data.volume.toLocaleString('en-US'),
+          avgVolume: data.averageVolume.toLocaleString('en-US'),
+          marketCap: data.marketCap
+            ? getNumberUnit(data.marketCap)
+            : 'N/A',
+          pegRatio: data.pegRatio ? data.pegRatio.toFixed(2) : 'N/A',
+          divYield: data.dividendYield
+            ? (data.dividendYield * 100).toFixed(2)
+            : 'N/A',
+          website: data.website
+        })
+        props.currencyCallback(data.currency)
 
         axios
-          .get(`http://localhost:5000/assets/stocks/listed-exchanges`, {
-            method: "GET",
+          .get('http://localhost:5000/assets/stocks/listed-exchanges', {
+            method: 'GET',
             params: {
               symbol: props.symbol
             }
           })
           .then((res) => {
             console.log(res.data)
-            setAsset(prevData => { return {...prevData, exchanges: res.data}})
+            setAsset(prevData => { return { ...prevData, exchanges: res.data } })
           })
           .catch((error) => {
-            console.log(error);
-          });
+            console.log(error)
+          })
       })
       .then(() => {
-        setLoading(false);
+        setLoading(false)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  }, [props.symbol]);
+        console.log(error)
+      })
+  }, [props.symbol])
 
-  function formatPrice(num) {
+  function formatPrice (num) {
     if (num < 0.1) {
       return num.toFixed(7)
     }
     const options = {
-      style: "currency",
-      currency: "usd",
-    };
-    return num.toLocaleString("en-US", options);
+      style: 'currency',
+      currency: 'usd'
+    }
+    return num.toLocaleString('en-US', options)
   }
 
-  function renderExchanges() {
-    var list = [];
-    for (var key in asset.exchanges) {
-      list.push(<div key={key}>{asset.exchanges[key]}<br/></div>);
+  function renderExchanges () {
+    const list = []
+    for (const key in asset.exchanges) {
+      list.push(<div key={key}>{asset.exchanges[key]}<br/></div>)
     }
-    return (list);
+    return (list)
   }
 
   return (
     <>
-      {loading ? (
+      {loading
+        ? (
         <Container fluid>
           <Spinner animation="border" />
         </Container>
-      ) : (
+          )
+        : (
         <Container fluid>
           <Col>
             <Image src={asset.logo} rounded alt="<no logo>"/>
@@ -184,56 +186,54 @@ function StockStatistics(props) {
             </Table>
           </Col>
         </Container>
-      )}
+          )}
     </>
-  );
+  )
 }
 
-function CoinStatistics(props) {
+function CoinStatistics (props) {
+  const currentTheme = useSelector((state) => state.theme.currentTheme)
 
-  const currentTheme = useSelector((state) => state.theme.currentTheme);
-
-  const [crypto, setCrypto] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+  const [crypto, setCrypto] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(true);
+    setLoading(true)
     axios
-      .get("http://localhost:5000/assets/crypto/stats", {
-        method: "GET",
+      .get('http://localhost:5000/assets/crypto/stats', {
+        method: 'GET',
         params: {
           id: props.id
         }
       })
       .then((res) => {
-        let data = res.data;
-        console.log(data);
-        setCrypto(data);
+        const data = res.data
+        console.log(data)
+        setCrypto(data)
       })
       .then(() => {
-        setLoading(false);
+        setLoading(false)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  }, [props.id]);
+        console.log(error)
+      })
+  }, [props.id])
 
-  function formatPrice(num) {
-    if (num == null) return "Not available"
+  function formatPrice (num) {
+    if (num == null) return 'Not available'
     if (num < 0.1) {
-      return "$" + num.toFixed(7).toString()
+      return '$' + num.toFixed(7).toString()
     }
     const options = {
-      style: "currency",
-      currency: "usd",
-    };
-    return num.toLocaleString("en-US", options);
+      style: 'currency',
+      currency: 'usd'
+    }
+    return num.toLocaleString('en-US', options)
   }
 
-  function renderExchanges() {
+  function renderExchanges () {
     if (crypto.exchanges.length === 0) {
-      return("Not available");
+      return ('Not available')
     } else if (crypto.exchanges.length > 5) {
       return (
         <div>
@@ -245,35 +245,37 @@ function CoinStatistics(props) {
             <div>...</div>
           </OverlayTrigger>
         </div>
-      );
+      )
     }
-    var list = [];
-    for (var key in crypto.exchanges) {
-      list.push(<div key={key}>{crypto.exchanges[key]}<br/></div>);
+    const list = []
+    for (const key in crypto.exchanges) {
+      list.push(<div key={key}>{crypto.exchanges[key]}<br/></div>)
     }
-    return (list);
+    return (list)
   }
 
-  function renderTooltip() {
-    var list = [];
-    for (var key in crypto.exchanges) {
-      list.push(crypto.exchanges[key] + ", ");
+  function renderTooltip () {
+    const list = []
+    for (const key in crypto.exchanges) {
+      list.push(crypto.exchanges[key] + ', ')
     }
-    list[list.length - 1] = list[list.length - 1].substring(0, list[list.length - 1].lastIndexOf(","))
-    return(
+    list[list.length - 1] = list[list.length - 1].substring(0, list[list.length - 1].lastIndexOf(','))
+    return (
       <Tooltip>
         {list}
       </Tooltip>
-    );
+    )
   }
 
   return (
     <>
-      {loading ? (
+      {loading
+        ? (
         <Container fluid>
           <Spinner animation="border" />
         </Container>
-      ) : (
+          )
+        : (
         <Container fluid>
           <Col>
           <Col>
@@ -292,23 +294,23 @@ function CoinStatistics(props) {
                 </tr>
                 <tr>
                   <td className="statName">Day High</td>
-                  <td className="statValue">{formatPrice(crypto['DayHigh'])}</td>
+                  <td className="statValue">{formatPrice(crypto.DayHigh)}</td>
                 </tr>
                 <tr>
                   <td className="statName">Day Low</td>
-                  <td className="statValue">{formatPrice(crypto['DayLow'])}</td>
+                  <td className="statValue">{formatPrice(crypto.DayLow)}</td>
                 </tr>
                 <tr>
                   <td className="statName">Market Cap Rank</td>
-                  <td className="statValue">{crypto['MarketCapRank'] ? crypto['MarketCapRank'] : "Not available"}</td>
+                  <td className="statValue">{crypto.MarketCapRank ? crypto.MarketCapRank : 'Not available'}</td>
                 </tr>
                 <tr>
                   <td className="statName">24 Hour Market Cap Change</td>
-                  <td className="statValue">{crypto['24HrMarketCapChange'] ? crypto['24HrMarketCapChange'] + "%" : "Not available"}</td>
+                  <td className="statValue">{crypto['24HrMarketCapChange'] ? crypto['24HrMarketCapChange'] + '%' : 'Not available'}</td>
                 </tr>
                 <tr>
                   <td className="statName">24 Hour Price Change</td>
-                  <td className="statValue">{crypto['24HrPriceChange'] ? crypto['24HrPriceChange'] + "%" : "Not available"}</td>
+                  <td className="statValue">{crypto['24HrPriceChange'] ? crypto['24HrPriceChange'] + '%' : 'Not available'}</td>
                 </tr>
                 <tr>
                   <td className="statName">Market Cap</td>
@@ -322,53 +324,55 @@ function CoinStatistics(props) {
             </Table>
           </Col>
         </Container>
-      )}
+          )}
     </>
-  );
+  )
 }
 
-function TokenStatistics(props) {
-  const currentTheme = useSelector((state) => state.theme.currentTheme);
+function TokenStatistics (props) {
+  const currentTheme = useSelector((state) => state.theme.currentTheme)
 
-  const [token, setToken] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     // console.log(props.addr)
-    setLoading(true);
+    setLoading(true)
     axios
-      .get("http://localhost:5000/assets/token/info", {
-        method: "GET",
+      .get('http://localhost:5000/assets/token/info', {
+        method: 'GET',
         params: {
           address: props.addr
         }
       })
       .then((res) => {
-        setLoading(true);
-        return JSON.parse(JSON.stringify(res.data));
+        setLoading(true)
+        return JSON.parse(JSON.stringify(res.data))
       })
       .then((data) => {
-        console.log(data);
-        setToken(data);
+        console.log(data)
+        setToken(data)
       })
       .then(() => {
-        setLoading(false);
+        setLoading(false)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  }, [props.addr]);
+        console.log(error)
+      })
+  }, [props.addr])
 
   return (
     <>
-      {loading ? (
+      {loading
+        ? (
         <Container fluid>
           <Spinner animation="border" />
         </Container>
-      ) : (
+          )
+        : (
         <Container fluid>
           <Col>
-            <h2 style={{textAlign: "left"}}>Token Info</h2>
+            <h2 style={{ textAlign: 'left' }}>Token Info</h2>
             <Table size="sm" style={{ color: currentTheme.foreground }}>
               <tbody>
                 <tr>
@@ -395,13 +399,13 @@ function TokenStatistics(props) {
             </Table>
           </Col>
         </Container>
-      )}
-    </>  
-  );
+          )}
+    </>
+  )
 }
 
 export {
   StockStatistics,
   CoinStatistics,
   TokenStatistics
-};
+}

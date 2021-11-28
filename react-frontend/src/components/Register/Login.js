@@ -8,32 +8,34 @@ import { Row, Col, Form, Button, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-function Login() {
-  const currentTheme = useSelector((state) => state.theme.currentTheme);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+import axios from 'axios'
 
-  const dispatch = useDispatch();
-  const history = useHistory();
+function Login () {
+  const currentTheme = useSelector((state) => state.theme.currentTheme)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const dispatch = useDispatch()
+  const history = useHistory()
 
   const handleSubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     const json = JSON.stringify({
       email: email,
-      password: password,
-    });
+      password: password
+    })
     const config = {
-      headers: { "Content-Type": "application/json" },
-      withCredentials: true,
-    };
+      headers: { 'Content-Type': 'application/json' },
+      withCredentials: true
+    }
 
     axios
-      .post("http://localhost:5000/auth/login", json, config)
+      .post('http://localhost:5000/auth/login', json, config)
       .then((res) => {
-        //register the user to global user
-        dispatch(registerUser("", email));
-        history.push("/home");
+        // register the user to global user
+        dispatch(registerUser('', email))
+        history.push('/home')
         // TODO: replace when we get better settings storage
         axios
           .get("http://localhost:5000/users/settings", {
@@ -77,7 +79,7 @@ function Login() {
       style={{
         background: currentTheme.background,
         color: currentTheme.foreground,
-        height: "100vh",
+        height: '100vh'
       }}
     >
       <MyNavBar />
@@ -132,12 +134,12 @@ function Login() {
                       to="register"
                       style={{ color: currentTheme.linkColor }}
                     >
-                      Register An Account{" "}
+                      Register An Account{' '}
                     </Link>
                   </Col>
                   <Col sm="4">
                     <Link to="reset" style={{ color: currentTheme.linkColor }}>
-                      Reset Password{" "}
+                      Reset Password{' '}
                     </Link>
                   </Col>
                 </Row>
@@ -147,7 +149,7 @@ function Login() {
         </Col>
       </Row>
     </div>
-  );
+  )
 }
 
-export default Login;
+export default Login

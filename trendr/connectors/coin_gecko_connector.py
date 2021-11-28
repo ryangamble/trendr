@@ -3,10 +3,12 @@ Documentation of CoingeckoAPI python wrapper can be found in: https://pypi.org/p
 The actual documentation of CoinGecko API can be found in: https://www.coingecko.com/en/api/documentation
 """
 import json
+import os
 from datetime import datetime
 from pycoingecko import CoinGeckoAPI
 
 # print(finnhub_client.company_profile(symbol='AAPL'))
+
 
 def convert_time(date_list):
     """
@@ -29,9 +31,9 @@ def get_historic_prices(coin, days):
     """
     cg_api = CoinGeckoAPI()
     coin = coin.lower()
-    prices = cg_api.get_coin_market_chart_by_id(
-        id=coin, vs_currency="usd", days=days
-    )["prices"]
+    prices = cg_api.get_coin_market_chart_by_id(id=coin, vs_currency="usd", days=days)[
+        "prices"
+    ]
     return convert_time(prices)
 
 
@@ -43,9 +45,9 @@ def get_historic_volumes(coin, days):
     """
     cg_api = CoinGeckoAPI()
     coin = coin.lower()
-    volumes = cg_api.get_coin_market_chart_by_id(
-        id=coin, vs_currency="usd", days=days
-    )["total_volumes"]
+    volumes = cg_api.get_coin_market_chart_by_id(id=coin, vs_currency="usd", days=days)[
+        "total_volumes"
+    ]
     return convert_time(volumes)
 
 
@@ -85,12 +87,11 @@ def get_coin_live_stats(coin):
     if len(info) == 0:
         return -1
 
-    
     exchanges = []
-    if info['tickers'] != None:
-        for market in info['tickers']:
-            if market['market']['name'] not in exchanges:
-                exchanges.append(market['market']['name'])
+    if info["tickers"] != None:
+        for market in info["tickers"]:
+            if market["market"]["name"] not in exchanges:
+                exchanges.append(market["market"]["name"])
 
     coin_stats = {
         "Name": info["name"],
@@ -119,7 +120,7 @@ def get_coin_live_stats(coin):
         "exchanges": exchanges,
         "homepage": info["links"]["homepage"][0]
         if len(info["links"]["homepage"][0]) > 0
-        else None
+        else None,
     }
     return coin_stats
 
@@ -130,7 +131,7 @@ def convert_symbol_to_id(symbol):
     :return: if this symbl exists, we return the corresponding ID used by coingecko API
     """
     # token_file = open('CoinGeckoCoins.json', encoding="utf8")
-    token_file = open('connectors/CoinGeckoCoins.json', encoding="utf8")
+    token_file = open("connectors/CoinGeckoCoins.json", encoding="utf8")
     tokens = json.load(token_file)
     for token in tokens:
         if token["symbol"] == symbol:
@@ -157,11 +158,15 @@ def get_id_eth_address(id):
     :returns the eth token contract address if it exists, or None of it's not an ETH token
     """
     # token_file = open('CoinGeckoCoins.json', encoding="utf8")
-    token_file = open('connectors/CoinGeckoCoins.json', encoding="utf8")
-    tokens = json.load(token_file)
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    json_path = os.path.join(SITE_ROOT, "CoinGeckoCoins.json")
+    tokens = json.loads(open(json_path, encoding="utf8").read())
     for token in tokens:
         if token["id"] == id:
-            if len(token["platforms"]["ethereum"]) > 0:
+            if (
+                "ethereum" in token["platforms"]
+                and len(token["platforms"]["ethereum"]) > 0
+            ):
                 return token["platforms"]["ethereum"]
     return None
 
@@ -189,8 +194,6 @@ def get_coin_links(coin_id):
     if len(data["repos_url"]["github"]) > 0:
         links["repos_link"] = data["repos_url"]["github"][0]
     if len(data["telegram_channel_identifier"]) > 0:
-        links["telegram_url"] = (
-            "https://t.me/" + data["telegram_channel_identifier"]
-        )
+        links["telegram_url"] = "https://t.me/" + data["telegram_channel_identifier"]
 
     return links

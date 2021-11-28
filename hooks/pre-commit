@@ -1,0 +1,13 @@
+#!/bin/bash; C:/Program\ Files/Git/bin/sh.exe
+echo "------------------------------------"
+echo "RUNNING BLACK ON BACKEND CODE"
+black trendr
+echo "BLACK COMPLETE"
+echo "------------------------------------"
+echo
+echo "------------------------------------"
+echo "RUNNING ESLINT ON FRONTEND CODE"
+eslint react-frontend/src/**/*.js --fix
+echo "ESLINT COMPLETE"
+echo "------------------------------------"
+echo

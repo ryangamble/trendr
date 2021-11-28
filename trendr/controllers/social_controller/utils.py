@@ -10,9 +10,7 @@ from .tweet_controller import store_twitter_results
 
 
 def store_results(
-    results: Union[
-        tweepy.models.SearchResults, tweepy.models.Status, pmaw.Response
-    ],
+    results: Union[tweepy.models.SearchResults, tweepy.models.Status, pmaw.Response],
     overwrite: bool = True,
     search_id: int = None,
 ) -> list[int]:

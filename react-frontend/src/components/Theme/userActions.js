@@ -11,15 +11,15 @@ const USER_CONFIRMATION = "USER_CONFIRMATION";
 export const registerUser = (username, email) => {
   return {
     type: USER_LOGIN,
-    payload: [username, email],
-  };
-};
+    payload: [username, email]
+  }
+}
 
 export const removeUser = () => {
   return {
-    type: USER_LOGOUT,
-  };
-};
+    type: USER_LOGOUT
+  }
+}
 
 // add a temporary email for confirmation page
 export const registerConfirmation = (tempEmail) => {
@@ -35,14 +35,14 @@ export const userReducer = (state = initialUserState, action) => {
       return {
         ...state,
         username: action.payload[0],
-        email: action.payload[1],
-      };
+        email: action.payload[1]
+      }
     case USER_LOGOUT:
       return {
         ...state,
-        username: "",
-        email: "",
-      };
+        username: '',
+        email: ''
+      }
 
     case USER_CONFIRMATION:
       return {
@@ -52,7 +52,7 @@ export const userReducer = (state = initialUserState, action) => {
 
     default:
       return {
-        ...state,
-      };
+        ...state
+      }
   }
-};
+}

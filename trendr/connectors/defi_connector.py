@@ -129,9 +129,7 @@ class TokenInfo:
         }
         holder_info = self.get_top_token_holders(address, number)
         self.top_100_holders_list = holder_info[0]
-        self.top_100_ownership = str("%") + "{0:.2f}".format(
-            float(holder_info[1])
-        )
+        self.top_100_ownership = str("%") + "{0:.2f}".format(float(holder_info[1]))
 
     @staticmethod
     def get_top_token_holders(token_address, number):

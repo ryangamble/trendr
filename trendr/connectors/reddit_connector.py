@@ -140,9 +140,7 @@ def gather_comments(**kwargs) -> list:
     return gather_items(**kwargs)
 
 
-def gather_items_by_id(
-    api: pmaw.PushshiftAPI, item: RedditItem, **kwargs
-) -> list:
+def gather_items_by_id(api: pmaw.PushshiftAPI, item: RedditItem, **kwargs) -> list:
     """
     Gather all reddit comments/submissions by their ids
 
