@@ -224,6 +224,7 @@ def store_reddit_submissions(
 
     search = None
     asset = None
+
     if search_id is not None:
         search = Search.query.filter_by(id=search_id).one()
         asset = search.asset

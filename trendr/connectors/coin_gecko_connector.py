@@ -3,6 +3,7 @@ Documentation of CoingeckoAPI python wrapper can be found in: https://pypi.org/p
 The actual documentation of CoinGecko API can be found in: https://www.coingecko.com/en/api/documentation
 """
 import json
+import os
 from datetime import datetime
 from pycoingecko import CoinGeckoAPI
 
@@ -157,11 +158,15 @@ def get_id_eth_address(id):
     :returns the eth token contract address if it exists, or None of it's not an ETH token
     """
     # token_file = open('CoinGeckoCoins.json', encoding="utf8")
-    token_file = open("connectors/CoinGeckoCoins.json", encoding="utf8")
-    tokens = json.load(token_file)
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    json_path = os.path.join(SITE_ROOT, "CoinGeckoCoins.json")
+    tokens = json.loads(open(json_path, encoding="utf8").read())
     for token in tokens:
         if token["id"] == id:
-            if len(token["platforms"]["ethereum"]) > 0:
+            if (
+                "ethereum" in token["platforms"]
+                and len(token["platforms"]["ethereum"]) > 0
+            ):
                 return token["platforms"]["ethereum"]
     return None
 
