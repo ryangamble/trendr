@@ -8,15 +8,7 @@ api = None
 @celery.task
 @store_in_db(wraps=twitter_connector.get_tweets_mentioning_asset)
 def store_tweets_mentioning_asset(*args, **kwargs):
-    global api
-    if api is None:
-        from trendr.config import TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET
-
-        api = twitter_connector.auth_to_api(
-            TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET
-        )
-    kwargs["api"] = api
-    return twitter_connector.get_tweets_mentioning_asset(*args, **kwargs)
+    twitter_connector.fetch_and_store_tweets(*args, **kwargs)
 
 
 @celery.task

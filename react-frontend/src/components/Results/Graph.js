@@ -663,7 +663,7 @@ function SentimentGraph (props) {
 
   // function fetchTwitterData() {
   //   axios
-  //     .get("http://localhost:5000/assets/twitter_sentiment", {
+  //     .get("http://localhost:5000/assets/twitter-sentiment", {
   //       method: "GET",
   //       params: {
   //         symbol: props.symbol,

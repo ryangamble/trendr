@@ -11,10 +11,9 @@ from flask import Blueprint, request, current_app
 from textblob import TextBlob
 from trendr.controllers.search_controller import new_search
 
-from trendr.connectors import twitter_connector
-from trendr.connectors import fear_and_greed_connector
-from trendr.connectors import coin_gecko_connector as cg
-from trendr.connectors import defi_connector as df
+from trendr.connectors import (
+    twitter_connector, fear_and_greed_connector, coin_gecko_connector as cg, defi_connector as df
+)
 from trendr.models.search_model import SearchType
 from trendr.tasks.social.twitter.gather import store_tweet_by_id
 from trendr.tasks.social.reddit.gather import store_comments, store_submissions
@@ -310,7 +309,7 @@ def stock_history():
     ).to_json()
 
 
-@assets.route("/twitter_sentiment", methods=["GET"])
+@assets.route("/twitter-sentiment", methods=["GET"])
 def twitter_sentiment():
     """
     Gets twitter sentiment for an asset (stock or crypto)
@@ -341,7 +340,7 @@ def twitter_sentiment():
     return json_response(response_body, status=200)
 
 
-@assets.route("/reddit_sentiment", methods=["GET"])
+@assets.route("/reddit-sentiment", methods=["GET"])
 def reddit_sentiment():
     """
     Gets reddit sentiment for an asset (stock or crypto)
