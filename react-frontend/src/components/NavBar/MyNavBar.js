@@ -20,7 +20,11 @@ function MyNavBar () {
       // TODO: remove this logout once session recovery is implemented
       // make a logout request
       axios
-        .post('http://localhost:5000/auth/logout', {}, { withCredentials: true })
+        .post(
+          'http://localhost:5000/auth/logout',
+          {},
+          { withCredentials: true }
+        )
         .then((res) => {
           // remove the global user
           dispatch(removeUser())
@@ -42,7 +46,11 @@ function MyNavBar () {
     } else {
       // make a logout request
       axios
-        .post('http://localhost:5000/auth/logout', {}, { withCredentials: true })
+        .post(
+          'http://localhost:5000/auth/logout',
+          {},
+          { withCredentials: true }
+        )
         .then((res) => {
           // remove the global user
           dispatch(removeUser())

@@ -32,6 +32,15 @@ def delete_user(user_id):
     pass
 
 
+@users.route("/logged-in", methods=["GET"])
+@auth_required("session")
+def logged_in():
+    if current_user is not None:
+        return json_response(status=200, payload={"success": True})
+    else:
+        return json_response(status=400, payload={"success": False})
+
+
 @users.route("/follow-asset", methods=["POST"])
 @auth_required("session")
 def follow_asset_curr():
