@@ -1,10 +1,12 @@
 export const initialUserState = {
   username: '',
-  email: ''
+  email: '',
+  tempEmail: ''
 }
 
 const USER_LOGIN = 'USER_LOGIN'
 const USER_LOGOUT = 'USER_LOGOUT'
+const USER_CONFIRMATION = 'USER_CONFIRMATION'
 
 export const registerUser = (username, email) => {
   return {
@@ -16,6 +18,14 @@ export const registerUser = (username, email) => {
 export const removeUser = () => {
   return {
     type: USER_LOGOUT
+  }
+}
+
+// add a temporary email for confirmation page
+export const registerConfirmation = (tempEmail) => {
+  return {
+    type: USER_CONFIRMATION,
+    payload: [tempEmail]
   }
 }
 
@@ -32,6 +42,12 @@ export const userReducer = (state = initialUserState, action) => {
         ...state,
         username: '',
         email: ''
+      }
+
+    case USER_CONFIRMATION:
+      return {
+        ...state,
+        tempEmail: action.payload[0]
       }
 
     default:

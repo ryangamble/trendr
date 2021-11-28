@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useHistory, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { registerUser } from '../Theme/userActions'
+import { registerConfirmation, registerUser } from '../Theme/userActions'
 import { toggleTheme, themes } from '../Theme/themeActions'
 import MyNavBar from '../NavBar/MyNavBar'
 import { Row, Col, Form, Button, Card } from 'react-bootstrap'
@@ -36,20 +36,39 @@ function Login () {
         history.push('/home')
         // TODO: replace when we get better settings storage
         axios
-          .get('http://localhost:5000/users/settings', { withCredentials: true })
-          .then(response => {
+          .get('http://localhost:5000/users/settings', {
+            withCredentials: true
+          })
+          .then((response) => {
             console.log('Read theme from user settings')
-            console.log('server: ' + response.data.dark_mode + '\nclient: ' + (currentTheme === themes.dark))
+            console.log(
+              'server: ' +
+                response.data.dark_mode +
+                '\nclient: ' +
+                (currentTheme === themes.dark)
+            )
             // false represents light, true represents dark
-            if ((response.data.dark_mode === false && currentTheme === themes.dark) ||
-            (response.data.dark_mode === true && currentTheme === themes.light)) {
+            if (
+              (response.data.dark_mode === false &&
+                currentTheme === themes.dark) ||
+              (response.data.dark_mode === true &&
+                currentTheme === themes.light)
+            ) {
               dispatch(toggleTheme())
             }
           })
-          .catch(err => { console.log(err) })
+          .catch((err) => {
+            console.log(err)
+          })
       })
       .catch((error) => {
-        alert(JSON.stringify(error.response.data.response.errors))
+        // alert(JSON.stringify(error.response.data.response.errors));
+        console.log(error.response.data.response.errors)
+        // If the user hasn't confirmed email, we will redirect to confirmation page
+        if (error.response.data.response.errors.email) {
+          dispatch(registerConfirmation(email))
+          history.push('/confirmation')
+        }
       })
   }
 
