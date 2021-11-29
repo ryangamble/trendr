@@ -34,7 +34,7 @@ const FlexRadialChart = makeVisFlexible(RadialChart)
 
 // Currently pass symbol as a prop, can be changed later
 // Used for both price and volume charts for stocks
-function StockGraph (props) {
+function PriceVolumeGraph (props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
 
   const [graphData, setgraphData] = useState([])
@@ -43,21 +43,29 @@ function StockGraph (props) {
   const [max, setMax] = useState(0)
   const [loadedCount, setLoadedCount] = useState(0)
   const [crosshairValues, setCrosshairValues] = useState([])
-  const [period, setPeriod] = useState('1d')
+  const [period, setPeriod] = props.assetType === 'stock' ? useState('1d') : useState('1')
 
-  const periodDisplay = {
-    '1d': 'Past Day',
-    '5d': 'Past 5 Days',
-    '1mo': 'Past Month',
-    '3mo': 'Past 3 Months',
-    '1y': 'Past Year'
-  }
+  const periodDisplay = props.assetType === 'stock'
+    ? {
+        '1d': 'Past Day',
+        '5d': 'Past 5 Days',
+        '1mo': 'Past Month',
+        '3mo': 'Past 3 Months',
+        '1y': 'Past Year'
+      }
+    : {
+        1: 'Past Day',
+        5: 'Past 5 Days',
+        30: 'Past Month',
+        90: 'Past 3 Months',
+        365: 'Past Year'
+      }
 
   useEffect(() => {
     setLoadedCount(0)
     for (const key in periodDisplay) {
       console.log('fetching ' + props.graphType + ' data for ' + key + '...')
-      fetchDataPoints(key)
+      props.assetType === 'stock' ? fetchStockDataPoints(key) : fetchCryptoDataPoints(key)
     }
   }, [])
 
@@ -66,7 +74,7 @@ function StockGraph (props) {
     console.log('changing ' + props.graphType + ' period to ' + period)
   }, [period, loadedCount])
 
-  async function fetchDataPoints (timePeriod) {
+  async function fetchStockDataPoints (timePeriod) {
     axios
       .get('http://localhost:5000/assets/stock/history', {
         method: 'GET',
@@ -143,237 +151,7 @@ function StockGraph (props) {
       })
   }
 
-  function getMinMax () {
-    let min = Number.MAX_VALUE
-    let max = 0
-    for (const key in graphData[period]) {
-      const val = graphData[period][key].y
-      if (val > max) {
-        max = val
-      }
-      if (val < min) {
-        min = val
-      }
-    }
-    setMin(min)
-    setMax(max)
-    // console.log(min);
-  }
-
-  const _onMouseLeave = () => {
-    setCrosshairValues([])
-  }
-
-  const _onNearestX = (value) => {
-    const x = value.x.toString()
-    value.x = x
-    setCrosshairValues([value])
-  }
-
-  const itemsFormatPrice = (data) => {
-    return [{ title: 'price', value: formatPrice(data[0].y) }]
-  }
-
-  const itemsFormatVol = (data) => {
-    return [{ title: 'volume', value: data[0].y.toLocaleString('en-US') }]
-  }
-
-  const unixToUTC = (unix) => {
-    let date = new Date(parseInt(unix)).toString()
-    date = date.replace(' ', ', ')
-    return date.substring(0, date.indexOf('-'))
-  }
-
-  const formatPrice = (num) => {
-    if (num < 0.1) {
-      return num.toFixed(7)
-    }
-    const options = {
-      style: 'currency',
-      currency: props.currency
-    }
-    return num.toLocaleString('en-US', options)
-  }
-
-  return (
-    <>
-      { loadedCount < 5
-        ? (
-        <Container fluid>
-          <Spinner animation="border" />
-        </Container>
-          )
-        : (
-        <Container className="graphLayout">
-          <Row>
-            <div className="chartTitle">
-              {props.graphType === 'price'
-                ? (
-                <h2>Price history</h2>
-                  )
-                : (
-                <h2>Volume history</h2>
-                  )}
-            </div>
-          </Row>
-          <Row>
-            <div className="chartContainer">
-              <FlexibleXYPlot
-                onMouseLeave={_onMouseLeave}
-                xType="ordinal"
-                yDomain={
-                  props.graphType === 'price'
-                    ? [0.98 * min, 1.02 * max]
-                    : [0.9 * min, 1.2 * max]
-                }
-              >
-                <HorizontalGridLines />
-                {/* <VerticalGridLines/> */}
-
-                <LineSeries
-                  animation={true}
-                  data={graphData[period]}
-                  onNearestX={_onNearestX}
-                  strokeWidth={2}
-                  opacity={1}
-                  color={props.color}
-                />
-                <Borders
-                  style={{
-                    bottom: { fill: currentTheme.fill },
-                    left: { fill: currentTheme.fill },
-                    right: { fill: currentTheme.fill },
-                    top: { fill: currentTheme.fill }
-                  }}
-                />
-
-                <YAxis />
-                <XAxis hideTicks />
-
-                <Crosshair
-                  values={crosshairValues}
-                  itemsFormat={
-                    props.graphType === 'price'
-                      ? itemsFormatPrice
-                      : itemsFormatVol
-                  }
-                />
-              </FlexibleXYPlot>
-            </div>
-          </Row>
-          <Row>
-            <Col>
-              <ButtonGroup size="sm">
-                <Button
-                  variant="secondary"
-                  className={props.graphType + 'PeriodToggle'}
-                  onClick={() => {
-                    setPeriod('1d')
-                  }}
-                >
-                  1D
-                </Button>
-                <Button
-                  variant="secondary"
-                  className={props.graphType + 'PeriodToggle'}
-                  onClick={() => setPeriod('5d')}
-                >
-                  5D
-                </Button>
-                <Button
-                  variant="secondary"
-                  className={props.graphType + 'PeriodToggle'}
-                  onClick={() => setPeriod('1mo')}
-                >
-                  1M
-                </Button>
-                <Button
-                  variant="secondary"
-                  className={props.graphType + 'PeriodToggle'}
-                  onClick={() => setPeriod('3mo')}
-                >
-                  3M
-                </Button>
-                <Button
-                  variant="secondary"
-                  className={props.graphType + 'PeriodToggle'}
-                  onClick={() => setPeriod('1y')}
-                >
-                  1Y
-                </Button>
-              </ButtonGroup>
-            </Col>
-            {props.graphType === 'price'
-              ? (
-              <Col>
-                {graphData[period][graphData[period].length - 1].y -
-                  graphData[period][0].y >
-                0
-                  ? (
-                  <div className="priceUp">
-                    Up{' '}
-                    {formatPrice(
-                      graphData[period][graphData[period].length - 1].y -
-                        graphData[period][0].y
-                    )}{' '}
-                    {periodDisplay[period]}
-                  </div>
-                    )
-                  : (
-                  <div className="priceDown">
-                    Down{' '}
-                    {formatPrice(
-                      graphData[period][graphData[period].length - 1].y -
-                        graphData[period][0].y
-                    )}{' '}
-                    {periodDisplay[period]}
-                  </div>
-                    )}
-              </Col>
-                )
-              : (
-              <Col></Col>
-                )}
-          </Row>
-        </Container>
-          )}
-    </>
-  )
-}
-
-function CryptoGraph (props) {
-  const currentTheme = useSelector((state) => state.theme.currentTheme)
-
-  const [graphData, setgraphData] = useState([])
-
-  const [min, setMin] = useState(0)
-  const [max, setMax] = useState(0)
-  const [loadedCount, setLoadedCount] = useState(0)
-  const [crosshairValues, setCrosshairValues] = useState([])
-  const [period, setPeriod] = useState('1')
-
-  const periodDisplay = {
-    1: 'Past Day',
-    5: 'Past 5 Days',
-    30: 'Past Month',
-    90: 'Past 3 Months',
-    365: 'Past Year'
-  }
-
-  useEffect(() => {
-    setLoadedCount(0)
-    for (const key in periodDisplay) {
-      console.log('fetching ' + props.graphType + ' data for ' + key + '...')
-      fetchDataPoints(key)
-    }
-  }, [])
-
-  useEffect(() => {
-    getMinMax()
-    console.log('changing ' + props.graphType + ' period to ' + period + ' days')
-  }, [period, loadedCount])
-
-  async function fetchDataPoints (timePeriod) {
+  async function fetchCryptoDataPoints (timePeriod) {
     let apiRoute = ''
     if (props.graphType === 'price') {
       apiRoute = 'http://localhost:5000/assets/crypto/price-history'
@@ -471,20 +249,78 @@ function CryptoGraph (props) {
     return [{ title: 'volume', value: data[0].y.toLocaleString('en-US') }]
   }
 
+  const unixToUTC = (unix) => {
+    let date = new Date(parseInt(unix)).toString()
+    date = date.replace(' ', ', ')
+    return date.substring(0, date.indexOf('-'))
+  }
+
   const formatPrice = (num) => {
     if (num < 0.1) {
-      return '$' + num.toFixed(7).toString()
+      return num.toFixed(7)
     }
     const options = {
       style: 'currency',
-      currency: 'usd'
+      currency: props.currency
     }
     return num.toLocaleString('en-US', options)
   }
 
+  const renderButtons = () => {
+    return (
+      <ButtonGroup size="sm">
+        <Button
+          variant="secondary"
+          className={props.graphType + 'PeriodToggle'}
+          onClick={() => {
+            props.assetType === 'stock' ? setPeriod('1d') : setPeriod('1')
+          }}
+        >
+          1D
+        </Button>
+        <Button
+          variant="secondary"
+          className={props.graphType + 'PeriodToggle'}
+          onClick={() => {
+            props.assetType === 'stock' ? setPeriod('5d') : setPeriod('5')
+          }}
+        >
+          5D
+        </Button>
+        <Button
+          variant="secondary"
+          className={props.graphType + 'PeriodToggle'}
+          onClick={() => {
+            props.assetType === 'stock' ? setPeriod('1mo') : setPeriod('30')
+          }}
+        >
+          1M
+        </Button>
+        <Button
+          variant="secondary"
+          className={props.graphType + 'PeriodToggle'}
+          onClick={() => {
+            props.assetType === 'stock' ? setPeriod('3mo') : setPeriod('90')
+          }}
+        >
+          3M
+        </Button>
+        <Button
+          variant="secondary"
+          className={props.graphType + 'PeriodToggle'}
+          onClick={() => {
+            props.assetType === 'stock' ? setPeriod('1y') : setPeriod('365')
+          }}
+        >
+          1Y
+        </Button>
+      </ButtonGroup>
+    )
+  }
+
   return (
     <>
-      {loadedCount < 5
+      { loadedCount < 5
         ? (
         <Container fluid>
           <Spinner animation="border" />
@@ -515,7 +351,7 @@ function CryptoGraph (props) {
                 }
               >
                 <HorizontalGridLines />
-                {/* <VerticalGridLines /> */}
+                {/* <VerticalGridLines/> */}
 
                 <LineSeries
                   animation={true}
@@ -535,13 +371,14 @@ function CryptoGraph (props) {
                 />
 
                 <YAxis />
-                <XAxis hideTicks/>
+                <XAxis hideTicks />
 
                 <Crosshair
                   values={crosshairValues}
-                  itemsFormat={props.graphType === 'price'
-                    ? itemsFormatPrice
-                    : itemsFormatVol
+                  itemsFormat={
+                    props.graphType === 'price'
+                      ? itemsFormatPrice
+                      : itemsFormatVol
                   }
                 />
               </FlexibleXYPlot>
@@ -549,45 +386,7 @@ function CryptoGraph (props) {
           </Row>
           <Row>
             <Col>
-              <ButtonGroup size="sm">
-                <Button
-                  variant="secondary"
-                  className={props.graphType + 'PeriodToggle'}
-                  onClick={() => {
-                    setPeriod('1')
-                  }}
-                >
-                  1D
-                </Button>
-                <Button
-                  variant="secondary"
-                  className={props.graphType + 'PeriodToggle'}
-                  onClick={() => setPeriod('5')}
-                >
-                  5D
-                </Button>
-                <Button
-                  variant="secondary"
-                  className={props.graphType + 'PeriodToggle'}
-                  onClick={() => setPeriod('30')}
-                >
-                  1M
-                </Button>
-                <Button
-                  variant="secondary"
-                  className={props.graphType + 'PeriodToggle'}
-                  onClick={() => setPeriod('90')}
-                >
-                  3M
-                </Button>
-                <Button
-                  variant="secondary"
-                  className={props.graphType + 'PeriodToggle'}
-                  onClick={() => setPeriod('365')}
-                >
-                  1Y
-                </Button>
-              </ButtonGroup>
+              {renderButtons()}
             </Col>
             {props.graphType === 'price'
               ? (
@@ -988,8 +787,7 @@ function FearGreed () {
 }
 
 export {
-  StockGraph,
-  CryptoGraph,
+  PriceVolumeGraph,
   SentimentGraph,
   TopTokenHolders,
   FearGreed

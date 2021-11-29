@@ -6,8 +6,7 @@ import TweetSummary from './TweetSummary'
 import { Container, Col, Row, Spinner } from 'react-bootstrap'
 import {
   SentimentGraph,
-  StockGraph,
-  CryptoGraph,
+  PriceVolumeGraph,
   TopTokenHolders
 } from './Graph'
 import { StockStatistics, CoinStatistics, TokenStatistics } from './Statistics'
@@ -119,9 +118,10 @@ function Results (props) {
             <Col xs={12} sm={12} md={12} lg={6}>
               {currency
                 ? (
-                <StockGraph
+                <PriceVolumeGraph
                   symbol={symbol}
                   currency={currency}
+                  assetType="stock"
                   graphType="price"
                   color="#0D6EFD"
                 />
@@ -134,7 +134,7 @@ function Results (props) {
               <br />
               {currency
                 ? (
-                <StockGraph symbol={symbol} graphType="volume" color="orange" />
+                <PriceVolumeGraph symbol={symbol} assetType="stock" graphType="volume" color="orange" />
                   )
                 : (
                 <Container fluid>
@@ -195,9 +195,9 @@ function Results (props) {
               )}
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
-              <CryptoGraph symbol={symbol} graphType="price" color="#0D6EFD" />
+              <PriceVolumeGraph symbol={symbol} currency="usd" assetType="crypto" graphType="price" color="#0D6EFD" />
               <br />
-              <CryptoGraph symbol={symbol} graphType="volume" color="orange" />
+              <PriceVolumeGraph symbol={symbol} assetType="crypto" graphType="volume" color="orange" />
               <br />
               {addr && (
                 <>
