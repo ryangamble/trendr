@@ -22,8 +22,8 @@
         "react/prop-types": "off",
         "no-loss-of-precision": "off",
         "react/jsx-key": "off",
-        "semi": 0,
-        "quotes": 0
+        "semi": "off",
+        "quotes": "off"
     },
     "settings": {
         "react": {
