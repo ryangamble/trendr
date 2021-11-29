@@ -1,12 +1,6 @@
 from flask import Blueprint, request, current_app
 from flask_security import current_user, auth_required
-from trendr.controllers.user_controller import (
-    get_followed_assets,
-    follow_asset,
-    unfollow_asset,
-    get_settings,
-    set_settings,
-)
+from trendr.controllers import user_controller
 from trendr.routes.helpers.json_response import json_response
 
 users = Blueprint("users", __name__, url_prefix="/users")
@@ -53,7 +47,7 @@ def follow_asset_curr():
         asset = content["id"]
 
     # TODO: Get current user workflow working (requires frontend changes)
-    if follow_asset(current_user, asset):
+    if user_controller.follow_asset(current_user, asset):
         return json_response(status=200, payload={"success": True})
     else:
         return json_response(status=400, payload={"success": False})
@@ -70,7 +64,7 @@ def unfollow_asset_curr():
     else:
         asset = content["id"]
 
-    if unfollow_asset(current_user, asset):
+    if user_controller.unfollow_asset(current_user, asset):
         return json_response(status=200, payload={"success": True})
     else:
         return json_response(status=400, payload={"success": False})
@@ -80,7 +74,7 @@ def unfollow_asset_curr():
 @auth_required("session")
 def get_followed_assets_curr():
     current_app.logger.info("Getting assets follwed for " + str(current_user.id))
-    return json_response(payload={"assets": get_followed_assets(user=current_user)})
+    return json_response(payload={"assets": user_controller.get_followed_assets(user=current_user)})
 
 
 @users.route("/assets-followed/<username>", methods=["GET"])
@@ -91,13 +85,13 @@ def get_assets_followed_by_user(username):
     :param username: The username of the user to check followed assets on
     :return: JSON Response containing a list of asset identifiers
     """
-    return json_response(payload={"assets": get_followed_assets(user=username)})
+    return json_response(payload={"assets": user_controller.get_followed_assets(user=username)})
 
 
 @users.route("/settings", methods=["GET"])
 @auth_required("session")
 def get_settings():
-    return json_response(get_settings(current_user))
+    return json_response(user_controller.get_settings(current_user))
 
 
 @users.route("/settings", methods=["PUT"])
@@ -105,5 +99,26 @@ def get_settings():
 def set_settings():
     content = request.get_json()
 
-    set_settings(current_user, content)
+    user_controller.set_settings(current_user, content)
     return json_response({"success": "true"})
+
+
+@users.route("/result-history", methods=["GET"])
+@auth_required("session")
+def get_result_history():
+    return json_response(current_user.result_histories)
+
+
+@users.route("/result-history", methods=["POST"])
+@auth_required("session")
+def add_result_history():
+    content = request.get_json()
+    if "symbol" not in content:
+        return json_response({"error": "Data field 'symbol' is required"}, status=400)
+    if "type" not in content:
+        return json_response({"error": "Data field 'type' is required"}, status=400)
+
+    if user_controller.add_result_history(current_user, content):
+        return json_response({"success": "true"})
+    else:
+        return json_response({"success": False}, status=400)

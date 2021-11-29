@@ -5,6 +5,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from trendr.extensions import db, security
 from trendr.models.asset_model import Asset
 from trendr.models.user_model import User
+from trendr.models.result_history_model import ResultHistory, SymbolTypeEnum
 
 
 def find_user(email):
@@ -127,3 +128,28 @@ def set_settings(user: User, settings: dict):
             setattr(user, key, val)
 
     db.session.commit()
+
+
+def add_result_history(user: User, result_history: dict):
+    """
+    Adds result history object to the user
+
+    :param user: user to add result history to
+    :param result_history: dictionary containing result history fields
+    """
+    if result_history["type"].lower() == "crypto":
+        symbol_type = SymbolTypeEnum.CRYPTO
+    else:
+        symbol_type = SymbolTypeEnum.STOCK
+    print(f"RESULT_HISTORY: {result_history['type']}")
+    print(f"RESULT_HISTORY: {result_history['symbol']}")
+    new_result_history = ResultHistory(
+        symbol=result_history["symbol"],
+        type=symbol_type,
+        user_id=user.id,
+        user=user
+    )
+    user.result_histories.append(new_result_history)
+    db.session.add(new_result_history)
+    db.session.commit()
+    return True
