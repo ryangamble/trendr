@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 import praw
 import pmaw
 from enum import Enum
@@ -7,7 +8,8 @@ from trendr.config import (
     REDDIT_CLIENT_SECRET,
     REDDIT_USER_AGENT,
 )
-
+# import psaw
+from psaw import PushshiftAPI
 
 class RedditItem(Enum):
     """
@@ -193,6 +195,71 @@ def gather_comments_by_id(**kwargs) -> list:
 
     kwargs["item"] = RedditItem.COMMENT
     return gather_items_by_id(**kwargs)
+
+def convert_time(unix_time) -> str:
+    """
+    Returns an RFC 1123 time string from a unix timestamp
+    :param unix_time: time unix_time format
+    :return: time as a datetime object
+    """
+    # return datetime.utcfromtimestamp(unix_time).strftime("%a, %d %b %Y %H:%M:%S GMT")
+    return datetime.utcfromtimestamp(unix_time)
+
+def reddit_count_mentioning_asset(asset_identifier: str):
+    """
+    Queries Reddit for the count of posts and comments mentioning the asset.
+    :param asset_identifier: The name of the asset (AAPL, BTC, Bitcoin, etc.)
+    :return: a Python dictionary with the count data(startingHour: count)
+     for each hour. The number of hours depends on the frequncy of mentions,
+     for a max of 2000 posts(can be changed by changing the POST_COUNT variable)
+     but it's left at 1,000 to not exceed api limits and for speed.
+    """
+    POSTS_COUNT = 1000
+    psaw_api = PushshiftAPI()
+    gen_subs = psaw_api.search_submissions(q=asset_identifier, limit=POSTS_COUNT)
+    gen_comments = psaw_api.search_comments(q=asset_identifier, limit=POSTS_COUNT)
+
+    results_comments = list(gen_comments)
+    results_subs = list(gen_subs)
+
+    timeDict = {}
+    for i in results_comments:
+        if type(i[len(i) - 1]) == float:
+            time = convert_time(i[len(i) - 1])
+            time2 = datetime(time.year, time.month, time.day, time.hour, 0, 0)
+            if time2 not in timeDict:
+                timeDict[time2] = 1
+            else:
+                timeDict[time2] += 1
+        else:
+            time = convert_time(i[len(i) - 1]['created'])
+            time2 = datetime(time.year, time.month, time.day, time.hour, 0, 0)
+
+            if time2 not in timeDict:
+                timeDict[time2] = 1
+            else:
+                timeDict[time2] += 1
+
+    for i in results_subs:
+        if type(i[len(i) - 1]) == float:
+            time = convert_time(i[len(i) - 1])
+            time2 = datetime(time.year, time.month, time.day, time.hour, 0, 0)
+            if time2 not in timeDict:
+                timeDict[time2] = 1
+            else:
+                timeDict[time2] += 1
+        else:
+            time = convert_time(i[len(i) - 1]['created'])
+            time2 = datetime(time.year, time.month, time.day, time.hour, 0, 0)
+            if time2 not in timeDict:
+                timeDict[time2] = 1
+            else:
+                timeDict[time2] += 1
+    newDict = {}
+    for key, value in timeDict.items():
+        string_date_time = key.strftime("%m/%d/%Y:%H")
+        newDict[string_date_time] = value
+    return newDict
 
 
 if __name__ == "__main__":
