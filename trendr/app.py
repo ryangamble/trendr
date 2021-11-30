@@ -11,6 +11,9 @@ from trendr.models.association_tables import (
     search_tweet_association,
     search_reddit_submission_association,
     search_reddit_comment_association,
+    sentiment_data_point_tweet_association,
+    sentiment_data_point_reddit_submission_association,
+    sentiment_data_point_reddit_comment_association,
 )
 from trendr.models.reddit_model import (
     RedditSubmissionType,
@@ -19,6 +22,7 @@ from trendr.models.reddit_model import (
 )
 from trendr.models.tweet_model import Tweet
 from trendr.models.search_model import Search
+from trendr.models.sentiment_model import SentimentDataPoint
 from trendr.models.user_model import User, Role
 
 
