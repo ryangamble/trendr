@@ -143,7 +143,7 @@ def get_result_history(user: User) -> [dict]:
         history_dict = {
             "ran_at": result_history.ran_at.strftime("%m/%d/%Y, %H:%M:%S"),
             "symbol": result_history.symbol,
-            "type": result_history.type
+            "type": result_history.type,
         }
         history_dicts.append(history_dict)
     return history_dicts
@@ -160,7 +160,7 @@ def add_result_history(user: User, result_history: dict):
         symbol=result_history["symbol"],
         type=result_history["type"],
         user_id=user.id,
-        user=user
+        user=user,
     )
     user.result_histories.append(new_result_history)
     db.session.add(new_result_history)

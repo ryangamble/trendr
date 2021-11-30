@@ -74,7 +74,9 @@ def unfollow_asset_curr():
 @auth_required("session")
 def get_followed_assets_curr():
     current_app.logger.info("Getting assets follwed for " + str(current_user.id))
-    return json_response(payload={"assets": user_controller.get_followed_assets(user=current_user)})
+    return json_response(
+        payload={"assets": user_controller.get_followed_assets(user=current_user)}
+    )
 
 
 @users.route("/assets-followed/<username>", methods=["GET"])
@@ -85,7 +87,9 @@ def get_assets_followed_by_user(username):
     :param username: The username of the user to check followed assets on
     :return: JSON Response containing a list of asset identifiers
     """
-    return json_response(payload={"assets": user_controller.get_followed_assets(user=username)})
+    return json_response(
+        payload={"assets": user_controller.get_followed_assets(user=username)}
+    )
 
 
 @users.route("/settings", methods=["GET"])
