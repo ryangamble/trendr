@@ -356,7 +356,7 @@ def twitter_mentions_count():
         current_app.logger.error("No symbol given")
         return json_response({"error": "Parameter 'symbol' is required"}, status=400)
 
-    res = twitter_connector.tweet_count_mentioning_asset(asset_identifier="bitcoin")
+    res = twitter_connector.tweet_count_mentioning_asset(asset_identifier=symbol)
     return json_response(res, status=200)
 
 @assets.route("/reddit_sentiment", methods=["GET"])

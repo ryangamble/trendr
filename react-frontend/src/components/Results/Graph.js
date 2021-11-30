@@ -359,7 +359,15 @@ function PriceVolumeGraph (props) {
                   onNearestX={_onNearestX}
                   strokeWidth={2}
                   opacity={1}
-                  color={props.color}
+                  color={props.graphType === 'price'
+                    ? (graphData[period][graphData[period].length - 1].y -
+                    graphData[period][0].y > 0
+                        ? ('#14ad14'
+                          )
+                        : (
+                            '#dc4b4b')
+                      )
+                    : 'orange'}
                 />
                 <Borders
                   style={{
@@ -392,8 +400,7 @@ function PriceVolumeGraph (props) {
               ? (
               <Col>
                 {graphData[period][graphData[period].length - 1].y -
-                  graphData[period][0].y >
-                0
+                  graphData[period][0].y > 0
                   ? (
                   <div className="priceUp">
                     Up{' '}
@@ -786,9 +793,143 @@ function FearGreed () {
   )
 }
 
+function MentionsGraph (props) {
+  const currentTheme = useSelector((state) => state.theme.currentTheme)
+
+  const [graphData, setgraphData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [crosshairValues, setCrosshairValues] = useState([])
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:5000/assets/twitter_mentions_count', {
+        method: 'GET',
+        params: {
+          symbol: props.symbol
+        }
+      })
+      .then((res) => {
+        return JSON.parse(JSON.stringify(res.data))
+      })
+      .then((data) => {
+        const points = []
+        for (const key in data) {
+          points.push({
+            x0: isoToUTC(data[key].start),
+            x: isoToUTC(data[key].end),
+            y: data[key].tweet_count
+          })
+        }
+        console.log(points)
+        return points
+      })
+      .then((points) => {
+        setgraphData(points)
+      })
+      .then(() => {
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }, [])
+
+  const _onMouseLeave = () => {
+    setCrosshairValues([])
+  }
+
+  const _onNearestX = (value) => {
+    const x = value.x.toString()
+    value.x = x
+    setCrosshairValues([value])
+  }
+
+  const formatMentions = (data) => {
+    return [{ title: 'mentions', value: data[0].y }]
+  }
+
+  // const itemsFormatVol = (data) => {
+  //   return [{ title: 'volume', value: data[0].y.toLocaleString('en-US') }]
+  // }
+
+  const isoToUTC = (iso) => {
+    let date = new Date(iso).toString()
+    date = date.replace(' ', ', ')
+    return date.substring(0, date.indexOf('-'))
+  }
+
+  // const formatPrice = (num) => {
+  //   if (num < 0.1) {
+  //     return num.toFixed(7)
+  //   }
+  //   const options = {
+  //     style: 'currency',
+  //     currency: props.currency
+  //   }
+  //   return num.toLocaleString('en-US', options)
+  // }
+
+  return (
+    <>
+      { loading
+        ? (
+        <Container fluid>
+          <Spinner animation="border" />
+        </Container>
+          )
+        : (
+        <Container className="graphLayout">
+          <Row>
+            <div className="chartTitle">
+              hlleo
+            </div>
+          </Row>
+          <Row>
+            <div className="chartContainer">
+              <FlexibleXYPlot
+                onMouseLeave={_onMouseLeave}
+                xType="ordinal"
+              >
+                <HorizontalGridLines />
+                {/* <VerticalGridLines/> */}
+
+                <LineSeries
+                  animation={true}
+                  data={graphData}
+                  onNearestX={_onNearestX}
+                  strokeWidth={2}
+                  opacity={1}
+                  color="#0D6EFD"
+                />
+                <Borders
+                  style={{
+                    bottom: { fill: currentTheme.fill },
+                    left: { fill: currentTheme.fill },
+                    right: { fill: currentTheme.fill },
+                    top: { fill: currentTheme.fill }
+                  }}
+                />
+
+                <YAxis />
+                <XAxis hideTicks />
+
+                <Crosshair
+                  values={crosshairValues}
+                  itemsFormat={formatMentions}
+                />
+              </FlexibleXYPlot>
+            </div>
+          </Row>
+        </Container>
+          )}
+    </>
+  )
+}
+
 export {
   PriceVolumeGraph,
   SentimentGraph,
   TopTokenHolders,
-  FearGreed
+  FearGreed,
+  MentionsGraph
 }

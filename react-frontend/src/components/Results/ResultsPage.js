@@ -7,7 +7,8 @@ import { Container, Col, Row, Spinner } from 'react-bootstrap'
 import {
   SentimentGraph,
   PriceVolumeGraph,
-  TopTokenHolders
+  TopTokenHolders,
+  MentionsGraph
 } from './Graph'
 import { StockStatistics, CoinStatistics, TokenStatistics } from './Statistics'
 import FollowBtn from '../FollowButton/FollowBtn'
@@ -142,6 +143,8 @@ function Results (props) {
                 </Container>
                   )}
               <br />
+              <MentionsGraph symbol={symbol} />
+              <br />
             </Col>
           </Row>
           <Link to="../../home" style={{ color: currentTheme.linkColor }}>
@@ -195,9 +198,11 @@ function Results (props) {
               )}
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
-              <PriceVolumeGraph symbol={symbol} currency="usd" assetType="crypto" graphType="price" color="#0D6EFD" />
+              <PriceVolumeGraph symbol={symbol} currency="usd" assetType="crypto" graphType="price" color="#228B22" />
               <br />
               <PriceVolumeGraph symbol={symbol} assetType="crypto" graphType="volume" color="orange" />
+              <br />
+              <MentionsGraph symbol={symbol} />
               <br />
               {addr && (
                 <>
