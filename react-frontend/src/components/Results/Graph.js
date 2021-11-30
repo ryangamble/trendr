@@ -37,7 +37,7 @@ const FlexRadialChart = makeVisFlexible(RadialChart)
 function PriceVolumeGraph (props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
 
-  const [graphData, setgraphData] = useState([])
+  const [graphData, setGraphData] = useState([])
 
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(0)
@@ -123,22 +123,22 @@ function PriceVolumeGraph (props) {
         const max = 0
         switch (timePeriod) {
           case '1d':
-            setgraphData((prev) => ({ ...prev, '1d': pd }))
+            setGraphData((prev) => ({ ...prev, '1d': pd }))
             break
           case '5d':
-            setgraphData((prev) => ({ ...prev, '5d': pd }))
+            setGraphData((prev) => ({ ...prev, '5d': pd }))
             break
           case '1mo':
-            setgraphData((prev) => ({ ...prev, '1mo': pd }))
+            setGraphData((prev) => ({ ...prev, '1mo': pd }))
             break
           case '3mo':
-            setgraphData((prev) => ({ ...prev, '3mo': pd }))
+            setGraphData((prev) => ({ ...prev, '3mo': pd }))
             break
           case '1y':
-            setgraphData((prev) => ({ ...prev, '1y': pd }))
+            setGraphData((prev) => ({ ...prev, '1y': pd }))
             break
           default:
-            setgraphData((prev) => ({ ...prev, '1d': pd }))
+            setGraphData((prev) => ({ ...prev, '1d': pd }))
         }
         return [min, max]
       })
@@ -186,22 +186,22 @@ function PriceVolumeGraph (props) {
         const max = 0
         switch (timePeriod) {
           case '1':
-            setgraphData((prev) => ({ ...prev, 1: pd }))
+            setGraphData((prev) => ({ ...prev, 1: pd }))
             break
           case '5':
-            setgraphData((prev) => ({ ...prev, 5: pd }))
+            setGraphData((prev) => ({ ...prev, 5: pd }))
             break
           case '30':
-            setgraphData((prev) => ({ ...prev, 30: pd }))
+            setGraphData((prev) => ({ ...prev, 30: pd }))
             break
           case '90':
-            setgraphData((prev) => ({ ...prev, 90: pd }))
+            setGraphData((prev) => ({ ...prev, 90: pd }))
             break
           case '365':
-            setgraphData((prev) => ({ ...prev, 365: pd }))
+            setGraphData((prev) => ({ ...prev, 365: pd }))
             break
           default:
-            setgraphData((prev) => ({ ...prev, 1: pd }))
+            setGraphData((prev) => ({ ...prev, 1: pd }))
         }
         return [min, max]
       })
@@ -585,7 +585,7 @@ function SentimentGraph (props) {
 function TopTokenHolders (props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
 
-  const [graphData, setgraphData] = useState([])
+  const [graphData, setGraphData] = useState([])
   const [value, setValue] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -621,7 +621,7 @@ function TopTokenHolders (props) {
         return pd
       })
       .then((pd) => {
-        setgraphData(pd)
+        setGraphData(pd)
       })
       .then(() => {
         setLoading(false)
@@ -694,7 +694,7 @@ function TopTokenHolders (props) {
 }
 
 function FearGreed () {
-  const [graphData, setgraphData] = useState([])
+  const [graphData, setGraphData] = useState([])
   const [crosshairValues, setCrosshairValues] = useState([])
   const [loading, setLoading] = useState(true)
   const currentTheme = useSelector((state) => state.theme.currentTheme)
@@ -723,7 +723,7 @@ function FearGreed () {
           }
         })
 
-        setgraphData(arr)
+        setGraphData(arr)
         setLoading(false)
       })
       .catch((error) => {
@@ -796,7 +796,7 @@ function FearGreed () {
 function MentionsGraph (props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
 
-  const [graphData, setgraphData] = useState([])
+  const [graphData, setGraphData] = useState([])
   const [loading, setLoading] = useState(true)
   const [crosshairValues, setCrosshairValues] = useState([])
 
@@ -815,7 +815,6 @@ function MentionsGraph (props) {
         const points = []
         for (const key in data) {
           points.push({
-            x0: isoToUTC(data[key].start),
             x: isoToUTC(data[key].end),
             y: data[key].tweet_count
           })
@@ -824,7 +823,7 @@ function MentionsGraph (props) {
         return points
       })
       .then((points) => {
-        setgraphData(points)
+        setGraphData(points)
       })
       .then(() => {
         setLoading(false)
