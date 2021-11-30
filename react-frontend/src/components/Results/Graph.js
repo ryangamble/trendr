@@ -796,7 +796,10 @@ function FearGreed () {
 function MentionsGraph (props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
 
-  const [graphData, setGraphData] = useState([])
+  const [twitterData, setTwitterData] = useState([])
+  const [redditData, setRedditData] = useState([])
+  const [graphData, setGraphData] = useState({})
+
   const [loading, setLoading] = useState(true)
   const [crosshairValues, setCrosshairValues] = useState([])
 
@@ -815,7 +818,7 @@ function MentionsGraph (props) {
         const points = []
         for (const key in data) {
           points.push({
-            x: isoToUTC(data[key].end),
+            x: toUTC(data[key].end),
             y: data[key].tweet_count
           })
         }
@@ -823,15 +826,62 @@ function MentionsGraph (props) {
         return points
       })
       .then((points) => {
-        setGraphData(points)
-      })
-      .then(() => {
-        setLoading(false)
+        setTwitterData(points)
       })
       .catch((err) => {
         console.log(err)
       })
   }, [])
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:5000/assets/reddit_mentions_count', {
+        method: 'GET',
+        params: {
+          symbol: props.symbol
+        }
+      })
+      .then((res) => {
+        return JSON.parse(JSON.stringify(res.data))
+      })
+      .then((data) => {
+        const points = []
+        for (const key in data) {
+          points.push({
+            x: toUTC(key),
+            y: data[key]
+          })
+        }
+        console.log(points)
+        return points
+      })
+      .then((points) => {
+        setRedditData(points)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }, [])
+
+  useEffect(() => {
+    if (redditData.length > 0) {
+      setGraphData({
+        data: redditData,
+        type: 'reddit',
+        color: 'red'
+      })
+      setLoading(false)
+      return
+    }
+    if (twitterData.length > 0) {
+      setGraphData({
+        data: twitterData,
+        type: 'twitter',
+        color: '#0d6efd'
+      })
+      setLoading(false)
+    }
+  }, [twitterData, redditData])
 
   const _onMouseLeave = () => {
     setCrosshairValues([])
@@ -847,8 +897,8 @@ function MentionsGraph (props) {
     return [{ title: 'mentions', value: data[0].y }]
   }
 
-  const isoToUTC = (iso) => {
-    let date = new Date(iso).toString()
+  const toUTC = (time) => {
+    let date = new Date(time).toString()
     date = date.replace(' ', ', ')
     return date.substring(0, date.indexOf('-'))
   }
@@ -870,56 +920,96 @@ function MentionsGraph (props) {
           </Row>
           <Row>
             <div className="chartContainer">
-              <FlexibleXYPlot
-                onMouseLeave={_onMouseLeave}
-                xType="ordinal"
-              >
-                <HorizontalGridLines />
-                {/* <VerticalGridLines/> */}
+              {(graphData.type === 'twitter' && twitterData.length === 0) ||
+              (graphData.type === 'reddit' && redditData.length === 0)
+                ? (
+                    <Spinner animation="border" />
+                  )
+                : (
+                  <FlexibleXYPlot
+                    onMouseLeave={_onMouseLeave}
+                    xType="ordinal"
+                  >
+                    <HorizontalGridLines />
+                    {/* <VerticalGridLines/> */}
 
-                <LineSeries
-                  animation={true}
-                  data={graphData}
-                  onNearestX={_onNearestX}
-                  strokeWidth={2}
-                  opacity={1}
-                  color="#0D6EFD"
-                />
-                <Borders
-                  style={{
-                    bottom: { fill: currentTheme.fill },
-                    left: { fill: currentTheme.fill },
-                    right: { fill: currentTheme.fill },
-                    top: { fill: currentTheme.fill }
-                  }}
-                />
+                    <LineSeries
+                      animation={true}
+                      data={graphData.data}
+                      onNearestX={_onNearestX}
+                      strokeWidth={2}
+                      opacity={1}
+                      color={graphData.color}
+                    />
 
-                <YAxis />
-                <XAxis hideTicks />
+                    <Borders
+                      style={{
+                        bottom: { fill: currentTheme.fill },
+                        left: { fill: currentTheme.fill },
+                        right: { fill: currentTheme.fill },
+                        top: { fill: currentTheme.fill }
+                      }}
+                    />
 
-                <Crosshair
-                  values={crosshairValues}
-                  itemsFormat={formatMentions}
-                />
+                    <YAxis />
+                    <XAxis hideTicks />
 
-                <DiscreteColorLegend
-                  orientation="horizontal"
-                  style={{ position: 'absolute', right: '0%', top: '0%', backgroundColor: 'rgba(108,117,125, 0.7)', borderRadius: '5px' }}
-                  items={[
-                    {
-                      title: 'Twitter',
-                      color: '#0D6EFD',
-                      strokeWidth: 5
-                    },
-                    {
-                      title: 'Reddit',
-                      color: 'red',
-                      strokeWidth: 5
-                    }
-                  ]}
-                />
-              </FlexibleXYPlot>
+                    <Crosshair
+                      values={crosshairValues}
+                      itemsFormat={formatMentions}
+                    />
+
+                    <DiscreteColorLegend
+                      orientation="horizontal"
+                      style={{ position: 'absolute', right: '0%', top: '0%', backgroundColor: 'rgba(108,117,125, 0.7)', borderRadius: '5px' }}
+                      items={[
+                        {
+                          title: 'Twitter',
+                          color: '#0D6EFD',
+                          strokeWidth: 5
+                        },
+                        {
+                          title: 'Reddit',
+                          color: 'red',
+                          strokeWidth: 5
+                        }
+                      ]}
+                    />
+                  </FlexibleXYPlot>
+                  )}
             </div>
+          </Row>
+          <Row>
+            <Col>
+              <ButtonGroup size="sm">
+                <Button
+                  variant="secondary"
+                  className="redditToggle"
+                  onClick={() => {
+                    setGraphData({
+                      data: redditData,
+                      type: 'reddit',
+                      color: 'red'
+                    })
+                  }}
+                >
+                  Reddit
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="twitterToggle"
+                  onClick={() => {
+                    setGraphData({
+                      data: twitterData,
+                      type: 'twitter',
+                      color: '#0d6efd'
+                    })
+                  }}
+                >
+                  Twitter
+                </Button>
+              </ButtonGroup>
+            </Col>
           </Row>
         </Container>
           )}

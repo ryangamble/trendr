@@ -257,7 +257,7 @@ def reddit_count_mentioning_asset(asset_identifier: str):
                 timeDict[time2] += 1
     newDict = {}
     for key, value in timeDict.items():
-        string_date_time = key.strftime("%m/%d/%Y:%H")
+        string_date_time = str(key)
         newDict[string_date_time] = value
     return newDict
 

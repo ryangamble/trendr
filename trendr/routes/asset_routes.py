@@ -315,7 +315,7 @@ def stock_history():
     ).to_json()
 
 @assets.route("/reddit_mentions_count", methods=["GET"])
-def twitter_mentions_count():
+def reddit_mentions_count():
     """
     Gets a dictionary with the count data(starting hour: count(ex. "2021/1/1:17" : 123)
     for each hour. The number of hours is based on the count, with a max of 2000 posts.
