@@ -1,15 +1,9 @@
-import enum
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from sqlalchemy.types import Integer, DateTime, String, Enum
+from sqlalchemy.types import Integer, DateTime, String
 
 from trendr.extensions import db
-
-
-class SymbolTypeEnum(enum.Enum):
-    CRYPTO = 0
-    STOCK = 1
 
 
 class ResultHistory(db.Model):
@@ -19,7 +13,7 @@ class ResultHistory(db.Model):
 
     ran_at = db.Column(DateTime, nullable=False, default=func.now())
     symbol = db.Column(String, nullable=False)
-    type = db.Column(Enum(SymbolTypeEnum), nullable=False)
+    type = db.Column(String, nullable=False)
 
     # There is a many-one relationship between search and user
     user_id = db.Column(Integer, ForeignKey("user.id"))

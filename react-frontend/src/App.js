@@ -16,6 +16,7 @@ import Settings from './components/Settings/Settings'
 import { Provider } from 'react-redux'
 import { store } from './components/Theme/store'
 import MyAccount from './components/MyAccount/MyAccount'
+import MyHistory from './components/MyAccount/MyHistory'
 import ConfirmationPage from './components/Register/ConfirmationPage'
 
 function App () {
@@ -33,6 +34,7 @@ function App () {
             <Route path="/confirm-email:confirmCode" component={ConfirmEmail} />
             <Route path="/confirmation" component={ConfirmationPage} />
             <Route path="/myaccount" component={MyAccount} />
+            <Route path="/history" component={MyHistory} />
             <Route path="/about" component={About} />
             <Route path="/settings" component={Settings} />
             <Route path="*" component={Home} />

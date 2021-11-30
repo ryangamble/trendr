@@ -5,7 +5,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from trendr.extensions import db, security
 from trendr.models.asset_model import Asset
 from trendr.models.user_model import User
-from trendr.models.result_history_model import ResultHistory, SymbolTypeEnum
+from trendr.models.result_history_model import ResultHistory
 
 
 def find_user(email):
@@ -130,6 +130,25 @@ def set_settings(user: User, settings: dict):
     db.session.commit()
 
 
+def get_result_history(user: User) -> [dict]:
+    """
+    Gets result history objects for a user
+
+    :param user: user to get result history for
+    :return: list of dictionaries containing result history fields
+    """
+    history_dicts = []
+    result_histories = user.result_histories
+    for result_history in result_histories:
+        history_dict = {
+            "ran_at": result_history.ran_at.strftime("%m/%d/%Y, %H:%M:%S"),
+            "symbol": result_history.symbol,
+            "type": result_history.type
+        }
+        history_dicts.append(history_dict)
+    return history_dicts
+
+
 def add_result_history(user: User, result_history: dict):
     """
     Adds result history object to the user
@@ -137,15 +156,9 @@ def add_result_history(user: User, result_history: dict):
     :param user: user to add result history to
     :param result_history: dictionary containing result history fields
     """
-    if result_history["type"].lower() == "crypto":
-        symbol_type = SymbolTypeEnum.CRYPTO
-    else:
-        symbol_type = SymbolTypeEnum.STOCK
-    print(f"RESULT_HISTORY: {result_history['type']}")
-    print(f"RESULT_HISTORY: {result_history['symbol']}")
     new_result_history = ResultHistory(
         symbol=result_history["symbol"],
-        type=symbol_type,
+        type=result_history["type"],
         user_id=user.id,
         user=user
     )

@@ -106,7 +106,7 @@ def set_settings():
 @users.route("/result-history", methods=["GET"])
 @auth_required("session")
 def get_result_history():
-    return json_response(current_user.result_histories)
+    return json_response(user_controller.get_result_history(current_user))
 
 
 @users.route("/result-history", methods=["POST"])
