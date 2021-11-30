@@ -33,7 +33,7 @@ import '../../../node_modules/react-vis/dist/style.css'
 const FlexRadialChart = makeVisFlexible(RadialChart)
 
 // Currently pass symbol as a prop, can be changed later
-// Used for both price and volume charts for stocks
+// Used for both price and volume charts for stocks and cryptos
 function PriceVolumeGraph (props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
 
@@ -848,26 +848,11 @@ function MentionsGraph (props) {
     return [{ title: 'mentions', value: data[0].y }]
   }
 
-  // const itemsFormatVol = (data) => {
-  //   return [{ title: 'volume', value: data[0].y.toLocaleString('en-US') }]
-  // }
-
   const isoToUTC = (iso) => {
     let date = new Date(iso).toString()
     date = date.replace(' ', ', ')
     return date.substring(0, date.indexOf('-'))
   }
-
-  // const formatPrice = (num) => {
-  //   if (num < 0.1) {
-  //     return num.toFixed(7)
-  //   }
-  //   const options = {
-  //     style: 'currency',
-  //     currency: props.currency
-  //   }
-  //   return num.toLocaleString('en-US', options)
-  // }
 
   return (
     <>
@@ -881,7 +866,7 @@ function MentionsGraph (props) {
         <Container className="graphLayout">
           <Row>
             <div className="chartTitle">
-              hlleo
+              <h2>Social Media Mentions</h2>
             </div>
           </Row>
           <Row>
@@ -916,6 +901,23 @@ function MentionsGraph (props) {
                 <Crosshair
                   values={crosshairValues}
                   itemsFormat={formatMentions}
+                />
+
+                <DiscreteColorLegend
+                  orientation="horizontal"
+                  style={{ position: 'absolute', right: '0%', top: '0%', backgroundColor: 'rgba(108,117,125, 0.7)', borderRadius: '5px' }}
+                  items={[
+                    {
+                      title: 'Twitter',
+                      color: '#0D6EFD',
+                      strokeWidth: 5
+                    },
+                    {
+                      title: 'Reddit',
+                      color: 'red',
+                      strokeWidth: 5
+                    }
+                  ]}
                 />
               </FlexibleXYPlot>
             </div>
