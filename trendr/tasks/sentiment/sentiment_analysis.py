@@ -56,9 +56,13 @@ def reddit_submission_analysis():
     submissions_to_analyze = RedditSubmission.query.filter_by(polarity=None).all()
     print(f"Reddit submissions to analyze: {submissions_to_analyze}")
     for submission in submissions_to_analyze:
-        polarity, subjectivity = pattern_analyzer(submission.text)
-        submission.polarity = polarity
-        submission.subjectivity = subjectivity
+        if submission.text:
+            polarity, subjectivity = pattern_analyzer(submission.text)
+            submission.polarity = polarity
+            submission.subjectivity = subjectivity
+        else:
+            submission.polarity = polarity
+            submission.subjectivity = subjectivity
         assign_score_reddit_submission(submission)
     db.session.commit()
 
@@ -71,9 +75,13 @@ def reddit_submission_analysis_by_ids(*ids: int):
     ).all()
     print(f"Reddit submissions to analyze: {submissions_to_analyze}")
     for submission in submissions_to_analyze:
-        polarity, subjectivity = pattern_analyzer(submission.text)
-        submission.polarity = polarity
-        submission.subjectivity = subjectivity
+        if submission.text:
+            polarity, subjectivity = pattern_analyzer(submission.text)
+            submission.polarity = polarity
+            submission.subjectivity = subjectivity
+        else:
+            submission.polarity = polarity
+            submission.subjectivity = subjectivity
         assign_score_reddit_submission(submission)
     db.session.commit()
     return ids
@@ -85,10 +93,15 @@ def reddit_comment_analysis():
     comments_to_analyze = RedditComment.query.filter_by(polarity=None).all()
     print(f"Reddit comments to analyze: {comments_to_analyze}")
     for comment in comments_to_analyze:
-        polarity, subjectivity = pattern_analyzer(comment.text)
-        comment.polarity = polarity
-        comment.subjectivity = subjectivity
+        if comment.text:
+            polarity, subjectivity = pattern_analyzer(comment.text)
+            comment.polarity = polarity
+            comment.subjectivity = subjectivity
+        else:
+            comment.polarity = polarity
+            comment.subjectivity = subjectivity
         assign_score_reddit_comment(comment)
+
     db.session.commit()
 
 
@@ -98,9 +111,13 @@ def reddit_comment_analysis_by_ids(*ids: int):
     comments_to_analyze = RedditComment.query.filter(RedditComment.id.in_(ids)).all()
     print(f"Reddit comments to analyze: {comments_to_analyze}")
     for comment in comments_to_analyze:
-        polarity, subjectivity = pattern_analyzer(comment.text)
-        comment.polarity = polarity
-        comment.subjectivity = subjectivity
+        if comment.text:
+            polarity, subjectivity = pattern_analyzer(comment.text)
+            comment.polarity = polarity
+            comment.subjectivity = subjectivity
+        else:
+            comment.polarity = polarity
+            comment.subjectivity = subjectivity
         assign_score_reddit_comment(comment)
     db.session.commit()
     return ids

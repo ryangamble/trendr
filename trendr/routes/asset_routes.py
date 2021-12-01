@@ -132,7 +132,7 @@ def perform_asset_search():
         db.session.commit()
 
     search = new_search(asset)
-    since = (search.ran_at - timedelta(days=20)).timestamp()
+    since = (search.ran_at - timedelta(days=5)).timestamp()
     perform_search.delay(
         asset_id=asset.id,
         search_types=[
