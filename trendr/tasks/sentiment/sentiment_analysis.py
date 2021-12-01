@@ -61,8 +61,8 @@ def reddit_submission_analysis():
             submission.polarity = polarity
             submission.subjectivity = subjectivity
         else:
-            submission.polarity = polarity
-            submission.subjectivity = subjectivity
+            submission.polarity = None
+            submission.subjectivity = None
         assign_score_reddit_submission(submission)
     db.session.commit()
 
@@ -80,8 +80,8 @@ def reddit_submission_analysis_by_ids(*ids: int):
             submission.polarity = polarity
             submission.subjectivity = subjectivity
         else:
-            submission.polarity = polarity
-            submission.subjectivity = subjectivity
+            submission.polarity = None
+            submission.subjectivity = None
         assign_score_reddit_submission(submission)
     db.session.commit()
     return ids
@@ -98,8 +98,8 @@ def reddit_comment_analysis():
             comment.polarity = polarity
             comment.subjectivity = subjectivity
         else:
-            comment.polarity = polarity
-            comment.subjectivity = subjectivity
+            comment.polarity = None
+            comment.subjectivity = None
         assign_score_reddit_comment(comment)
 
     db.session.commit()
@@ -116,8 +116,8 @@ def reddit_comment_analysis_by_ids(*ids: int):
             comment.polarity = polarity
             comment.subjectivity = subjectivity
         else:
-            comment.polarity = polarity
-            comment.subjectivity = subjectivity
+            comment.polarity = None
+            comment.subjectivity = None
         assign_score_reddit_comment(comment)
     db.session.commit()
     return ids

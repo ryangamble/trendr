@@ -145,11 +145,13 @@ def get_affecting_socials(
     ).all()
     reddit_submissions = RedditSubmission.query.filter(
         RedditSubmission.assets.any(id=asset_id),
+        RedditSubmission.polarity != None,
         RedditSubmission.posted_at <= max_time,
         RedditSubmission.posted_at >= min_time,
     ).all()
     reddit_comments = RedditComment.query.filter(
         RedditComment.assets.any(id=asset_id),
+        RedditComment.polarity != None,
         RedditComment.posted_at <= max_time,
         RedditComment.posted_at >= min_time,
     ).all()
