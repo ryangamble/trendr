@@ -1,9 +1,10 @@
+import typing as t
 from typing import Union
-from flask_security import hash_password
+from flask_security.utils import hash_password
 from sqlalchemy.orm.exc import NoResultFound
-
 from trendr.extensions import db, security
 from trendr.models.asset_model import Asset
+from trendr.models.association_tables import user_asset_association
 from trendr.models.user_model import User
 
 
