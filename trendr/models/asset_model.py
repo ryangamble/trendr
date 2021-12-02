@@ -11,8 +11,8 @@ class Asset(db.Model):
     id = db.Column(Integer, primary_key=True, autoincrement="auto")
     identifier = db.Column(String, nullable=False, unique=True)
     # query strings to search socials for
-    reddit_q = db.Column(String, nullable=False)
-    twitter_q = db.Column(String, nullable=False)
+    reddit_q = db.Column(String, nullable=True)
+    twitter_q = db.Column(String, nullable=True)
 
     # There is a one-many relationship between asset and search
     searches = relationship("Search", back_populates="asset")

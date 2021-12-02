@@ -96,13 +96,13 @@ def get_assets_followed_by_user(username):
 
 @users.route("/settings", methods=["GET"])
 @auth_required("session")
-def get_settings():
+def get_settings_route():
     return json_response(get_settings(current_user))
 
 
 @users.route("/settings", methods=["PUT"])
 @auth_required("session")
-def set_settings():
+def set_settings_route():
     content = request.get_json()
 
     set_settings(current_user, content)
