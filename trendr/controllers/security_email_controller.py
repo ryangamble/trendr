@@ -29,7 +29,7 @@ from werkzeug.datastructures import ImmutableMultiDict
 from wtforms import StringField, SubmitField
 from wtforms.validators import EqualTo
 from werkzeug.local import LocalProxy
-
+from trendr.controllers.user_controller import find_user
 from trendr.routes.helpers.json_response import json_response
 
 _security = LocalProxy(lambda: app.extensions["security"])  # type: ignore
@@ -61,6 +61,9 @@ class ChangeEmailForm(FlaskForm):
             self.email.errors.append(
                 "Your new email must be different than your previous email"
             )
+            return False
+        if find_user(self.new_email.data):
+            self.new_email.errors.append("Another user with this email already exists")
             return False
         return True
 
@@ -148,14 +151,14 @@ def confirm_change_email(token):
     """View function which handles a change email confirmation request.
     Based on confirm_email in Flask-Security."""
     expired, invalid, user, new_email = confirm_change_email_token_status(token)
-    print(expired, invalid, user, new_email)
 
     if not user or invalid:
         invalid = True
         m, c = get_message("INVALID_CONFIRMATION_TOKEN")
         if _security.redirect_behavior == "spa":
             return redirect(get_url(_security.confirm_error_view, qparams={c: m}))
-        do_flash(m, c)
+        m, c = ("Invalid code", "error")
+        return json_response({c: m})
 
     if expired:
         send_change_email_confirmation_instructions(user, new_email)
@@ -175,10 +178,12 @@ def confirm_change_email(token):
                 )
             )
 
-        do_flash(m, c)
+        m, c = ("Expired code, resending", "error")
+        return json_response({c: m})
 
     if invalid or expired:
-        return redirect(url_for("users.change_email"))
+        m, c = ("Invalid code", "error")
+        return json_response({c: m})
 
     if user != current_user:
         logout_user()
@@ -197,8 +202,7 @@ def confirm_change_email(token):
     else:
         m, c = ("Your change of email has already been confirmed.", "info")
 
-    do_flash(m, c)
-    return redirect(url_for("users.change_email"))
+    return json_response({c: m})
 
 
 @auth_required("session")

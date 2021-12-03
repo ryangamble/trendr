@@ -1,6 +1,9 @@
 from flask import Blueprint, request, current_app
 from flask_security import current_user, auth_required
-from trendr.controllers.security_email_controller import change_email, confirm_change_email
+from trendr.controllers.security_email_controller import (
+    change_email,
+    confirm_change_email,
+)
 from trendr.controllers.user_controller import (
     get_followed_assets,
     follow_asset,
@@ -109,15 +112,11 @@ def set_settings():
     set_settings(current_user, content)
     return json_response({"success": "true"})
 
+
 users.add_url_rule(
-    '/confirm-change-email/<token>',
-    endpoint=None,
-    view_func=confirm_change_email
+    "/confirm-change-email/<token>", endpoint=None, view_func=confirm_change_email
 )
 
 users.add_url_rule(
-    '/change-email',
-    endpoint=None,
-    view_func=change_email,
-    methods=['GET', 'POST']
+    "/change-email", endpoint=None, view_func=change_email, methods=["GET", "POST"]
 )
