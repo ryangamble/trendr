@@ -132,6 +132,9 @@ function MyAccount() {
       if (res.data && res.data.success) {
         alert(res.data.success)
       }
+      else {
+        alert("The new email has already been registered, please use another one.")
+      }
     })
     .catch(err=>console.log(err))
   };

@@ -11,17 +11,17 @@ function ConfirmChangeEmail () {
   const config = {
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
-    
-  };
 
-  console.log(token)
+  };
 
   axios
     .get('http://localhost:5000/users/confirm-change-email/' + token.substring(1), {}, config)
     .then((res) => {
         console.log(res)
-    //   alert("Your new email has been confirmed and changed")
         history.push('/')
+        if (res.data && res.data.success) {
+            alert(res.data.success)
+        }
     })
     .catch((error) => {
       console.log(error)
