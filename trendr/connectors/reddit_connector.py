@@ -154,7 +154,7 @@ def gather_submissions(**kwargs) -> list:
     :return: res
     :rtype: list[pmaw.PushshiftAPI.submission]
     """
-    if kwargs["keywords"] and not kwargs["after"]:
+    if "keywords" in kwargs and "after" not in kwargs:
         timestamp = get_latest_submission_timestamp(kwargs["keywords"][0])
         if timestamp:
             kwargs["after"] = timestamp
@@ -179,7 +179,7 @@ def gather_comments(**kwargs) -> list:
     :return: res
     :rtype: list[pmaw.PushshiftAPI.comment]
     """
-    if kwargs["keywords"] and not kwargs["after"]:
+    if "keywords" in kwargs and "after" not in kwargs:
         timestamp = get_latest_comment_timestamp(kwargs["keywords"][0])
         if timestamp:
             kwargs["after"] = timestamp
