@@ -31,6 +31,9 @@ from trendr.tasks.search import perform_search
 from trendr.routes.helpers.json_response import json_response
 from trendr.config import FINNHUB_KEY
 
+# from trendr.tasks.symbols import populate_database
+# populate_database.populate_database_with_symbols()
+
 assets = Blueprint("assets", __name__, url_prefix="/assets")
 
 
