@@ -42,9 +42,9 @@ def store_twitter_results(
                 existing.retweets = result.retweet_count
                 # TODO: determine if we should overwrite sentiment scores
                 existing.sentiment_score = None
-                existing.tweeter_num_followers = (result.user.followers_count,)
-                existing.tweeter_num_following = (result.user.friends_count,)
-                existing.tweeter_created_at = (result.user.created_at,)
+                existing.tweeter_num_followers = result.user.followers_count
+                existing.tweeter_num_following = result.user.friends_count
+                existing.tweeter_created_at = result.user.created_at
                 existing.tweeter_verified = result.user.verified
 
             if search:
