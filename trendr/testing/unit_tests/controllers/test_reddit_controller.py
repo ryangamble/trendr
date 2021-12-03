@@ -112,6 +112,7 @@ def test_store_reddit_comments(mocker, existing):
         "author": "author",
         "subreddit": "subreddit",
         "subreddit_id": 1,
+        "permalink": "/permalink",
     }
     mock_reddit_comment = MagicMock()
     mock_reddit_comment.id = 1
@@ -167,6 +168,7 @@ def test_store_reddit_comments(mocker, existing):
             text="body",
             posted_at=datetime.datetime.fromtimestamp(1),
             score=0.5,
+            embed_url="https://www.reddit.com/permalink",
         )
         reddit_submission_mock.query.filter_by.assert_called_once_with(reddit_id=1)
         store_author_mock.assert_called_once_with(username="author")
@@ -187,6 +189,7 @@ def test_store_reddit_submissions(mocker, existing):
         "author": "author",
         "subreddit": "subreddit",
         "subreddit_id": 1,
+        "url": "url",
     }
     mock_reddit_submission = MagicMock()
     mock_reddit_submission.id = 1
@@ -237,6 +240,7 @@ def test_store_reddit_submissions(mocker, existing):
             type=RedditSubmissionType.TEXT,
             posted_at=datetime.datetime.fromtimestamp(1),
             score=0.5,
+            embed_url="url",
         )
         store_author_mock.assert_called_once_with(username="author")
         store_subreddit_mock.assert_called_once_with(name="subreddit", reddit_id=1)
