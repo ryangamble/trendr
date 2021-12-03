@@ -102,7 +102,7 @@ def get_latest_comment_timestamp(asset_identifier: str) -> int or None:
 def gather_items(
     api: pmaw.PushshiftAPI,
     item: RedditItem,
-    keywords: List[str],
+    search_str: str,
     subreddits: List[str] = None,
     **kwargs,
 ) -> list:
@@ -112,7 +112,7 @@ def gather_items(
 
     :param api: api object to use when gathering
     :param item: item to collect (comment or submission)
-    :param keywords: strings to search for
+    :param search_str: string to use as q
     :param before: limit query to content posted before timestamp
     :param after: limit query to content posted after timestamp
     :param subreddits: strings of subreddit names to search,
@@ -123,8 +123,6 @@ def gather_items(
     :return: res
     :rtype: list[pmaw.PushshiftAPI.comment or pmaw.PushshiftAPI.submission]
     """
-
-    search_str = "|".join(keywords)
 
     kwargs["q"] = search_str
     if subreddits:
@@ -146,7 +144,7 @@ def gather_submissions(**kwargs) -> list:
     after and before which contain any keywords
 
     :param api: api object to use when gathering
-    :param keywords: strings to search for
+    :param search_str: string to use as q
     :param before: limit query to content posted before timestamp
     :param after: limit query to content posted after timestamp
     :param subreddits: strings of subreddit names to search,
@@ -171,7 +169,7 @@ def gather_comments(**kwargs) -> list:
     after and before which contain any keywords
 
     :param api: api object to use when gathering
-    :param keywords: strings to search for
+    :param search_str: string to use as q
     :param before: limit query to content posted before timestamp
     :param after: limit query to content posted after timestamp
     :param subreddits: strings of subreddit names to search,

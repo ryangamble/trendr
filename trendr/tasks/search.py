@@ -1,45 +1,59 @@
 from enum import Enum
-from datetime import timedelta, datetime
-from typing import List, Type, Union
-
+import datetime
+from functools import wraps
+from typing import List
 from celery.canvas import chord, chain
-from sqlalchemy.sql.base import Immutable
 from trendr.extensions import celery, db
 from trendr.models.search_model import Search, SearchType
-from trendr.models.tweet_model import Tweet
-from trendr.models.reddit_model import RedditSubmission, RedditComment
+from trendr.models.asset_model import Asset
 from trendr.tasks.social.twitter.gather import store_tweets_mentioning_asset
 from trendr.tasks.social.reddit.gather import store_submissions, store_comments
 from trendr.tasks.sentiment.sentiment_analysis import analyze_by_ids
-from trendr.analyzers.aggregators import aggregate_sentiment_simple_mean
+from trendr.analyzers.aggregators import create_datapoints as create_datapoints_ntask
 
 
 @celery.task
 def perform_search(
-    keyword: str,
+    asset_id: int,
     search_types: List[SearchType],
+    earliest_ts: int,
+    latest_ts: int = None,
     search_id: int = None,
-    time: int = None,
-    limit: int = None,
+    reddit_limit: int = None,
 ):
-    now = datetime.now()
-
+    asset = Asset.query.filter_by(id=asset_id).one()
     if search_id is None:
-        search = Search(search_string=keyword, ran_at=now)
+        now = datetime.datetime.now()
+        search = Search(ran_at=now, asset=asset)
         search_id = search.id
+    else:
+        search = Search.query.filter_by(id=search_id).one()
+        now = search.ran_at
+
+    earliest = datetime.datetime.fromtimestamp(earliest_ts)
+    latest = None
+    if latest_ts:
+        latest = datetime.datetime.fromtimestamp(latest_ts)
+    else:
+        latest = now
+
+    if earliest > now:
+        raise Exception("Can not perform search on data that doesn't exist")
+    if latest < earliest:
+        latest = now
 
     searched_types = set()
     chains = []
 
     reddit_args = {
-        "keywords": [keyword],
-        "after": time,
-        "limit": limit,
+        "search_str": asset.reddit_q,
+        "after": earliest,
+        "limit": reddit_limit,
         "search_id": search_id,
     }
-    if time is None:
+    if earliest is None:
         del reddit_args["after"]
-    if limit is None:
+    if reddit_limit is None:
         del reddit_args["limit"]
 
     # 1. retreive socials, store and then get sentiment
@@ -52,7 +66,7 @@ def perform_search(
         if search_type == SearchType.TWITTER:
             curr_chain = chain(
                 store_tweets_mentioning_asset.signature(
-                    kwargs={"asset_identifier": keyword, "search_id": search_id}
+                    kwargs={"asset_identifier": asset.twitter_q, "search_id": search_id}
                 ),
                 analyze_by_ids.signature(kwargs={"social_type": SearchType.TWITTER}),
             )
@@ -76,23 +90,14 @@ def perform_search(
     # wait for all chains to complete, then aggregate sentiment
     res_chord = chord(
         chains,
-        aggregate_sentiment_simple_mean_search.signature((search_id,), immutable=True),
+        create_datapoints.signature(
+            (search_id, earliest.timestamp(), latest.timestamp()), immutable=True
+        ),
     )
 
     res_chord.delay()
 
 
 @celery.task
-def aggregate_sentiment_simple_mean_search(search_id: int):
-    search = Search.query.filter_by(id=search_id).one()
-    if search.tweets:
-        search.twitter_sentiment = aggregate_sentiment_simple_mean(search.tweets)
-    if search.reddit_submissions:
-        search.reddit_sentiment = aggregate_sentiment_simple_mean(
-            search.reddit_submissions
-        )
-    elif search.reddit_comments:
-        search.reddit_sentiment = aggregate_sentiment_simple_mean(
-            search.reddit_comments
-        )
-    db.session.commit()
+def create_datapoints(*args, **kwargs):
+    return create_datapoints_ntask(*args, **kwargs)
