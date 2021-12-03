@@ -35,6 +35,7 @@ function MyAccount() {
 
   // new email
   const [newEmail, setNewEmail] = useState("");
+  const [confirmNewEmail, setConfirmNewEmail] = useState("")
 
   useEffect(() => {
     // get the user follow list
@@ -99,7 +100,40 @@ function MyAccount() {
 
   const handleChangeEmail = (e) => {
     e.preventDefault();
+
+    // Check if 2 emails entered are the same
+    if (newEmail !== confirmNewEmail) {
+      alert('The two emails entered are not the same!');
+      setNewEmail("");
+      setConfirmNewEmail("");
+      return;
+    }
+
+    // Check if the new email is different from the old one
+    if (newEmail === currentUser.email) {
+      alert("The new email should be different from the old one!");
+      return;
+    }
     console.log("changing user email to", newEmail);
+
+    const json = JSON.stringify({
+      email: currentUser.email,
+      new_email: newEmail,
+      new_email_confirm: confirmNewEmail
+    });
+    const config = {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true
+    };
+
+    axios.post("http://localhost:5000/users/change-email", json, config)
+    .then(res=>{
+      console.log(res);
+      if (res.data && res.data.success) {
+        alert(res.data.success)
+      }
+    })
+    .catch(err=>console.log(err))
   };
 
   return (
@@ -197,6 +231,14 @@ function MyAccount() {
                             required
                             value={newEmail}
                             onChange={(e) => setNewEmail(e.target.value)}
+                            style={{ marginBottom: "5px" }}
+                          />
+                          <Form.Control
+                            type="email"
+                            placeholder="Confirm your new email"
+                            required
+                            value={confirmNewEmail}
+                            onChange={(e) => setConfirmNewEmail(e.target.value)}
                             style={{ marginBottom: "5px" }}
                           />
                         </Form.Group>
