@@ -22,15 +22,25 @@ def convert_time(date_list):
     return date_list
 
 
-def get_historic_prices(coin, days):
+supported_currencies = ['aed', 'ars', 'aud', 'bch', 'bdt', 'bhd', 'bits', 'bmd',
+ 'bnb', 'brl', 'btc', 'cad', 'chf', 'clp', 'cny', 'czk', 'dkk', 'dot', 'eos',
+ 'eth', 'eur', 'gbp', 'hkd', 'huf','idr', 'ils', 'inr', 'jpy', 'krw', 'kwd',
+'link', 'lkr', 'ltc', 'mmk', 'mxn', 'myr', 'ngn', 'nok', 'nzd', 'php', 'pkr',
+ 'pln', 'rub', 'sar', 'sats', 'sek', 'sgd', 'thb', 'try', 'twd', 'uah', 'usd',
+  'vef', 'vnd', 'xag', 'xau', 'xdr', 'xlm', 'xrp', 'yfi', 'zar']
+
+def get_historic_prices(coin, days, currency="usd"):
     """
     :param coin: The id of the coin as defined in the coingecko json file and API
     :param days: How many days of data to return
     :return: a list of prices
     """
+    currency = currency.lower()
+    if currency not in supported_currencies:
+        return None
     cg_api = CoinGeckoAPI()
     coin = coin.lower()
-    prices = cg_api.get_coin_market_chart_by_id(id=coin, vs_currency="usd", days=days)[
+    prices = cg_api.get_coin_market_chart_by_id(id=coin, vs_currency=currency, days=days)[
         "prices"
     ]
     return convert_time(prices)

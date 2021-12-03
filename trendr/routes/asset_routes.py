@@ -240,6 +240,7 @@ def token_top_holders():
 def crypto_price_history():
     id = request.args.get("id")
     days = request.args.get("days")
+    currency = request.args.get("currency")
     if not id:
         current_app.logger.error("No id given")
         return json_response({"error": "Parameter 'id' is required"}, status=400)
@@ -247,7 +248,10 @@ def crypto_price_history():
         current_app.logger.error("No days given")
         return json_response({"error": "Parameter 'days' is required"}, status=400)
 
-    response_body = cg.get_historic_prices(id, days)
+    response_body = cg.get_historic_prices(id, days, currency)
+    if response_body == None:
+        return json_response({"error": "Parameter 'currency' value is unsupported"}, status=400)
+
     current_app.logger.info(
         "Getting crypto price history for " + id + " over " + days + " days"
     )
@@ -305,12 +309,23 @@ def stock_history():
         "Getting stock pirce and volume history for " + symbol + " over " + period
     )
     # TODO: Figure out how to return this like the other endpoints w/o breaking the frontend
-    return asset_ticker.history(
+    history = asset_ticker.history(
         period=period,
         interval=period_to_interval_map.get(period),
         prepost="True",
         actions="False",
-    ).to_json()
+    )
+    # print("type == " , type(history))
+    # print(history.columns)
+
+    # return asset_ticker.history(
+    #     period=period,
+    #     interval=period_to_interval_map.get(period),
+    #     prepost="True",
+    #     actions="False",
+    # ).to_json()
+    # return "sucess"
+    return history.to_json()
 
 
 @assets.route("/twitter_sentiment", methods=["GET"])

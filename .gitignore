@@ -121,3 +121,4 @@ packages/react-devtools-scheduling-profiler/dist
 # Ignore env var files
 ./.env/*
 get-pip.py
+temp.py
