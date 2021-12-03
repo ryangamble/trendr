@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState, useEffect } from "react";
 import MyNavBar from "../NavBar/MyNavBar";
 import { useSelector } from "react-redux";
@@ -14,13 +13,13 @@ import {
   Card,
   Form,
   Tabs,
-  Tab,
+  Tab
 } from "react-bootstrap";
 import "./MyAccount.css";
 import FollowBtn from "../FollowButton/FollowBtn";
 import axios from "axios";
 
-function MyAccount() {
+function MyAccount () {
   // color theme
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   // current user
@@ -44,7 +43,7 @@ function MyAccount() {
 
       axios
         .get("http://localhost:5000/users/assets-followed", {
-          withCredentials: true,
+          withCredentials: true
         })
         .then((res) => {
           return res.data;
@@ -75,11 +74,11 @@ function MyAccount() {
     const json = JSON.stringify({
       password: oldPassword,
       new_password: newPassword,
-      new_password_confirm: confirmPassword,
+      new_password_confirm: confirmPassword
     });
     const config = {
       headers: { "Content-Type": "application/json" },
-      withCredentials: true,
+      withCredentials: true
     };
     console.log("changing password");
     axios
@@ -127,16 +126,15 @@ function MyAccount() {
     };
 
     axios.post("http://localhost:5000/users/change-email", json, config)
-    .then(res=>{
-      console.log(res);
-      if (res.data && res.data.success) {
-        alert(res.data.success)
-      }
-      else {
-        alert("The new email has already been registered, please use another one.")
-      }
-    })
-    .catch(err=>console.log(err))
+      .then(res => {
+        console.log(res);
+        if (res.data && res.data.success) {
+          alert(res.data.success)
+        } else {
+          alert("The new email has already been registered, please use another one.")
+        }
+      })
+      .catch(err => console.log(err))
   };
 
   return (
@@ -144,7 +142,7 @@ function MyAccount() {
       style={{
         backgroundColor: currentTheme.background,
         height: "100vh",
-        color: currentTheme.foreground,
+        color: currentTheme.foreground
       }}
       className="myAccountWrapper"
     >
@@ -160,15 +158,17 @@ function MyAccount() {
                 : currentUser.email}
             </h3>
 
-            {currentUser.username === "" && currentUser.email === "" ? (
-              <Link to="login">Login to see your profile</Link>
-            ) : null}
+            {currentUser.username === "" && currentUser.email === ""
+              ? (<Link to="login">Login to see your profile</Link>)
+              : null}
           </Col>
         </Row>
 
         <br />
         <br />
-        {currentUser.username === "" && currentUser.email === "" ? null : (
+        {currentUser.username === "" && currentUser.email === ""
+          ? null
+          : (
           <div>
             <Row>
               <Col xs={12} md={3}>
@@ -177,9 +177,9 @@ function MyAccount() {
                 </h3>
               </Col>
             </Row>
-            {list.length === 0 ? (
-              <p>You haven&apos;t followed any stocks/cryptos.</p>
-            ) : null}
+            {list.length === 0
+              ? (<p>You haven&apos;t followed any stocks/cryptos.</p>)
+              : null}
             <Row>
               <Col xs={12}>
                 <ListGroup variant="flush" align="left">
@@ -191,7 +191,7 @@ function MyAccount() {
                     >
                       <Link
                         to={{
-                          pathname: `/result/${item}`,
+                          pathname: `/result/${item}`
                         }}
                       >
                         {item.split(":")[1].toUpperCase()}
@@ -207,10 +207,12 @@ function MyAccount() {
               </Col>
             </Row>
           </div>
-        )}
+            )}
         <br />
 
-        {currentUser.username === "" && currentUser.email === "" ? null : (
+        {currentUser.username === "" && currentUser.email === ""
+          ? null
+          : (
           <Tabs
             defaultActiveKey="change_email"
             id="uncontrolled-tab-example"
@@ -320,7 +322,7 @@ function MyAccount() {
               </Row>
             </Tab>
           </Tabs>
-        )}
+            )}
       </Container>
     </div>
   );
