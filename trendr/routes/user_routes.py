@@ -7,7 +7,7 @@ from trendr.controllers.user_controller import (
     get_settings,
     set_settings,
     get_result_history,
-    add_result_history
+    add_result_history,
 )
 from trendr.routes.helpers.json_response import json_response
 
