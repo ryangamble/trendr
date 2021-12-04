@@ -72,9 +72,7 @@ def get_latest_submission_timestamp(asset_identifier: str) -> int or None:
     """
     asset = Asset.query.filter_by(identifier=asset_identifier)
     submission = (
-        RedditSubmission.query.filter(
-            RedditSubmission.assets.any(id=asset.id)
-        )
+        RedditSubmission.query.filter(RedditSubmission.assets.any(id=asset.id))
         .order_by(desc(RedditSubmission.tweeted_at))
         .first()
     )
@@ -92,9 +90,7 @@ def get_latest_comment_timestamp(asset_identifier: str) -> int or None:
     """
     asset = Asset.query.filter_by(identifier=asset_identifier)
     comment = (
-        RedditComment.query.filter(
-            RedditComment.assets.any(id=asset.id)
-        )
+        RedditComment.query.filter(RedditComment.assets.any(id=asset.id))
         .order_by(desc(RedditComment.tweeted_at))
         .first()
     )

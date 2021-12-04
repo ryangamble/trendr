@@ -45,9 +45,7 @@ def get_latest_tweet_id(asset_identifier: str) -> int or None:
     """
     asset = Asset.query.filter_by(identifier=asset_identifier)
     tweet = (
-        Tweet.query.filter(
-            Tweet.assets.any(id=asset.id)
-        )
+        Tweet.query.filter(Tweet.assets.any(id=asset.id))
         .order_by(desc(Tweet.tweeted_at))
         .first()
     )
