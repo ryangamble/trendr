@@ -69,9 +69,10 @@ def get_latest_submission_timestamp(asset_identifier: str) -> int or None:
     :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
     :return: A tweet id
     """
+    asset = Asset.query.filter_by(identifier=asset_identifier)
     submission = (
         RedditSubmission.query.filter(
-            RedditSubmission.text.ilike(f"%{asset_identifier}%")
+            RedditSubmission.assets.any(id=asset.id)
         )
         .order_by(desc(RedditSubmission.tweeted_at))
         .limit(1)
