@@ -9,11 +9,10 @@ class Asset(db.Model):
     __tablename__ = "asset"
 
     id = db.Column(Integer, primary_key=True, autoincrement="auto")
-    identifier = db.Column(String, nullable=False, unique=True)
+    identifier = db.Column(String, nullable=False, unique=False)
 
-    asset_name = db.Column(String, nullable=False, unique=True)
+    coinGeckoid = db.Column(String, nullable=True, unique=True)
 
-    asset_type = db.Column(String, nullable=False, unique=True)
     # query strings to search socials for
     reddit_q = db.Column(String, nullable=False)
     twitter_q = db.Column(String, nullable=False)

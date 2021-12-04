@@ -30,12 +30,14 @@ from trendr.tasks.social.reddit.gather import store_comments, store_submissions
 from trendr.tasks.search import perform_search
 from trendr.routes.helpers.json_response import json_response
 from trendr.config import FINNHUB_KEY
-
-# from trendr.tasks.symbols import populate_database
-# populate_database.populate_database_with_symbols()
+from trendr.tasks.symbols import populate_database
 
 assets = Blueprint("assets", __name__, url_prefix="/assets")
 
+@assets.route("/populate_assets", methods=["POST"])
+def populate_assets():
+    message = populate_database.populate_database_with_symbols()
+    return json_response({"Result": message }, status=200)
 
 @assets.route("/fear-greed", methods=["GET"])
 def fear_greed():
