@@ -78,7 +78,7 @@ def get_latest_submission_timestamp(asset_identifier: str) -> int or None:
         .first()
     )
     if submission:
-        return (submission[0].posted_at - datetime.datetime(1970, 1, 1)).total_seconds()
+        return submission.posted_at.timestamp()
     return None
 
 
