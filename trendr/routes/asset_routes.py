@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 import json
 import os
 import re
@@ -6,7 +6,6 @@ import yfinance as yf
 import yahooquery as yq
 import finnhub
 import pandas as pd
-
 from flask import Blueprint, request, current_app
 from textblob import TextBlob
 from trendr.controllers.search_controller import new_search
@@ -19,6 +18,7 @@ from trendr.connectors import twitter_connector
 from trendr.connectors import fear_and_greed_connector
 from trendr.connectors import coin_gecko_connector as cg
 from trendr.connectors import defi_connector as df
+from trendr.extensions import db
 from trendr.models.reddit_model import RedditSubmission
 from trendr.models.search_model import Search, SearchType
 from trendr.models.sentiment_model import SentimentDataPoint
@@ -119,16 +119,20 @@ def sentiment_important_posts():
 @assets.route("/perform_asset_search", methods=["GET"])
 def perform_asset_search():
     # TODO: Remove block, it's temporary while we have no assets
-    asset = Asset.query.filter_by(id=1).first()
+    asset = Asset.query.filter_by(identifier="AAPL").first()
     if asset is None:
         asset = Asset(
             identifier="AAPL", reddit_q="AAPL|apple", twitter_q="AAPL OR apple"
         )
         db.session.add(asset)
         db.session.commit()
+    else:
+        asset.reddit_q = "AAPL"
+        asset.twitter_q = "AAPL OR apple"
+        db.session.commit()
 
     search = new_search(asset)
-    since = (search.ran_at - timedelta(days=5)).timestamp()
+    since = (search.ran_at - timedelta(days=1)).timestamp()
     perform_search.delay(
         asset_id=asset.id,
         search_types=[
