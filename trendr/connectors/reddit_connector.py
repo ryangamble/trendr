@@ -75,8 +75,7 @@ def get_latest_submission_timestamp(asset_identifier: str) -> int or None:
             RedditSubmission.assets.any(id=asset.id)
         )
         .order_by(desc(RedditSubmission.tweeted_at))
-        .limit(1)
-        .all()
+        .first()
     )
     if submission:
         return (submission[0].posted_at - datetime.datetime(1970, 1, 1)).total_seconds()
