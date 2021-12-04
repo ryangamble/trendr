@@ -33,10 +33,12 @@ from trendr.tasks.symbols import populate_database
 
 assets = Blueprint("assets", __name__, url_prefix="/assets")
 
+
 @assets.route("/populate_assets", methods=["POST"])
 def populate_assets():
     message = populate_database.populate_database_with_symbols()
-    return json_response({"Result": message }, status=200)
+    return json_response({"Result": message}, status=200)
+
 
 @assets.route("/fear-greed", methods=["GET"])
 def fear_greed():
