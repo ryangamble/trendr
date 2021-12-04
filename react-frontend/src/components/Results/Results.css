@@ -66,6 +66,22 @@ img.rounded {
   background-color: orange;
 }
 
+.btn.twitterToggle:active {
+  background-color: #0d6efd;
+}
+
+.btn.twitterToggle:focus {
+  background-color: #0d6efd;
+}
+
+.btn.redditToggle:active {
+  background-color: red;
+}
+
+.btn.redditToggle:focus {
+  background-color: red;
+}
+
 .btn-group {
   width: fit-content;
   align-self: center;
