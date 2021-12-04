@@ -45,6 +45,20 @@ function Results (props) {
 
   useEffect(() => {
     // do this only if user is logged in
+    if ((currentUser.email !== '' || currentUser.username !== '') && type && symbol) {
+      axios
+        .post('http://localhost:5000/users/result-history', {
+          symbol: symbol,
+          type: type
+        }, { withCredentials: true })
+        .catch(() => {
+          alert('Could not update result history')
+        })
+    }
+  }, [type, symbol])
+
+  useEffect(() => {
+    // do this only if user is logged in
     if (currentUser.email !== '' || currentUser.username !== '') {
       console.log('fetching user follow list')
 
