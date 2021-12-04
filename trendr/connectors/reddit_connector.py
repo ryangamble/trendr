@@ -69,10 +69,13 @@ def get_latest_submission_timestamp(asset_identifier: str) -> int or None:
     :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
     :return: A tweet id
     """
-    submission = RedditSubmission.query\
-        .filter(RedditSubmission.text.ilike(f'%{asset_identifier}%'))\
-        .order_by(desc(RedditSubmission.tweeted_at))\
+    submission = (
+        RedditSubmission.query.filter(
+            RedditSubmission.text.ilike(f"%{asset_identifier}%")
+        )
+        .order_by(desc(RedditSubmission.tweeted_at))
         .first()
+    )
     if submission:
         return submission.posted_at.timestamp()
     return None
@@ -85,10 +88,11 @@ def get_latest_comment_timestamp(asset_identifier: str) -> int or None:
     :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
     :return: A tweet id
     """
-    comment = RedditComment.query\
-        .filter(RedditComment.text.ilike(f'%{asset_identifier}%'))\
-        .order_by(desc(RedditComment.tweeted_at))\
+    comment = (
+        RedditComment.query.filter(RedditComment.text.ilike(f"%{asset_identifier}%"))
+        .order_by(desc(RedditComment.tweeted_at))
         .first()
+    )
     if comment:
         return comment.posted_at.timestamp()
     return None

@@ -42,10 +42,11 @@ def get_latest_tweet_id(asset_identifier: str) -> int or None:
     :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
     :return: A tweet id
     """
-    tweet = Tweet.query\
-        .filter(Tweet.text.ilike(f'%{asset_identifier}%'))\
-        .order_by(desc(Tweet.tweeted_at))\
+    tweet = (
+        Tweet.query.filter(Tweet.text.ilike(f"%{asset_identifier}%"))
+        .order_by(desc(Tweet.tweeted_at))
         .first()
+    )
     if tweet:
         return tweet.tweet_id
     return None
