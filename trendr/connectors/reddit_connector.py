@@ -12,6 +12,7 @@ from trendr.config import (
     REDDIT_USER_AGENT,
 )
 from trendr.models.reddit_model import RedditComment, RedditSubmission
+from trendr.models.asset_model import Asset
 
 
 class RedditItem(Enum):
@@ -89,14 +90,16 @@ def get_latest_comment_timestamp(asset_identifier: str) -> int or None:
     :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
     :return: A tweet id
     """
+    asset = Asset.query.filter_by(identifier=asset_identifier)
     comment = (
-        RedditComment.query.filter(RedditComment.text.ilike(f"%{asset_identifier}%"))
+        RedditComment.query.filter(
+            RedditComment.assets.any(id=asset.id)
+        )
         .order_by(desc(RedditComment.tweeted_at))
-        .limit(1)
-        .all()
+        .first()
     )
     if comment:
-        return (comment[0].posted_at - datetime.datetime(1970, 1, 1)).total_seconds()
+        return comment.posted_at.timestamp()
     return None
 
 

@@ -15,6 +15,7 @@ from trendr.config import (
 )
 from trendr.exceptions import ConnectorException
 from trendr.models.tweet_model import Tweet
+from trendr.models.asset_model import Asset
 from trendr.controllers.social_controller.utils import store_in_db
 
 
@@ -42,14 +43,16 @@ def get_latest_tweet_id(asset_identifier: str) -> int or None:
     :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
     :return: A tweet id
     """
+    asset = Asset.query.filter_by(identifier=asset_identifier)
     tweet = (
-        Tweet.query.filter(Tweet.text.ilike(f"%{asset_identifier}%"))
+        Tweet.query.filter(
+            Tweet.assets.any(id=asset.id)
+        )
         .order_by(desc(Tweet.tweeted_at))
-        .limit(1)
-        .all()
+        .first()
     )
     if tweet:
-        return tweet[0].tweet_id
+        return tweet.tweet_id
     return None
 
 
@@ -112,7 +115,7 @@ def get_stored_tweets_mentioning_asset(asset_identifier: str) -> [Tweet]:
     """
     # TODO: If this starts returning too many results we may want to provide a limit
     get_tweets_mentioning_asset(asset_identifier)
-    return Tweet.query.filter(Tweet.text.ilike(f"%{asset_identifier}%")).all()
+    return Tweet.query.filter(Tweet.assets.any(identifier=asset_identifier)).all()
 
 
 def twitter_accounts_mentioning_asset_summary(asset_identifier: str) -> dict:
