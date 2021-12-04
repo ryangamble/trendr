@@ -47,7 +47,7 @@ def perform_search(
 
     reddit_args = {
         "search_str": asset.reddit_q,
-        "after": earliest,
+        "after": int(earliest_ts),
         "limit": reddit_limit,
         "search_id": search_id,
     }

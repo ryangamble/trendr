@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 import json
 import os
 import re
@@ -6,7 +6,6 @@ import yfinance as yf
 import yahooquery as yq
 import finnhub
 import pandas as pd
-
 from flask import Blueprint, request, current_app
 from textblob import TextBlob
 from trendr.controllers.search_controller import new_search
@@ -16,13 +15,11 @@ from trendr.controllers.sentiment_data_point_controller import (
 )
 
 from trendr.connectors import twitter_connector
+from trendr.connectors import reddit_connector
 from trendr.connectors import fear_and_greed_connector
 from trendr.connectors import coin_gecko_connector as cg
 from trendr.connectors import defi_connector as df
-from trendr.models.reddit_model import RedditSubmission
-from trendr.models.search_model import Search, SearchType
-from trendr.models.sentiment_model import SentimentDataPoint
-from trendr.models.tweet_model import Tweet
+from trendr.extensions import db
 from trendr.models.asset_model import Asset
 from trendr.models.search_model import SearchType
 from trendr.tasks.social.twitter.gather import store_tweet_by_id
@@ -119,16 +116,20 @@ def sentiment_important_posts():
 @assets.route("/perform_asset_search", methods=["GET"])
 def perform_asset_search():
     # TODO: Remove block, it's temporary while we have no assets
-    asset = Asset.query.filter_by(id=1).first()
+    asset = Asset.query.filter_by(identifier="AAPL").first()
     if asset is None:
         asset = Asset(
             identifier="AAPL", reddit_q="AAPL|apple", twitter_q="AAPL OR apple"
         )
         db.session.add(asset)
         db.session.commit()
+    else:
+        asset.reddit_q = "AAPL"
+        asset.twitter_q = "AAPL OR apple"
+        db.session.commit()
 
     search = new_search(asset)
-    since = (search.ran_at - timedelta(days=5)).timestamp()
+    since = (search.ran_at - timedelta(days=1)).timestamp()
     perform_search.delay(
         asset_id=asset.id,
         search_types=[
@@ -395,6 +396,24 @@ def stock_history():
     ).to_json()
 
 
+@assets.route("/reddit_mentions_count", methods=["GET"])
+def reddit_mentions_count():
+    """
+    Gets a dictionary with the count data(starting hour: count(ex. "2021/1/1:17" : 123)
+    for each hour. The number of hours is based on the count, with a max of 2000 posts.
+    symbol can be any keyword. ex. BTC or Bitcoin.
+    """
+    symbol = request.args.get("symbol")
+
+    if not symbol:
+        current_app.logger.error("No symbol given")
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
+
+    # res = reddit_connector.get_mentions_count(symbol='Bitcoin')
+    res = reddit_connector.reddit_count_mentioning_asset(asset_identifier=symbol)
+    return json_response(res, status=200)
+
+
 @assets.route("/twitter_sentiment", methods=["GET"])
 def twitter_sentiment():
     """
@@ -424,6 +443,22 @@ def twitter_sentiment():
 
     current_app.logger.info("Getting twitter sentiment data for " + symbol)
     return json_response(response_body, status=200)
+
+
+@assets.route("/twitter_mentions_count", methods=["GET"])
+def twitter_mentions_count():
+    """
+    Gets a list with the count data(start, end, tweet_count) for each hour for the previous 7 days.
+    symbol can be any keyword. ex. BTC or Bitcoin.
+    """
+    symbol = request.args.get("symbol")
+
+    if not symbol:
+        current_app.logger.error("No symbol given")
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
+
+    res = twitter_connector.tweet_count_mentioning_asset(asset_identifier=symbol)
+    return json_response(res, status=200)
 
 
 @assets.route("/reddit_sentiment", methods=["GET"])

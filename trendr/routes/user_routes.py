@@ -1,5 +1,9 @@
 from flask import Blueprint, request, current_app
 from flask_security import current_user, auth_required
+from trendr.controllers.security_email_controller import (
+    change_email,
+    confirm_change_email,
+)
 from trendr.controllers.user_controller import (
     get_followed_assets,
     follow_asset,
@@ -130,3 +134,13 @@ def add_result_history_route():
         return json_response({"success": "true"})
     else:
         return json_response({"success": False}, status=400)
+
+
+users.add_url_rule(
+    "/confirm-change-email/<token>", endpoint=None, view_func=confirm_change_email
+)
+
+
+users.add_url_rule(
+    "/change-email", endpoint=None, view_func=change_email, methods=["GET", "POST"]
+)
