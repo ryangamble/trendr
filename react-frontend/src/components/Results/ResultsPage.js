@@ -6,9 +6,9 @@ import TweetSummary from './TweetSummary'
 import { Container, Col, Row, Spinner } from 'react-bootstrap'
 import {
   SentimentGraph,
-  StockGraph,
-  CryptoGraph,
-  TopTokenHolders
+  PriceVolumeGraph,
+  TopTokenHolders,
+  MentionsGraph
 } from './Graph'
 import { StockStatistics, CoinStatistics, TokenStatistics } from './Statistics'
 import FollowBtn from '../FollowButton/FollowBtn'
@@ -42,6 +42,20 @@ function Results (props) {
       console.log(id.substring(id.indexOf(':') + 1))
     }
   }, [id])
+
+  useEffect(() => {
+    // do this only if user is logged in
+    if ((currentUser.email !== '' || currentUser.username !== '') && type && symbol) {
+      axios
+        .post('http://localhost:5000/users/result-history', {
+          symbol: symbol,
+          type: type
+        }, { withCredentials: true })
+        .catch(() => {
+          alert('Could not update result history')
+        })
+    }
+  }, [type, symbol])
 
   useEffect(() => {
     // do this only if user is logged in
@@ -119,9 +133,10 @@ function Results (props) {
             <Col xs={12} sm={12} md={12} lg={6}>
               {currency
                 ? (
-                <StockGraph
+                <PriceVolumeGraph
                   symbol={symbol}
                   currency={currency}
+                  assetType="stock"
                   graphType="price"
                   color="#0D6EFD"
                 />
@@ -134,13 +149,15 @@ function Results (props) {
               <br />
               {currency
                 ? (
-                <StockGraph symbol={symbol} graphType="volume" color="orange" />
+                <PriceVolumeGraph symbol={symbol} assetType="stock" graphType="volume" color="orange" />
                   )
                 : (
                 <Container fluid>
                   <Spinner animation="border" />
                 </Container>
                   )}
+              <br />
+              <MentionsGraph symbol={symbol} />
               <br />
             </Col>
           </Row>
@@ -195,9 +212,11 @@ function Results (props) {
               )}
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
-              <CryptoGraph symbol={symbol} graphType="price" color="#0D6EFD" />
+              <PriceVolumeGraph symbol={symbol} currency="usd" assetType="crypto" graphType="price" color="#228B22" />
               <br />
-              <CryptoGraph symbol={symbol} graphType="volume" color="orange" />
+              <PriceVolumeGraph symbol={symbol} assetType="crypto" graphType="volume" color="orange" />
+              <br />
+              <MentionsGraph symbol={symbol} />
               <br />
               {addr && (
                 <>

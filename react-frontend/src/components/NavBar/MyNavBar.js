@@ -90,13 +90,13 @@ function MyNavBar () {
                 Home
               </Nav.Link>
               <Nav.Link as={Link} to="/myaccount">
-                MyAccount
+                Account
               </Nav.Link>
               <Nav.Link as={Link} to="/settings">
                 Settings
               </Nav.Link>
-              <Nav.Link as={Link} to="/report">
-                MyReport
+              <Nav.Link as={Link} to="/history">
+                History
               </Nav.Link>
               <Nav.Link as={Link} to="/about">
                 About

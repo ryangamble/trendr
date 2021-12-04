@@ -123,6 +123,19 @@ def init_celery(app=None):
     return celery
 
 
+def load_env_files():
+    env_path = pathlib.Path(__file__).parent.resolve() / "../.env"
+    env_files = [
+        join(env_path, f) for f in listdir(env_path) if isfile(join(env_path, f))
+    ]
+    for env_file in env_files:
+        with open(env_file) as f:
+            for line in f:
+                key, value = line.strip().split("=")
+                os.environ[key] = value
+
+
 if __name__ == "__main__":
+    load_env_files()
     app = create_app()
     app.run(host="0.0.0.0", debug=True, port=5000)

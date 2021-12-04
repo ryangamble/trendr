@@ -41,3 +41,12 @@ def test_set_settings_401(client):
         response.json["response"]["error"]
         == "You are not authenticated. Please supply the correct credentials."
     )
+
+
+def test_change_email_401(client):
+    response = user_bindings.change_email(client, "new_email@gmail.com")
+    assert response.status_code == 401
+    assert (
+        response.json["response"]["error"]
+        == "You are not authenticated. Please supply the correct credentials."
+    )

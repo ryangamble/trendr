@@ -1,11 +1,17 @@
 from flask import Blueprint, request, current_app
 from flask_security import current_user, auth_required
+from trendr.controllers.security_email_controller import (
+    change_email,
+    confirm_change_email,
+)
 from trendr.controllers.user_controller import (
     get_followed_assets,
     follow_asset,
     unfollow_asset,
     get_settings,
     set_settings,
+    get_result_history,
+    add_result_history,
 )
 from trendr.routes.helpers.json_response import json_response
 
@@ -107,3 +113,34 @@ def set_settings_route():
 
     set_settings(current_user, content)
     return json_response({"success": "true"})
+
+
+@users.route("/result-history", methods=["GET"])
+@auth_required("session")
+def get_result_history_route():
+    return json_response(get_result_history(current_user))
+
+
+@users.route("/result-history", methods=["POST"])
+@auth_required("session")
+def add_result_history_route():
+    content = request.get_json()
+    if "symbol" not in content:
+        return json_response({"error": "Data field 'symbol' is required"}, status=400)
+    if "type" not in content:
+        return json_response({"error": "Data field 'type' is required"}, status=400)
+
+    if add_result_history(current_user, content):
+        return json_response({"success": "true"})
+    else:
+        return json_response({"success": False}, status=400)
+
+
+users.add_url_rule(
+    "/confirm-change-email/<token>", endpoint=None, view_func=confirm_change_email
+)
+
+
+users.add_url_rule(
+    "/change-email", endpoint=None, view_func=change_email, methods=["GET", "POST"]
+)

@@ -63,6 +63,7 @@ prawcore==2.3.0
 prometheus-client==0.11.0
 prompt-toolkit==3.0.20
 psycopg2-binary==2.9.2
+psaw==0.1.0
 py==1.10.0
 pycoingecko==2.2.0
 pycparser==2.20

@@ -2,11 +2,14 @@ import pytest
 from trendr.extensions import security, db as database
 from trendr.app import create_app
 from trendr.testing.data import test_user
+from unittest.mock import MagicMock
 
 
 @pytest.fixture(scope="session")
 def app():
     app = create_app(for_testing=True)
+    # mock mail sending
+    app.extensions["security"]._mail_util.send_mail = MagicMock()
     ctx = app.app_context()
     ctx.push()
     yield app
@@ -20,14 +23,16 @@ def client(app):
 
 @pytest.fixture
 def db():
-    database.create_all()
-    security.datastore.create_user(
-        email=test_user["email"],
-        username=test_user["username"],
-        password=test_user["password"],
-    )
-    yield database
-    database.drop_all()
+    try:
+        database.create_all()
+        security.datastore.create_user(
+            email=test_user["email"],
+            username=test_user["username"],
+            password=test_user["password"],
+        )
+        yield database
+    finally:
+        database.drop_all()
 
 
 # @pytest.fixture(scope="session")

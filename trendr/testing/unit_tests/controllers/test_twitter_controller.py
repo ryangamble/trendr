@@ -12,6 +12,10 @@ def test_store_twitter_results(mocker, existing):
     result_mock.created_at = 1
     result_mock.favorite_count = 1
     result_mock.retweet_count = 1
+    result_mock.user.followers_count = 1
+    result_mock.user.friends_count = 1
+    result_mock.user.created_at = 1
+    result_mock.user.verified = True
     result_mock.entities = {"urls": [{"expanded_url": "url"}]}
     mock_results = result_mock
 
@@ -40,7 +44,16 @@ def test_store_twitter_results(mocker, existing):
         tweet_mock.assert_not_called()
     else:
         tweet_mock.assert_called_once_with(
-            tweet_id=1, text="text", tweeted_at=1, likes=1, retweets=1, embed_url="url"
+            tweet_id=1,
+            text="text",
+            tweeted_at=1,
+            likes=1,
+            retweets=1,
+            tweeter_num_followers=1,
+            tweeter_num_following=1,
+            tweeter_created_at=1,
+            tweeter_verified=1,
+            embed_url="url",
         )
     db_mock.session.add_all.assert_called_once()
     db_mock.session.commit.assert_called_once()
