@@ -16,9 +16,7 @@ class CeleryMailUtil(MailUtil):
         # If the first replacement didn't occur, use this one
         html = html.replace("/auth/reset/", "/set-password:")
         html = html.replace("/auth/confirm/", "/confirm-email:")
-        html = html.replace(
-            "/users/confirm-change-email/", "/confirm-change-email:"
-        )
+        html = html.replace("/users/confirm-change-email/", "/confirm-change-email:")
         send_flask_mail.delay(
             subject=subject,
             sender=sender,
