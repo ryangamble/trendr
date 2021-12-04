@@ -20,10 +20,6 @@ from trendr.connectors import reddit_connector
 from trendr.connectors import fear_and_greed_connector
 from trendr.connectors import coin_gecko_connector as cg
 from trendr.connectors import defi_connector as df
-from trendr.models.reddit_model import RedditSubmission
-from trendr.models.search_model import Search, SearchType
-from trendr.models.sentiment_model import SentimentDataPoint
-from trendr.models.tweet_model import Tweet
 from trendr.models.asset_model import Asset
 from trendr.models.search_model import SearchType
 from trendr.tasks.social.twitter.gather import store_tweet_by_id

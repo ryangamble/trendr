@@ -168,11 +168,11 @@ def tweet_count_mentioning_asset(asset_identifier: str, client: tweepy.Client = 
     Queries Twitter for the count of tweets mentioning the asset.
 
     :param asset_identifier: The name of the asset (AAPL, BTC, Bitcoin, etc.)
-    :param clinet: An optional tweepy.Client object, if one is not provided it will be created
+    :param client: An optional tweepy.Client object, if one is not provided it will be created
     :return: a Python list with the count data(start, end, tweet_count) for each hour for the previous 7 days.
     """
     if not client:
-        client = client = tweepy.Client(bearer_token=TWITTER_BEARER_TOKEN)
+        client = tweepy.Client(bearer_token=TWITTER_BEARER_TOKEN)
 
     results = client.get_recent_tweets_count(
         query=asset_identifier,
