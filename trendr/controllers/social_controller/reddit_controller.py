@@ -230,17 +230,17 @@ def store_reddit_submissions(
         asset = search.asset
 
     for result in submissions:
-
+        res_text = result["selftext"] if "selftext" in result else None
         existing = RedditSubmission.query.filter_by(reddit_id=result["id"]).first()
         if existing:
             res_ids.append(existing.id)
 
             # overwrite with new data
             if overwrite:
-                if existing.text != result["selftext"]:
+                if existing.text != res_text:
                     # Only overwrite on change
                     existing.sentiment_score = None
-                existing.text = result["selftext"]
+                existing.text = res_text
                 existing.score = result["score"]
 
             if search:
@@ -253,10 +253,10 @@ def store_reddit_submissions(
                 reddit_id=result["id"],
                 permalink=result["permalink"],
                 title=result["title"],
-                text=result["selftext"],
+                text=res_text,
                 type=(
                     RedditSubmissionType.TEXT
-                    if result["selftext"]
+                    if res_text
                     else RedditSubmissionType.OTHER
                 ),
                 posted_at=datetime.datetime.fromtimestamp(result["created_utc"]),

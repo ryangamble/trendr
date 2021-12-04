@@ -2,3 +2,11 @@
   display: flex;
   justify-content: space-between;
 }
+
+.list-group-item > p, .list-group-item > Link {
+  display: inline;
+}
+
+.floatRight {
+  float: right;
+}

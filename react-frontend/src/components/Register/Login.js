@@ -1,52 +1,52 @@
-import React, { useState } from 'react'
-import { useHistory, Link } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import { registerConfirmation, registerUser } from '../Theme/userActions'
-import { toggleTheme, themes } from '../Theme/themeActions'
-import MyNavBar from '../NavBar/MyNavBar'
-import { Row, Col, Form, Button, Card } from 'react-bootstrap'
+import React, { useState } from "react";
+import { useHistory, Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { registerConfirmation, registerUser } from "../Theme/userActions";
+import { toggleTheme, themes } from "../Theme/themeActions";
+import MyNavBar from "../NavBar/MyNavBar";
+import { Row, Col, Form, Button, Card } from "react-bootstrap";
 
-import axios from 'axios'
+import axios from "axios";
 
 function Login () {
-  const currentTheme = useSelector((state) => state.theme.currentTheme)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const dispatch = useDispatch()
-  const history = useHistory()
+  const dispatch = useDispatch();
+  const history = useHistory();
 
   const handleSubmit = (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     const json = JSON.stringify({
       email: email,
       password: password
-    })
+    });
     const config = {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
       withCredentials: true
-    }
+    };
 
     axios
-      .post('http://localhost:5000/auth/login', json, config)
+      .post("http://localhost:5000/auth/login", json, config)
       .then((res) => {
         // register the user to global user
-        dispatch(registerUser('', email))
-        history.push('/home')
+        dispatch(registerUser("", email));
+        history.push("/home");
         // TODO: replace when we get better settings storage
         axios
-          .get('http://localhost:5000/users/settings', {
+          .get("http://localhost:5000/users/settings", {
             withCredentials: true
           })
           .then((response) => {
-            console.log('Read theme from user settings')
+            console.log("Read theme from user settings");
             console.log(
-              'server: ' +
+              "server: " +
                 response.data.dark_mode +
-                '\nclient: ' +
+                "\nclient: " +
                 (currentTheme === themes.dark)
-            )
+            );
             // false represents light, true represents dark
             if (
               (response.data.dark_mode === false &&
@@ -54,30 +54,36 @@ function Login () {
               (response.data.dark_mode === true &&
                 currentTheme === themes.light)
             ) {
-              dispatch(toggleTheme())
+              dispatch(toggleTheme());
             }
           })
           .catch((err) => {
-            console.log(err)
-          })
+            console.log(err);
+          });
       })
       .catch((error) => {
-        // alert(JSON.stringify(error.response.data.response.errors));
-        console.log(error.response.data.response.errors)
+        console.log(error.response.data.response.errors.email);
         // If the user hasn't confirmed email, we will redirect to confirmation page
-        if (error.response.data.response.errors.email) {
-          dispatch(registerConfirmation(email))
-          history.push('/confirmation')
+        if (
+          error.response.data.response.errors.email && error.response.data.response.errors.email.includes(
+            "Email requires confirmation."
+          )
+        ) {
+          dispatch(registerConfirmation(email));
+          history.push("/confirmation");
+        } else {
+          // Other wise alert the error
+          alert(JSON.stringify(error.response.data.response.errors));
         }
-      })
-  }
+      });
+  };
 
   return (
     <div
       style={{
         background: currentTheme.background,
         color: currentTheme.foreground,
-        height: '100vh'
+        height: "100vh"
       }}
     >
       <MyNavBar />
@@ -132,12 +138,12 @@ function Login () {
                       to="register"
                       style={{ color: currentTheme.linkColor }}
                     >
-                      Register An Account{' '}
+                      Register An Account{" "}
                     </Link>
                   </Col>
                   <Col sm="4">
                     <Link to="reset" style={{ color: currentTheme.linkColor }}>
-                      Reset Password{' '}
+                      Reset Password{" "}
                     </Link>
                   </Col>
                 </Row>
@@ -147,7 +153,7 @@ function Login () {
         </Col>
       </Row>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;
