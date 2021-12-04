@@ -9,7 +9,11 @@ from statistics import median
 import tweepy
 from tweepy import models
 
-from trendr.config import TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, TWITTER_BEARER_TOKEN
+from trendr.config import (
+    TWITTER_CONSUMER_KEY,
+    TWITTER_CONSUMER_SECRET,
+    TWITTER_BEARER_TOKEN,
+)
 from trendr.exceptions import ConnectorException
 
 
@@ -159,9 +163,7 @@ def twitter_accounts_mentioning_asset_summary(
     }
 
 
-def tweet_count_mentioning_asset(
-    asset_identifier: str, client: tweepy.Client = None
-):
+def tweet_count_mentioning_asset(asset_identifier: str, client: tweepy.Client = None):
     """
     Queries Twitter for the count of tweets mentioning the asset.
 

@@ -8,8 +8,10 @@ from trendr.config import (
     REDDIT_CLIENT_SECRET,
     REDDIT_USER_AGENT,
 )
+
 # import psaw
 from psaw import PushshiftAPI
+
 
 class RedditItem(Enum):
     """
@@ -194,6 +196,7 @@ def gather_comments_by_id(**kwargs) -> list:
     kwargs["item"] = RedditItem.COMMENT
     return gather_items_by_id(**kwargs)
 
+
 def convert_time(unix_time) -> str:
     """
     Returns an RFC 1123 time string from a unix timestamp
@@ -202,6 +205,7 @@ def convert_time(unix_time) -> str:
     """
     # return datetime.utcfromtimestamp(unix_time).strftime("%a, %d %b %Y %H:%M:%S GMT")
     return datetime.utcfromtimestamp(unix_time)
+
 
 def reddit_count_mentioning_asset(asset_identifier: str):
     """
@@ -230,7 +234,7 @@ def reddit_count_mentioning_asset(asset_identifier: str):
             else:
                 timeDict[time2] += 1
         else:
-            time = convert_time(i[len(i) - 1]['created'])
+            time = convert_time(i[len(i) - 1]["created"])
             time2 = datetime(time.year, time.month, time.day, time.hour, 0, 0)
 
             if time2 not in timeDict:
@@ -247,7 +251,7 @@ def reddit_count_mentioning_asset(asset_identifier: str):
             else:
                 timeDict[time2] += 1
         else:
-            time = convert_time(i[len(i) - 1]['created'])
+            time = convert_time(i[len(i) - 1]["created"])
             time2 = datetime(time.year, time.month, time.day, time.hour, 0, 0)
             if time2 not in timeDict:
                 timeDict[time2] = 1

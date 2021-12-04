@@ -35,7 +35,6 @@ from trendr.config import FINNHUB_KEY
 assets = Blueprint("assets", __name__, url_prefix="/assets")
 
 
-
 @assets.route("/fear-greed", methods=["GET"])
 def fear_greed():
     """
@@ -396,6 +395,7 @@ def stock_history():
         actions="False",
     ).to_json()
 
+
 @assets.route("/reddit_mentions_count", methods=["GET"])
 def reddit_mentions_count():
     """
@@ -412,6 +412,7 @@ def reddit_mentions_count():
     # res = reddit_connector.get_mentions_count(symbol='Bitcoin')
     res = reddit_connector.reddit_count_mentioning_asset(asset_identifier=symbol)
     return json_response(res, status=200)
+
 
 @assets.route("/twitter_sentiment", methods=["GET"])
 def twitter_sentiment():
@@ -443,6 +444,7 @@ def twitter_sentiment():
     current_app.logger.info("Getting twitter sentiment data for " + symbol)
     return json_response(response_body, status=200)
 
+
 @assets.route("/twitter_mentions_count", methods=["GET"])
 def twitter_mentions_count():
     """
@@ -457,6 +459,7 @@ def twitter_mentions_count():
 
     res = twitter_connector.tweet_count_mentioning_asset(asset_identifier=symbol)
     return json_response(res, status=200)
+
 
 @assets.route("/reddit_sentiment", methods=["GET"])
 def reddit_sentiment():
@@ -489,5 +492,3 @@ def tweet_summary(asset_identifier):
     )
     current_app.logger.info("Getting twitter user statistics for " + asset_identifier)
     return json_response(summary_data, status=200)
-
-
