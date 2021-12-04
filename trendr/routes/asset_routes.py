@@ -8,17 +8,19 @@ import finnhub
 import pandas as pd
 from flask import Blueprint, request, current_app
 from textblob import TextBlob
+
 from trendr.controllers.search_controller import new_search
 from trendr.controllers.sentiment_data_point_controller import (
     get_important_posts,
     get_sentiment_scores,
 )
-
-from trendr.connectors import twitter_connector
-from trendr.connectors import reddit_connector
-from trendr.connectors import fear_and_greed_connector
-from trendr.connectors import coin_gecko_connector as cg
-from trendr.connectors import defi_connector as df
+from trendr.connectors import (
+    twitter_connector,
+    reddit_connector,
+    fear_and_greed_connector,
+    coin_gecko_connector as cg,
+    defi_connector as df,
+)
 from trendr.extensions import db
 from trendr.models.asset_model import Asset
 from trendr.models.search_model import SearchType
@@ -426,7 +428,7 @@ def twitter_sentiment():
         return json_response({"error": "Parameter 'symbol' is required"}, status=400)
 
     response_body = []
-    results = twitter_connector.get_tweets_mentioning_asset(symbol)
+    results = twitter_connector.get_stored_tweets_mentioning_asset(symbol)
     for result in results:
         text_clean = re.sub(r"@[A-Za-z0-9]+", "", result.text)
         text_clean = re.sub(r"#", "", text_clean)

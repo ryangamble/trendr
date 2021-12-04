@@ -23,14 +23,16 @@ def client(app):
 
 @pytest.fixture
 def db():
-    database.create_all()
-    security.datastore.create_user(
-        email=test_user["email"],
-        username=test_user["username"],
-        password=test_user["password"],
-    )
-    yield database
-    database.drop_all()
+    try:
+        database.create_all()
+        security.datastore.create_user(
+            email=test_user["email"],
+            username=test_user["username"],
+            password=test_user["password"],
+        )
+        yield database
+    finally:
+        database.drop_all()
 
 
 # @pytest.fixture(scope="session")

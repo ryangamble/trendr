@@ -77,15 +77,19 @@ def test_crypto_volume_history(client):
     assert isinstance(resp_data[0][1], float)
 
 
-def test_twitter_sentiment(client):
+def test_twitter_sentiment(client, db):
     response = asset_bindings.twitter_sentiment(client, params={"symbol": "AAPL"})
     assert response.status_code == 200
     resp_data = response.json
+    print(f"sentiment: {resp_data}")
     assert len(resp_data) > 0
 
 
-def test_tweet_summary(client):
+def test_tweet_summary(client, db):
     response = asset_bindings.tweet_summary(client, asset_identifier="AAPL")
     assert response.status_code == 200
     resp_data = response.json
-    assert len(resp_data) > 0
+    assert "follower_stats" in resp_data
+    assert "following_stats" in resp_data
+    assert "accounts_age_stats" in resp_data
+    assert "verified_count" in resp_data

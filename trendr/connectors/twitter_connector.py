@@ -2,12 +2,11 @@
 Functions for interacting with the Twitter API using the tweepy library
 """
 import datetime
-from datetime import date
-from time import strptime
 from statistics import median
 
 import tweepy
 from tweepy import models
+from sqlalchemy import desc
 
 from trendr.config import (
     TWITTER_CONSUMER_KEY,
@@ -15,6 +14,8 @@ from trendr.config import (
     TWITTER_BEARER_TOKEN,
 )
 from trendr.exceptions import ConnectorException
+from trendr.models.tweet_model import Tweet
+from trendr.controllers.social_controller.utils import store_in_db
 
 
 def auth_to_api(consumer_key: str, consumer_secret: str) -> tweepy.API:
@@ -34,6 +35,24 @@ def auth_to_api(consumer_key: str, consumer_secret: str) -> tweepy.API:
         )
 
 
+def get_latest_tweet_id(asset_identifier: str) -> int or None:
+    """
+    Returns the id of the latest tweet stored in the database for a given identifier
+
+    :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
+    :return: A tweet id
+    """
+    tweet = (
+        Tweet.query.filter(Tweet.text.ilike(f"%{asset_identifier}%"))
+        .order_by(desc(Tweet.tweeted_at))
+        .first()
+    )
+    if tweet:
+        return tweet.tweet_id
+    return None
+
+
+@store_in_db()
 def get_tweet_by_id(tweet_id: int, api: tweepy.API = None) -> tweepy.models.Status:
     """
     Gets all the information available for given tweet.
@@ -47,87 +66,76 @@ def get_tweet_by_id(tweet_id: int, api: tweepy.API = None) -> tweepy.models.Stat
     return api.get_status(tweet_id)
 
 
+@store_in_db()
 def get_tweets_mentioning_asset(
-    asset_identifier: str, since_id: str = None, api: tweepy.API = None
+    asset_identifier: str, api: tweepy.API = None
 ) -> tweepy.models.SearchResults:
     """
     Queries Twitter for tweets that mention an asset_identifier (AAPL, BTC) within the last 7 days, starting at the
-    tweet with the id since_id if one is provided.
-
+    latest tweet we have already stored
     :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
-    :param since_id: The id of the oldest tweet to start searching from
     :param api: An optional tweepy.API object, if one is not provided it will be created
     :return: A tweepy.SearchResults object
     """
+    latest_tweet_id = get_latest_tweet_id(asset_identifier)
     if not api:
         api = auth_to_api(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
-    return api.search_tweets(
-        q=asset_identifier, lang="en", result_type="popular", since_id=since_id
-    )
 
-
-def get_mixed_tweets_mentioning_asset(
-    asset_identifier: str, since_id: str = None, api: tweepy.API = None
-) -> tweepy.models.SearchResults:
-    """
-    Queries Twitter for tweets that mention an asset_identifier (AAPL, BTC) within the last 7 days, starting at the
-    tweet with the id since_id if one is provided.
-
-    :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
-    :param since_id: The id of the oldest tweet to start searching from
-    :param api: An optional tweepy.API object, if one is not provided it will be created
-    :return: A tweepy.SearchResults object
-    """
-    if not api:
-        api = auth_to_api(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
+    # 100 is the allowed max
     return api.search_tweets(
         q=asset_identifier,
         lang="en",
         result_type="mixed",
-        since_id=since_id,
-        count=300,
+        since_id=latest_tweet_id,
+        count=100,
     )
 
 
-def account_age_days(month: int, year: int) -> int:
+def get_stored_tweet_by_id(tweet_id: int) -> Tweet or None:
     """
-    Gets the month and date, and returns the difference in days from the current date.
+    Gets all stored information available for given tweet.
 
-    :param month: Integer identifier of the month to
-    :param year: Integer identifier of the year
-    :return: difference of days from today.
+    :param tweet_id: The Twitter id for the tweet
+    :return: A Tweet model object
     """
-    start_date = date(year, month, 1)
-    return abs(datetime.datetime.now().date() - start_date).days
+    get_tweet_by_id(tweet_id)
+    return Tweet.query.filter_by(tweet_id=tweet_id).one()
 
 
-def twitter_accounts_mentioning_asset_summary(
-    asset_identifier: str, api: tweepy.API = None
-):
+def get_stored_tweets_mentioning_asset(asset_identifier: str) -> [Tweet]:
+    """
+    Gets all tweets from the database that contain the asset_identifier
+
+    :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
+    :return: A list of Tweet model objects
+    """
+    # TODO: If this starts returning too many results we may want to provide a limit
+    get_tweets_mentioning_asset(asset_identifier)
+    return Tweet.query.filter(Tweet.text.ilike(f"%{asset_identifier}%")).all()
+
+
+def twitter_accounts_mentioning_asset_summary(asset_identifier: str) -> dict:
     """
     Queries Twitter for up to 300 tweets that mention an asset_identifier (AAPL, BTC) within the last 7 days, then
     checks meta data about the posters of those tweets.
 
     :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
-    :param api: An optional tweepy.API object, if one is not provided it will be created
     :return: a Python dictionary with relevant stats
     """
-    results = get_mixed_tweets_mentioning_asset(
-        asset_identifier=asset_identifier, api=api
-    )
+    tweets = get_stored_tweets_mentioning_asset(asset_identifier)
+
     followers_count_list = []
     following_count_list = []
     verified_count = 0
     accounts_age_list = []
 
-    for i in range(len(results)):
-        followers_count_list.append(results[i]._json["user"]["followers_count"])
-        following_count_list.append(results[i]._json["user"]["friends_count"])
-        created_at = results[i]._json["user"]["created_at"].split(" ")
-        month = strptime(created_at[1], "%b").tm_mon
-        year = int(created_at[5])
-        accounts_age_list.append(account_age_days(month, year))
-        if results[i]._json["user"]["verified"]:
+    for tweet in tweets:
+        followers_count_list.append(tweet.tweeter_num_followers)
+        following_count_list.append(tweet.tweeter_num_following)
+        accounts_age_list.append(
+            abs(datetime.datetime.now() - tweet.tweeter_created_at).days
+        )
+        if tweet.tweeter_verified:
             verified_count += 1
 
     if followers_count_list:
