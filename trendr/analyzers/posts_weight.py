@@ -119,22 +119,23 @@ def assign_score_reddit_submission(submission: RedditSubmission):
     :param tweet: tweet object to calculate score for
     """
     subscribers_score = 1
-    if submission.subreddit.subscribers > 1000000:
-        subscribers_score = 10
-    elif submission.subreddit.subscribers > 500000:
-        subscribers_score = 8
-    elif submission.subreddit.subscribers > 100000:
-        subscribers_score = 7
-    elif submission.subreddit.subscribers > 30000:
-        subscribers_score = 6
-    elif submission.subreddit.subscribers > 10000:
-        subscribers_score = 5
-    elif submission.subreddit.subscribers > 5000:
-        subscribers_score = 3
-    elif submission.subreddit.subscribers > 1000:
-        subscribers_score = 2
-    else:
-        subscribers_score = 1
+    if submission.subreddit.subscribers:
+        if submission.subreddit.subscribers > 1000000:
+            subscribers_score = 10
+        elif submission.subreddit.subscribers > 500000:
+            subscribers_score = 8
+        elif submission.subreddit.subscribers > 100000:
+            subscribers_score = 7
+        elif submission.subreddit.subscribers > 30000:
+            subscribers_score = 6
+        elif submission.subreddit.subscribers > 10000:
+            subscribers_score = 5
+        elif submission.subreddit.subscribers > 5000:
+            subscribers_score = 3
+        elif submission.subreddit.subscribers > 1000:
+            subscribers_score = 2
+        else:
+            subscribers_score = 1
 
     comments_count = len(submission.comments)
     score = (
@@ -151,22 +152,24 @@ def assign_score_reddit_comment(comment: RedditComment):
     #   a high weight as well, but do not consider comments seperately
 
     subscribers_score = 1
-    if comment.subreddit.subscribers > 1000000:
-        subscribers_score = 10
-    elif comment.subreddit.subscribers > 500000:
-        subscribers_score = 8
-    elif comment.subreddit.subscribers > 100000:
-        subscribers_score = 7
-    elif comment.subreddit.subscribers > 30000:
-        subscribers_score = 6
-    elif comment.subreddit.subscribers > 10000:
-        subscribers_score = 5
-    elif comment.subreddit.subscribers > 5000:
-        subscribers_score = 3
-    elif comment.subreddit.subscribers > 1000:
-        subscribers_score = 2
-    else:
-        subscribers_score = 1
+
+    if comment.subreddit.subscribers:
+        if comment.subreddit.subscribers > 1000000:
+            subscribers_score = 10
+        elif comment.subreddit.subscribers > 500000:
+            subscribers_score = 8
+        elif comment.subreddit.subscribers > 100000:
+            subscribers_score = 7
+        elif comment.subreddit.subscribers > 30000:
+            subscribers_score = 6
+        elif comment.subreddit.subscribers > 10000:
+            subscribers_score = 5
+        elif comment.subreddit.subscribers > 5000:
+            subscribers_score = 3
+        elif comment.subreddit.subscribers > 1000:
+            subscribers_score = 2
+        else:
+            subscribers_score = 1
 
     score = subscribers_score * comment.polarity * comment.score
     comment.sentiment_score = score
