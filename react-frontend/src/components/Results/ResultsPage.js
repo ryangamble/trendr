@@ -47,7 +47,7 @@ function Results (props) {
     // do this only if user is logged in
     if ((currentUser.email !== '' || currentUser.username !== '') && type && symbol) {
       axios
-        .post('http://localhost:5000/users/result-history', {
+        .post(`${process.env.REACT_APP_API_ROOT}/users/result-history`, {
           symbol: symbol,
           type: type
         }, { withCredentials: true })

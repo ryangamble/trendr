@@ -27,7 +27,7 @@ function MyHistory () {
       console.log('profile fetching user follow list....')
 
       axios
-        .get('http://localhost:5000/users/result-history', {
+        .get(`${process.env.REACT_APP_API_ROOT}/users/result-history`, {
           withCredentials: true
         })
         .then((res) => {

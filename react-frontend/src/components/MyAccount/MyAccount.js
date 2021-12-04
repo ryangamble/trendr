@@ -125,7 +125,7 @@ function MyAccount () {
       withCredentials: true
     };
 
-    axios.post("http://localhost:5000/users/change-email", json, config)
+    axios.post(`${process.env.REACT_APP_API_ROOT}/users/change-email`, json, config)
       .then(res => {
         console.log(res);
         if (res.data && res.data.success) {

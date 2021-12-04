@@ -8,7 +8,6 @@ class CeleryMailUtil(MailUtil):
         # prevent being discovered on app creation
         from trendr.tasks.mail import send_flask_mail
 
-        # http://localhost:5000/auth/reset/*
         html = html.replace(":5000/auth/reset/", ":3000/set-password:")
         html = html.replace(":5000/auth/confirm/", ":3000/confirm-email:")
         html = html.replace(

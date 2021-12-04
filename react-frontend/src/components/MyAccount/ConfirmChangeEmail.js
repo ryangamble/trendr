@@ -14,7 +14,7 @@ function ConfirmChangeEmail () {
   };
 
   axios
-    .get('http://localhost:5000/users/confirm-change-email/' + token.substring(1), {}, config)
+    .get(`${process.env.REACT_APP_API_ROOT}/users/confirm-change-email/` + token.substring(1), {}, config)
     .then((res) => {
       console.log(res)
       history.push('/')

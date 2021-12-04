@@ -21,7 +21,7 @@ function ConfirmationPage () {
     }
 
     axios
-      .post('http://localhost:5000/auth/confirm', json, config)
+      .post(`${process.env.REACT_APP_API_ROOT}/auth/confirm`, json, config)
       .then((res) => {
         alert('We have resent confirmation successfully!')
       })

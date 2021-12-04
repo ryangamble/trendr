@@ -805,7 +805,7 @@ function MentionsGraph (props) {
 
   useEffect(() => {
     axios
-      .get('http://localhost:5000/assets/twitter_mentions_count', {
+      .get(`${process.env.REACT_APP_API_ROOT}/assets/twitter_mentions_count`, {
         method: 'GET',
         params: {
           symbol: props.symbol
@@ -835,7 +835,7 @@ function MentionsGraph (props) {
 
   useEffect(() => {
     axios
-      .get('http://localhost:5000/assets/reddit_mentions_count', {
+      .get(`${process.env.REACT_APP_API_ROOT}/assets/reddit_mentions_count`, {
         method: 'GET',
         params: {
           symbol: props.symbol
