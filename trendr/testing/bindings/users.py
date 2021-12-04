@@ -64,6 +64,7 @@ def set_settings(client, json, as_user=False):
     else:
         return client.put("/users/settings", json=json)
 
+
 def change_email(client, new_email, as_user=False):
     form_data = {
         "email": test_user["email"],
@@ -78,6 +79,7 @@ def change_email(client, new_email, as_user=False):
         return response
     else:
         return client.post("/users/change-email", json=form_data)
+
 
 def confirm_change_email(client, token, as_user=False):
     req_url = f"/users/confirm-change-email/{token}"
