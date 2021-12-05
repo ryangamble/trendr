@@ -15,7 +15,7 @@ import About from './components/About/About'
 import Settings from './components/Settings/Settings'
 
 import { Provider } from 'react-redux'
-import { store } from './components/Theme/store'
+import { store } from './components/Actions/store'
 import MyAccount from './components/MyAccount/MyAccount'
 
 function App () {

@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { useHistory, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { registerUser } from '../Theme/userActions'
-import { toggleTheme, themes } from '../Theme/themeActions'
+import { registerUser } from '../Actions/userActions'
+import { toggleTheme, themes } from '../Actions/themeActions'
 import MyNavBar from '../NavBar/MyNavBar'
 import { Row, Col, Form, Button, Card } from 'react-bootstrap'
 

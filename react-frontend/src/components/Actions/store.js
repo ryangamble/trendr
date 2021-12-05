@@ -1,3 +1,4 @@
+import { initialCurrencyState, currencyReducer } from './currencyActions'
 import { initialThemeState, themeReducer } from './themeActions'
 import { initialUserState, userReducer } from './userActions'
 
@@ -19,6 +20,7 @@ function loadFromLocalStorage () {
     const serializedStore = window.localStorage.getItem('store')
     if (serializedStore === null) return undefined
     if (
+      JSON.parse(serializedStore).currency === undefined ||
       JSON.parse(serializedStore).theme === undefined ||
       JSON.parse(serializedStore).user === undefined
     ) {
@@ -33,17 +35,19 @@ function loadFromLocalStorage () {
     window.localStorage.setItem(
       'store',
       JSON.stringify({
+        currency: { ...initialCurrencyState },
         theme: { ...initialThemeState },
         user: { ...initialUserState }
       })
     )
-    return { theme: { ...initialThemeState }, user: { ...initialUserState } }
+    return { currency: { ...initialCurrencyState }, theme: { ...initialThemeState }, user: { ...initialUserState } }
   }
 }
 
 const persistedState = loadFromLocalStorage()
 
 const rootReducer = combineReducers({
+  currency: currencyReducer,
   theme: themeReducer,
   user: userReducer
 })
