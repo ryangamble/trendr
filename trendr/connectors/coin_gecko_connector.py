@@ -23,12 +23,70 @@ def convert_time(date_list):
     return date_list
 
 
-supported_currencies = ['aed', 'ars', 'aud', 'bch', 'bdt', 'bhd', 'bits', 'bmd',
- 'bnb', 'brl', 'btc', 'cad', 'chf', 'clp', 'cny', 'czk', 'dkk', 'dot', 'eos',
- 'eth', 'eur', 'gbp', 'hkd', 'huf','idr', 'ils', 'inr', 'jpy', 'krw', 'kwd',
-'link', 'lkr', 'ltc', 'mmk', 'mxn', 'myr', 'ngn', 'nok', 'nzd', 'php', 'pkr',
- 'pln', 'rub', 'sar', 'sats', 'sek', 'sgd', 'thb', 'try', 'twd', 'uah', 'usd',
-  'vef', 'vnd', 'xag', 'xau', 'xdr', 'xlm', 'xrp', 'yfi', 'zar']
+supported_currencies = [
+    "aed",
+    "ars",
+    "aud",
+    "bch",
+    "bdt",
+    "bhd",
+    "bits",
+    "bmd",
+    "bnb",
+    "brl",
+    "btc",
+    "cad",
+    "chf",
+    "clp",
+    "cny",
+    "czk",
+    "dkk",
+    "dot",
+    "eos",
+    "eth",
+    "eur",
+    "gbp",
+    "hkd",
+    "huf",
+    "idr",
+    "ils",
+    "inr",
+    "jpy",
+    "krw",
+    "kwd",
+    "link",
+    "lkr",
+    "ltc",
+    "mmk",
+    "mxn",
+    "myr",
+    "ngn",
+    "nok",
+    "nzd",
+    "php",
+    "pkr",
+    "pln",
+    "rub",
+    "sar",
+    "sats",
+    "sek",
+    "sgd",
+    "thb",
+    "try",
+    "twd",
+    "uah",
+    "usd",
+    "vef",
+    "vnd",
+    "xag",
+    "xau",
+    "xdr",
+    "xlm",
+    "xrp",
+    "yfi",
+    "zar",
+]
+
 
 def get_historic_prices(coin, days, currency="usd"):
     """
@@ -41,9 +99,9 @@ def get_historic_prices(coin, days, currency="usd"):
         return None
     cg_api = CoinGeckoAPI()
     coin = coin.lower()
-    prices = cg_api.get_coin_market_chart_by_id(id=coin, vs_currency=currency, days=days)[
-        "prices"
-    ]
+    prices = cg_api.get_coin_market_chart_by_id(
+        id=coin, vs_currency=currency, days=days
+    )["prices"]
     return convert_time(prices)
 
 

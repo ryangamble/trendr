@@ -4,7 +4,7 @@ import { useHistory, Link } from 'react-router-dom'
 import MyNavBar from '../NavBar/MyNavBar'
 
 import { useSelector, useDispatch } from 'react-redux'
-import { registerConfirmation } from '../Theme/userActions'
+import { registerConfirmation } from '../Actions/userActions'
 import axios from 'axios'
 
 function Register () {
