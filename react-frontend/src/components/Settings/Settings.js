@@ -4,6 +4,7 @@ import axios from 'axios'
 import { toggleTheme } from '../Theme/themeActions'
 import { Row, Col, Form, FormCheck, Card } from 'react-bootstrap'
 import { useSelector, useDispatch } from 'react-redux'
+import CurrencySelector from './CurrencySelector'
 
 function Settings () {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
@@ -73,6 +74,7 @@ function Settings () {
                   />
                 </Form.Group>
               </Form>
+              <CurrencySelector />
             </Card.Body>
           </Card>
         </Col>
