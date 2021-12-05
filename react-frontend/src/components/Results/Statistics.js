@@ -64,7 +64,6 @@ function StockStatistics (props) {
             : 'N/A',
           website: data.website
         })
-        props.currencyCallback(data.currency)
 
         axios
           .get('http://localhost:5000/assets/stocks/listed-exchanges', {

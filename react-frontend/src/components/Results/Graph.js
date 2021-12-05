@@ -36,6 +36,7 @@ const FlexRadialChart = makeVisFlexible(RadialChart)
 // Used for both price and volume charts for stocks and cryptos
 function PriceVolumeGraph (props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
+  const currentCurrency = useSelector((state) => state.currency.currentCurrency)
 
   const [graphData, setGraphData] = useState([])
 
@@ -70,6 +71,7 @@ function PriceVolumeGraph (props) {
   }, [])
 
   useEffect(() => {
+    console.log(props.currency)
     getMinMax()
     console.log('changing ' + props.graphType + ' period to ' + period)
   }, [period, loadedCount])
@@ -80,6 +82,7 @@ function PriceVolumeGraph (props) {
         method: 'GET',
         params: {
           symbol: props.symbol,
+          currency: currentCurrency,
           period: timePeriod
         }
       })
@@ -164,6 +167,7 @@ function PriceVolumeGraph (props) {
         method: 'GET',
         params: {
           id: props.symbol,
+          currency: currentCurrency,
           days: timePeriod
         }
       })
@@ -261,7 +265,7 @@ function PriceVolumeGraph (props) {
     }
     const options = {
       style: 'currency',
-      currency: props.currency
+      currency: currentCurrency.toLowerCase()
     }
     return num.toLocaleString('en-US', options)
   }

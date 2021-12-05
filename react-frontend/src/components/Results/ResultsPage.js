@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { useParams, Link } from 'react-router-dom'
 import MyNavBar from '../NavBar/MyNavBar'
 import TweetSummary from './TweetSummary'
-import { Container, Col, Row, Spinner } from 'react-bootstrap'
+import { Container, Col, Row } from 'react-bootstrap'
 import {
   SentimentGraph,
   PriceVolumeGraph,
@@ -16,19 +16,15 @@ import axios from 'axios'
 
 function Results (props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
+  // const currentCurrency = useSelector((state) => state.currency.currentCurrency)
   // current user
   const currentUser = useSelector((state) => state.user)
 
   const { id } = useParams()
-  const [currency, setCurrency] = useState(null)
   const [isFollow, setIsFollow] = useState(false)
   const [type, setType] = useState(null)
   const [symbol, setSymbol] = useState(null)
   const [addr, setAddr] = useState(null)
-
-  const setCurrencyCallback = (curr) => {
-    setCurrency(curr)
-  }
 
   useEffect(() => {
     console.log('id is', id)
@@ -122,7 +118,6 @@ function Results (props) {
             <Col xs={12} sm={12} md={12} lg={6}>
               <StockStatistics
                 symbol={symbol}
-                currencyCallback={setCurrencyCallback}
               />
               <br />
               <SentimentGraph symbol={symbol} />
@@ -131,31 +126,14 @@ function Results (props) {
               <br />
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
-              {currency
-                ? (
                 <PriceVolumeGraph
                   symbol={symbol}
-                  currency={currency}
                   assetType="stock"
                   graphType="price"
                   color="#0D6EFD"
                 />
-                  )
-                : (
-                <Container fluid>
-                  <Spinner animation="border" />
-                </Container>
-                  )}
               <br />
-              {currency
-                ? (
                 <PriceVolumeGraph symbol={symbol} assetType="stock" graphType="volume" color="orange" />
-                  )
-                : (
-                <Container fluid>
-                  <Spinner animation="border" />
-                </Container>
-                  )}
               <br />
               <MentionsGraph symbol={symbol} />
               <br />
