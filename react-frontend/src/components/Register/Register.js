@@ -3,7 +3,8 @@ import { Form, Button, Col, Row, Card } from 'react-bootstrap'
 import { useHistory, Link } from 'react-router-dom'
 import MyNavBar from '../NavBar/MyNavBar'
 
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { registerConfirmation } from '../Theme/userActions'
 import axios from 'axios'
 
 function Register () {
@@ -14,6 +15,7 @@ function Register () {
   const [password2, setPassword2] = useState('')
 
   const history = useHistory()
+  const dispatch = useDispatch()
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -37,7 +39,9 @@ function Register () {
     axios
       .post('http://localhost:5000/auth/register', json, config)
       .then((res) => {
-        history.push('/login')
+        // After successully register the user, save the email and go to confirmation page
+        dispatch(registerConfirmation(email))
+        history.push('/confirmation')
       })
       .catch((error) => {
         alert(JSON.stringify(error.response.data.response.errors))

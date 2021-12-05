@@ -23,6 +23,8 @@ jobs:
         echo TWITTER_CONSUMER_KEY=${{ secrets.TWITTER_CONSUMER_KEY }} >> .env/.env_apis
         echo TWITTER_CONSUMER_SECRET=${{ secrets.TWITTER_CONSUMER_SECRET }} >> .env/.env_apis
         echo ETHPLORER_KEY=${{ secrets.ETHPLORER_KEY }} >> .env/.env_apis
+        echo FINNHUB_KEY=${{ secrets.FINNHUB_KEY }} >> .env/.env_apis
+        echo TWITTER_BEARER_TOKEN=${{ secrets.TWITTER_BEARER_TOKEN }} >> .env/.env_apis
 
     - name: Create .env_mail_secrets
       run: |

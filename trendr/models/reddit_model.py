@@ -1,12 +1,16 @@
 import enum
 from sqlalchemy import Enum
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.types import Integer, Text, DateTime, String, Float
 from trendr.extensions import db
 from trendr.models.association_tables import (
     search_reddit_submission_association,
     search_reddit_comment_association,
+    asset_reddit_submission_association,
+    asset_reddit_comment_association,
+    sentiment_data_point_reddit_submission_association,
+    sentiment_data_point_reddit_comment_association,
 )
 
 
@@ -22,14 +26,16 @@ class RedditSubmission(db.Model):
     reddit_id = db.Column(String, nullable=False, unique=True)
     permalink = db.Column(String, nullable=False)
     title = db.Column(String, nullable=False)
-    text = db.Column(Text, nullable=False)
+    text = db.Column(Text, nullable=True)
     type = db.Column(Enum(RedditSubmissionType))
     posted_at = db.Column(DateTime, nullable=False)
     up_votes = db.Column(Integer, nullable=True)
     down_votes = db.Column(Integer, nullable=True)
     score = db.Column(Integer, nullable=True)
+    embed_url = db.Column(Text, nullable=False)
     polarity = db.Column(Float, nullable=True)
     subjectivity = db.Column(Float, nullable=True)
+    sentiment_score = db.Column(Float, nullable=True)
 
     # There is a one-many relationship between subreddits and reddit_submissions
     subreddit_id = db.Column(Integer, ForeignKey("subreddit.id"))
@@ -42,6 +48,20 @@ class RedditSubmission(db.Model):
     searches = relationship(
         "Search",
         secondary=search_reddit_submission_association,
+        back_populates="reddit_submissions",
+    )
+
+    # There is a one-way many-many relationship between reddit_submission and asset
+    assets = relationship(
+        "Asset",
+        secondary=asset_reddit_submission_association,
+        backref=backref("reddit_submissions", lazy=None),
+    )
+
+    # There is a many-many relationship between sentiment_data_points and tweets
+    sentiment_data_points = relationship(
+        "SentimentDataPoint",
+        secondary=sentiment_data_point_reddit_submission_association,
         back_populates="reddit_submissions",
     )
 
@@ -58,13 +78,15 @@ class RedditComment(db.Model):
 
     id = db.Column(Integer, primary_key=True, autoincrement="auto")
     reddit_id = db.Column(String, nullable=False, unique=True)
-    text = db.Column(Text, nullable=False)
+    text = db.Column(Text, nullable=True)
     posted_at = db.Column(DateTime, nullable=False)
     up_votes = db.Column(Integer, nullable=True)
     down_votes = db.Column(Integer, nullable=True)
     score = db.Column(Integer, nullable=True)
+    embed_url = db.Column(Text, nullable=False)
     polarity = db.Column(Float, nullable=True)
     subjectivity = db.Column(Float, nullable=True)
+    sentiment_score = db.Column(Float, nullable=True)
 
     # There is a one-many relationship between reddit posts and reddit comments
     submission_id = db.Column(Integer, ForeignKey("reddit_submission.id"))
@@ -78,6 +100,20 @@ class RedditComment(db.Model):
     searches = relationship(
         "Search",
         secondary=search_reddit_comment_association,
+        back_populates="reddit_comments",
+    )
+
+    # There is a one-way many-many relationship between reddit_comment and asset
+    assets = relationship(
+        "Asset",
+        secondary=asset_reddit_comment_association,
+        backref=backref("reddit_comments", lazy=None),
+    )
+
+    # There is a many-many relationship between sentiment_data_points and tweets
+    sentiment_data_points = relationship(
+        "SentimentDataPoint",
+        secondary=sentiment_data_point_reddit_comment_association,
         back_populates="reddit_comments",
     )
 

@@ -1,24 +1,23 @@
+import typing as t
 from typing import Union
-from flask_security import hash_password
+from flask_security.utils import hash_password
 from sqlalchemy.orm.exc import NoResultFound
-
 from trendr.extensions import db, security
 from trendr.models.asset_model import Asset
 from trendr.models.association_tables import user_asset_association
-from trendr.models.user_model import User, Role
-
-user_datastore = security.datastore
+from trendr.models.user_model import User
+from trendr.models.result_history_model import ResultHistory
 
 
 def find_user(email):
-    return user_datastore.find_user(email=email)
+    return security.datastore.find_user(email=email)
 
 
 def create_user(email, password, roles=None, **kwargs):
     if roles is not None:
         kwargs["roles"] = roles
 
-    new_user = user_datastore.create_user(
+    new_user = security.datastore.create_user(
         email=email, password=hash_password(password), **kwargs
     )
     db.session.commit()
@@ -130,3 +129,41 @@ def set_settings(user: User, settings: dict):
             setattr(user, key, val)
 
     db.session.commit()
+
+
+def get_result_history(user: User) -> [dict]:
+    """
+    Gets result history objects for a user
+
+    :param user: user to get result history for
+    :return: list of dictionaries containing result history fields
+    """
+    history_dicts = []
+    result_histories = user.result_histories
+    for result_history in result_histories:
+        history_dict = {
+            "ran_at": result_history.ran_at.strftime("%m/%d/%Y, %H:%M:%S"),
+            "symbol": result_history.symbol,
+            "type": result_history.type,
+        }
+        history_dicts.append(history_dict)
+    return history_dicts
+
+
+def add_result_history(user: User, result_history: dict):
+    """
+    Adds result history object to the user
+
+    :param user: user to add result history to
+    :param result_history: dictionary containing result history fields
+    """
+    new_result_history = ResultHistory(
+        symbol=result_history["symbol"],
+        type=result_history["type"],
+        user_id=user.id,
+        user=user,
+    )
+    user.result_histories.append(new_result_history)
+    db.session.add(new_result_history)
+    db.session.commit()
+    return True

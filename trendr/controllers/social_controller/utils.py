@@ -1,8 +1,6 @@
-from re import search
 import tweepy
 import pmaw
 import functools
-import inspect
 from typing import Union
 
 from .reddit_controller import store_reddit_results

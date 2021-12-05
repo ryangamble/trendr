@@ -1,5 +1,8 @@
 import logging
 import os
+import pathlib
+from os import listdir
+from os.path import isfile, join
 from flask import Flask
 from flask_cors import CORS
 from flask_security import SQLAlchemyUserDatastore
@@ -11,6 +14,9 @@ from trendr.models.association_tables import (
     search_tweet_association,
     search_reddit_submission_association,
     search_reddit_comment_association,
+    sentiment_data_point_tweet_association,
+    sentiment_data_point_reddit_submission_association,
+    sentiment_data_point_reddit_comment_association,
 )
 from trendr.models.reddit_model import (
     RedditSubmissionType,
@@ -19,6 +25,7 @@ from trendr.models.reddit_model import (
 )
 from trendr.models.tweet_model import Tweet
 from trendr.models.search_model import Search
+from trendr.models.sentiment_model import SentimentDataPoint
 from trendr.models.user_model import User, Role
 
 
@@ -116,6 +123,19 @@ def init_celery(app=None):
     return celery
 
 
+def load_env_files():
+    env_path = pathlib.Path(__file__).parent.resolve() / "../.env"
+    env_files = [
+        join(env_path, f) for f in listdir(env_path) if isfile(join(env_path, f))
+    ]
+    for env_file in env_files:
+        with open(env_file) as f:
+            for line in f:
+                key, value = line.strip().split("=")
+                os.environ[key] = value
+
+
 if __name__ == "__main__":
+    load_env_files()
     app = create_app()
     app.run(host="0.0.0.0", debug=True, port=5000)

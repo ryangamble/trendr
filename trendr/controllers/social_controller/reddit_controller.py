@@ -129,8 +129,10 @@ def store_reddit_comments(
     to_add = []
 
     search = None
+    asset = None
     if search_id is not None:
         search = Search.query.filter_by(id=search_id).one()
+        asset = search.asset
 
     for result in comments:
 
@@ -148,6 +150,8 @@ def store_reddit_comments(
 
             if search:
                 search.reddit_comments.append(existing)
+            if asset and asset not in existing.assets:
+                existing.assets.append(asset)
         else:
             # generate new db row
             new_comment = RedditComment(
@@ -155,7 +159,11 @@ def store_reddit_comments(
                 text=result["body"],
                 posted_at=datetime.datetime.fromtimestamp(result["created_utc"]),
                 score=result["score"],
+                embed_url=f"https://www.reddit.com{result['permalink']}",
             )
+
+            if asset:
+                new_comment.assets.append(asset)
 
             # assign submission if exists
             existing_submission = RedditSubmission.query.filter_by(
@@ -214,40 +222,50 @@ def store_reddit_submissions(
     res_ids = []
     to_add = []
 
+    search = None
+    asset = None
+
     if search_id is not None:
         search = Search.query.filter_by(id=search_id).one()
+        asset = search.asset
 
     for result in submissions:
-
+        res_text = result["selftext"] if "selftext" in result else None
         existing = RedditSubmission.query.filter_by(reddit_id=result["id"]).first()
         if existing:
             res_ids.append(existing.id)
 
             # overwrite with new data
             if overwrite:
-                if existing.text != result["selftext"]:
+                if existing.text != res_text:
                     # Only overwrite on change
                     existing.sentiment_score = None
-                existing.text = result["selftext"]
+                existing.text = res_text
                 existing.score = result["score"]
 
             if search:
                 search.reddit_submissions.append(existing)
+            if asset and asset not in existing.assets:
+                existing.assets.append(asset)
         else:
             # generate new db row
             new_submission = RedditSubmission(
                 reddit_id=result["id"],
                 permalink=result["permalink"],
                 title=result["title"],
-                text=result["selftext"],
+                text=res_text,
                 type=(
                     RedditSubmissionType.TEXT
-                    if result["selftext"]
+                    if res_text
                     else RedditSubmissionType.OTHER
                 ),
                 posted_at=datetime.datetime.fromtimestamp(result["created_utc"]),
                 score=result["score"],
+                embed_url=result["url"],
             )
+
+            if asset:
+                new_submission.assets.append(asset)
 
             # assign author
             author = store_reddit_author(username=result["author"])

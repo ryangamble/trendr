@@ -19,6 +19,9 @@ class User(db.Model, fsqla.FsUserMixin):
     # There is a one-many relationship between users and searches
     searches = relationship("Search", back_populates="user")
 
+    # There is a one-many relationship between users and result histories
+    result_histories = relationship("ResultHistory", back_populates="user")
+
     # There is a many-many relationship between users and assets
     assets = relationship(
         "Asset",
