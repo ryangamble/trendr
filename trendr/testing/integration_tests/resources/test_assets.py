@@ -78,23 +78,18 @@ def test_crypto_volume_history(client):
 
 
 def test_twitter_sentiment(client, db):
-    response = asset_bindings.twitter_sentiment(client, params={"query": "AAPL"})
+    response = asset_bindings.twitter_sentiment(client, params={"symbol": "AAPL"})
+    assert response.status_code == 200
     resp_data = response.json
-    assert response.status_code == 200 or 302
-    if response.status_code == 200:
-        assert len(resp_data) > 0
+    print(f"sentiment: {resp_data}")
+    assert len(resp_data) > 0
 
 
-def test_reddit_sentiment(client, db):
-    response = asset_bindings.reddit_sentiment(client, params={"query": "AAPL"})
-    resp_data = response.json
-    assert response.status_code == 200 or 302
-    if response.status_code == 200:
-        assert len(resp_data) > 0
-
-
-def test_tweet_summary(client):
+def test_tweet_summary(client, db):
     response = asset_bindings.tweet_summary(client, asset_identifier="AAPL")
     assert response.status_code == 200
     resp_data = response.json
-    assert len(resp_data) > 0
+    assert "follower_stats" in resp_data
+    assert "following_stats" in resp_data
+    assert "accounts_age_stats" in resp_data
+    assert "verified_count" in resp_data

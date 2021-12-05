@@ -119,7 +119,7 @@ Reddit API secrets
 """
 TWITTER_CONSUMER_KEY = fetch_config("TWITTER_CONSUMER_KEY")
 TWITTER_CONSUMER_SECRET = fetch_config("TWITTER_CONSUMER_SECRET")
-
+TWITTER_BEARER_TOKEN = fetch_config("TWITTER_BEARER_TOKEN")
 """
 Reddit API secrets
 """

@@ -7,42 +7,37 @@ import tweepy
 from tweepy import models
 
 import trendr.exceptions
-from trendr.config import TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET
 from trendr.connectors import twitter_connector
+from trendr.models.tweet_model import Tweet
 
 
 # Positive tests
 
 
-@pytest.fixture
-def twitter_api() -> tweepy.API:
-    """
-    Creates a tweepy.API object to be used by
-    """
-    yield twitter_connector.auth_to_api(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
-
-
-def test_get_tweet_by_id_positive(twitter_api: tweepy.API):
+def test_get_tweet_by_id_positive(client, db):
     """
     Tests that if you attempt to get a tweet by id, then you get that tweet back
     """
-    tweets = twitter_connector.get_tweets_mentioning_asset("and", api=twitter_api)
-    tweet_id = tweets[0].__getattribute__("id")
-    tweet = twitter_connector.get_tweet_by_id(tweet_id, api=twitter_api)
+    tweet_id = 1464764077666881542
+    expected_tweet_text = "Just checked, and AAPL’s at $156.81. (It dropped $5.13.)"
+    tweet = twitter_connector.get_stored_tweet_by_id(tweet_id)
     assert tweet
-    assert isinstance(tweet, tweepy.models.Status)
-    assert tweet.__getattribute__("id") == tweet_id
+    assert isinstance(tweet, Tweet)
+    assert tweet.tweet_id == tweet_id
+    assert tweet.text == expected_tweet_text
 
 
-def test_get_tweets_mentioning_asset_positive(twitter_api: tweepy.API):
+def test_get_tweets_mentioning_asset_positive(client, db):
     """
     Tests that if you attempt to get tweets with a search string, then you get some results back
     """
     search_term = "apple"
-    tweets = twitter_connector.get_tweets_mentioning_asset(search_term, api=twitter_api)
+    tweets = twitter_connector.get_stored_tweets_mentioning_asset(search_term)
     assert tweets
-    assert isinstance(tweets, tweepy.models.SearchResults)
-    assert tweets.__getattribute__("count") >= 1
+    assert isinstance(tweets, list)
+    for tweet in tweets:
+        assert isinstance(tweet, Tweet)
+    assert len(tweets) >= 1
     # Tweets are returned when attributes other than text contain the search term such as tweet.entities.urls so we
     # can't always assert the search term will be in the tweet text
 
@@ -50,13 +45,13 @@ def test_get_tweets_mentioning_asset_positive(twitter_api: tweepy.API):
 # Negative tests
 
 
-def test_get_tweet_by_id_invalid_id(twitter_api: tweepy.API):
+def test_get_tweet_by_id_invalid_id():
     """
     Tests that when you try to retrieve a tweet that doesn't exist, you get a TweepError
     """
     tweet_id = -1
     with pytest.raises(tweepy.errors.TweepyException):
-        twitter_connector.get_tweet_by_id(tweet_id, api=twitter_api)
+        twitter_connector.get_tweet_by_id(tweet_id)
 
 
 def test_get_tweet_by_id_unauthenticated():

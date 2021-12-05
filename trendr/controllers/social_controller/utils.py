@@ -1,4 +1,3 @@
-from re import search
 import tweepy
 import pmaw
 import functools

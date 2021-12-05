@@ -26,7 +26,7 @@ class RedditSubmission(db.Model):
     reddit_id = db.Column(String, nullable=False, unique=True)
     permalink = db.Column(String, nullable=False)
     title = db.Column(String, nullable=False)
-    text = db.Column(Text, nullable=False)
+    text = db.Column(Text, nullable=True)
     type = db.Column(Enum(RedditSubmissionType))
     posted_at = db.Column(DateTime, nullable=False)
     up_votes = db.Column(Integer, nullable=True)
@@ -78,7 +78,7 @@ class RedditComment(db.Model):
 
     id = db.Column(Integer, primary_key=True, autoincrement="auto")
     reddit_id = db.Column(String, nullable=False, unique=True)
-    text = db.Column(Text, nullable=False)
+    text = db.Column(Text, nullable=True)
     posted_at = db.Column(DateTime, nullable=False)
     up_votes = db.Column(Integer, nullable=True)
     down_votes = db.Column(Integer, nullable=True)
