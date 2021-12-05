@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useHistory, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
+import { updateCurrency } from '../Actions/currencyActions'
 import { registerUser, registerConfirmation } from '../Actions/userActions'
 import { toggleTheme, themes } from '../Actions/themeActions'
 import MyNavBar from '../NavBar/MyNavBar'
@@ -56,6 +57,7 @@ function Login () {
             ) {
               dispatch(toggleTheme());
             }
+            dispatch(updateCurrency(response.data.currency));
           })
           .catch((err) => {
             console.log(err);

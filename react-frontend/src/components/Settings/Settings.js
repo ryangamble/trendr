@@ -3,9 +3,8 @@ import MyNavBar from '../NavBar/MyNavBar'
 import axios from 'axios'
 import { toggleTheme } from '../Actions/themeActions'
 import { updateCurrency } from '../Actions/currencyActions'
-import { Row, Col, Form, FormCheck, Card } from 'react-bootstrap'
+import { Row, Col, Form, FormCheck, Card, FloatingLabel } from 'react-bootstrap'
 import { useSelector, useDispatch } from 'react-redux'
-import CurrencySelector from './CurrencySelector'
 
 function Settings () {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
@@ -69,7 +68,10 @@ function Settings () {
                 <Form.Group className="mb-3" controlId="formDarkMode">
                   <FormCheck
                     type="switch"
-                    style={{ color: currentTheme.textColorLightBackground }}
+                    style={{
+                      color: currentTheme.textColorLightBackground,
+                      marginBottom: '50px'
+                    }}
                     label= {currentTheme.name + ' Mode'}
                     variant={currentTheme.variant}
                     checked={(currentTheme.name === 'Dark')}
@@ -80,52 +82,56 @@ function Settings () {
                       dispatch(toggleTheme())
                     }}
                   />
-                  <Form.Select
-                      aria-label="Currency"
-                      onChange={(e) => {
-                        storeSettingsToBackend(currentTheme.name === 'Dark', e.target.value)
-                        dispatch(updateCurrency(e.target.value))
-                      }}
-                  >
-                    <option selected value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                    <option value="JPY">JPY</option>
-                    <option value="GBP">GBP</option>
-                    <option value="AUD">AUD</option>
-                    <option value="CAD">CAD</option>
-                    <option value="CHF">CHF</option>
-                    <option value="CNY">CNY</option>
-                    <option value="HKD">HKD</option>
-                    <option value="NZD">NZD</option>
-                    <option value="SEK">SEK</option>
-                    <option value="KRW">KRW</option>
-                    <option value="SGD">SGD</option>
-                    <option value="NOK">NOK</option>
-                    <option value="MXN">MXN</option>
-                    <option value="INR">INR</option>
-                    <option value="RUB">RUB</option>
-                    <option value="ZAR">ZAR</option>
-                    <option value="TRY">TRY</option>
-                    <option value="BRL">BRL</option>
-                    <option value="TWD">TWD</option>
-                    <option value="DKK">DKK</option>
-                    <option value="PLN">PLN</option>
-                    <option value="THB">THB</option>
-                    <option value="IDR">IDR</option>
-                    <option value="HUF">HUF</option>
-                    <option value="CZK">CZK</option>
-                    <option value="ILS">ILS</option>
-                    <option value="CLP">CLP</option>
-                    <option value="PHP">PHP</option>
-                    <option value="AED">AED</option>
-                    <option value="COP">COP</option>
-                    <option value="SAR">SAR</option>
-                    <option value="MYR">MYR</option>
-                    <option value="RON">RON</option>
-                  </Form.Select>
+                  <FloatingLabel controlId="floatingSelectCurrency" label="Currency" style={{
+                    color: "#777"
+                  }}>
+                    <Form.Select
+                        aria-label="Select Currency"
+                        defaultValue={currentCurrency}
+                        onChange={(e) => {
+                          storeSettingsToBackend(currentTheme.name === 'Dark', e.target.value)
+                          dispatch(updateCurrency(e.target.value))
+                        }}
+                    >
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="JPY">JPY</option>
+                      <option value="GBP">GBP</option>
+                      <option value="AUD">AUD</option>
+                      <option value="CAD">CAD</option>
+                      <option value="CHF">CHF</option>
+                      <option value="CNY">CNY</option>
+                      <option value="HKD">HKD</option>
+                      <option value="NZD">NZD</option>
+                      <option value="SEK">SEK</option>
+                      <option value="KRW">KRW</option>
+                      <option value="SGD">SGD</option>
+                      <option value="NOK">NOK</option>
+                      <option value="MXN">MXN</option>
+                      <option value="INR">INR</option>
+                      <option value="RUB">RUB</option>
+                      <option value="ZAR">ZAR</option>
+                      <option value="TRY">TRY</option>
+                      <option value="BRL">BRL</option>
+                      <option value="TWD">TWD</option>
+                      <option value="DKK">DKK</option>
+                      <option value="PLN">PLN</option>
+                      <option value="THB">THB</option>
+                      <option value="IDR">IDR</option>
+                      <option value="HUF">HUF</option>
+                      <option value="CZK">CZK</option>
+                      <option value="ILS">ILS</option>
+                      <option value="CLP">CLP</option>
+                      <option value="PHP">PHP</option>
+                      <option value="AED">AED</option>
+                      <option value="COP">COP</option>
+                      <option value="SAR">SAR</option>
+                      <option value="MYR">MYR</option>
+                      <option value="RON">RON</option>
+                    </Form.Select>
+                  </FloatingLabel>
                 </Form.Group>
               </Form>
-              <CurrencySelector />
             </Card.Body>
           </Card>
         </Col>

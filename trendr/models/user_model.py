@@ -15,7 +15,7 @@ class User(db.Model, fsqla.FsUserMixin):
     # settings
     _settings_attrs = ("dark_mode", "currency")
     dark_mode = db.Column(Boolean, nullable=False, default=False)
-    currency = db.Column(String, nullable=False, default='usd')
+    currency = db.Column(String, nullable=False, default="usd")
 
     # There is a one-many relationship between users and searches
     searches = relationship("Search", back_populates="user")
