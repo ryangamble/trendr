@@ -443,26 +443,31 @@ function SentimentGraph (props) {
 
   useEffect(() => {
     fetchSentimentData('twitter')
-    fetchSentimentData('reddit')
+    // fetchSentimentData('reddit')
   }, [])
 
   /*
     attempts to fetch the data, if its not there, backend calls perform_search_asset
   */
   function fetchSentimentData (source) {
-    let url = ''
-    source === 'reddit'
-      ? url = 'http://localhost:5000/assets/reddit-sentiment'
-      : url = 'http://localhost:5000/assets/twitter-sentiment'
+    // let url = ''
+    // source === 'reddit'
+    //   ? url = 'http://localhost:5000/assets/reddit-sentiment'
+    //   : url = 'http://localhost:5000/assets/twitter-sentiment'
 
-    axios
-      .get(url, {
-        method: 'GET',
-        params: {
-          query: props.symbol
-        }
-      })
+    var currentDate = Math.floor(Date.now() / 1000);
+    var lastWeekDate = Math.floor((Date.now() - 604800000) / 1000);
+
+    axios('http://localhost:5000/assets/sentiment_values', {
+      method: 'GET',
+      params: {
+        asset_identifier: props.symbol,
+        start_timestamp: lastWeekDate,
+        end_timestamp: currentDate
+      }
+    })
       .then((res) => {
+        console.log("SENTIMENT DATA")
         console.log(res.data)
         return JSON.parse(JSON.stringify(res.data))
       })
@@ -477,8 +482,6 @@ function SentimentGraph (props) {
               size: 1
             })
           }
-        } else {
-          setTimeout(() => fetchSentimentData(source), 20000)
         }
         console.log(source + ' sentiment analysis points')
         console.log(points)

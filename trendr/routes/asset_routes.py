@@ -21,7 +21,9 @@ from trendr.connectors import (
 )
 from trendr.extensions import db
 from trendr.models.asset_model import Asset
-from trendr.models.search_model import SearchType
+from trendr.models.search_model import SearchType, Search
+from trendr.models.tweet_model import Tweet
+from trendr.models.reddit_model import RedditComment
 from trendr.tasks.social.twitter.gather import store_tweet_by_id
 from trendr.tasks.social.reddit.gather import store_comments, store_submissions
 from trendr.tasks.search import perform_search
@@ -56,17 +58,19 @@ def fear_greed():
     return json_response(response_body, status=200)
 
 
-@assets.route("/sentiment_values", methods=["POST"])
+@assets.route("/sentiment_values", methods=["GET"])
 def sentiment_values():
     current_app.logger.info(f"Getting sentiment data points")
 
-    content = request.get_json()
+    content = request.args
+    print(content)
     params = {"asset_identifier": None, "start_timestamp": None, "end_timestamp": None}
     for param in params:
         if param in content:
             val = content[param]
             if param.endswith("timestamp"):
-                val = datetime.fromtimestamp(val)
+                val = datetime.fromtimestamp(int(val))
+                print(val)
             params[param] = val
         else:
             current_app.logger.error(f"No {param} given")
@@ -92,7 +96,7 @@ def sentiment_values():
 def sentiment_important_posts():
     current_app.logger.info(f"Getting sentiment data points")
 
-    content = request.get_json()
+    content = request.args
     params = {"asset_identifier": None, "timestamp": None}
     for param in params:
         if param in content:
@@ -439,12 +443,6 @@ def twitter_sentiment():
         .order_by(Search.ran_at.desc())
         .limit(2)
     )
-    response_body = []
-    results = twitter_connector.get_stored_tweets_mentioning_asset(symbol)
-    for result in results:
-        text_clean = re.sub(r"@[A-Za-z0-9]+", "", result.text)
-        text_clean = re.sub(r"#", "", text_clean)
-        text_clean = re.sub("\n", " ", text_clean)
 
     failed_searches = 0
     for search in recent_searches:
