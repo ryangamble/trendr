@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import MyNavBar from '../NavBar/MyNavBar'
 import { Row, Col, Form, Button, Card } from 'react-bootstrap'
 import axios from 'axios'
+import { removeUser } from '../Theme/userActions'
 
 function SetPassword () {
   const { resetCode } = useParams()
@@ -12,6 +13,7 @@ function SetPassword () {
   const [password2, setPassword2] = useState('')
 
   const history = useHistory()
+  const dispatch = useDispatch()
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -37,7 +39,26 @@ function SetPassword () {
         config
       )
       .then((res) => {
-        history.push('/login')
+        // Upon success, we will logout, then go to login page
+        axios
+          .post(
+            'http://localhost:5000/auth/logout',
+            {},
+            { withCredentials: true }
+          )
+          .then((res) => {
+            // remove the global user
+            dispatch(removeUser())
+
+            history.push('/login')
+          })
+          .catch((error) => {
+            //alert(JSON.stringify(error.response.data.response.errors))
+            // if we get an error here we are already logged out...
+            // remove the global user
+            dispatch(removeUser())
+            history.push('/login')
+          })
       })
       .catch((error) => {
         alert(JSON.stringify(error.response.data.response.errors))
