@@ -23,7 +23,7 @@ def populate_database_with_symbols():
     for token in tokens:
         symbol = token["symbol"]
         asset = Asset(
-            identifier="cryto:" + symbol,
+            identifier="crypto:" + symbol,
             coinGeckoid=token["id"],
             reddit_q=symbol,
             twitter_q=symbol,
@@ -31,12 +31,12 @@ def populate_database_with_symbols():
         try:
             db.session.add(asset)
         except Exception as e:
-            return "Asseet Table have been populated previously"
+            return "Asset Table have been populated previously"
 
     try:
         db.session.commit()
     except Exception as e:
-        return "Asseet Table have been populated previously"
+        return "Asset Table have been populated previously"
 
     yahoo_stocks_path = os.path.join(SITE_ROOT, "yahoo_stocks.csv")
     df_stocks = pd.read_csv(yahoo_stocks_path)
