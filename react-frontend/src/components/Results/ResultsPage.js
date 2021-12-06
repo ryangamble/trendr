@@ -79,76 +79,13 @@ function Results (props) {
     }
   }, [])
 
-  if (type && symbol) {
-    if (type === 'crypto') {
-      return renderCryptoResults()
-    } else {
-      return renderStockResults()
-    }
-  } else {
-    return null
-  }
-
-  function renderStockResults () {
-    return (
-      <div
-        className="resultsPage"
-        style={{
-          background: currentTheme.background,
-          color: currentTheme.foreground
-        }}
-      >
-        <MyNavBar />
-        <br />
-        <br />
-        <Container className="resultsContainer">
-          <Row>
-            <Col xs={12} className="resultsHeader">
-              <h3 style={{ marginRight: 10 }}>Showing Results For: {symbol}</h3>
-              {currentUser.username === '' &&
-              currentUser.email === ''
-                ? null
-                : (
-                <FollowBtn id={id} isFollow={isFollow} />
-                  )}
-            </Col>
-          </Row>
-          <br />
-          <Row>
-            <Col xs={12} sm={12} md={12} lg={6}>
-              <StockStatistics
-                symbol={symbol}
-              />
-              <br />
-              <SentimentGraph symbol={symbol} />
-              <br />
-              <TweetSummary symbol={symbol}/>
-              <br />
-            </Col>
-            <Col xs={12} sm={12} md={12} lg={6}>
-                <PriceVolumeGraph
-                  symbol={symbol}
-                  assetType="stock"
-                  graphType="price"
-                  color="#0D6EFD"
-                />
-              <br />
-                <PriceVolumeGraph symbol={symbol} assetType="stock" graphType="volume" color="orange" />
-              <br />
-              <MentionsGraph symbol={symbol} />
-              <br />
-            </Col>
-          </Row>
-          <Link to="../../home" style={{ color: currentTheme.linkColor }}>
-            Return to Home
-          </Link>
-        </Container>
-      </div>
-    )
-  }
-
-  function renderCryptoResults () {
-    return (
+  return (
+    <>
+    {(symbol === null || type === null)
+      ? (
+          null
+        )
+      : (
       <div
         className="resultsPage"
         style={{
@@ -176,7 +113,7 @@ function Results (props) {
           <br />
           <Row>
             <Col xs={12} sm={12} md={12} lg={6}>
-              <CoinStatistics id={symbol} />
+              {type === 'crypto' ? <CoinStatistics id={symbol} /> : <StockStatistics symbol={symbol} />}
               <br />
               <SentimentGraph symbol={symbol} />
               <br />
@@ -190,9 +127,9 @@ function Results (props) {
               )}
             </Col>
             <Col xs={12} sm={12} md={12} lg={6}>
-              <PriceVolumeGraph symbol={symbol} currency="usd" assetType="crypto" graphType="price" color="#228B22" />
+              <PriceVolumeGraph symbol={symbol} assetType={type} graphType="price" color="#228B22" />
               <br />
-              <PriceVolumeGraph symbol={symbol} assetType="crypto" graphType="volume" color="orange" />
+              <PriceVolumeGraph symbol={symbol} assetType={type} graphType="volume" color="orange" />
               <br />
               <MentionsGraph symbol={symbol} />
               <br />
@@ -208,9 +145,11 @@ function Results (props) {
             Return to Home
           </Link>
         </Container>
+
       </div>
-    )
-  }
+        )}
+    </>
+  )
 }
 
 export default Results

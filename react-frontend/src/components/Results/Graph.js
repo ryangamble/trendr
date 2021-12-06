@@ -44,29 +44,29 @@ function PriceVolumeGraph (props) {
   const [max, setMax] = useState(0)
   const [loadedCount, setLoadedCount] = useState(0)
   const [crosshairValues, setCrosshairValues] = useState([])
-  const [period, setPeriod] = props.assetType === 'stock' ? useState('1d') : useState('1')
+  const [period, setPeriod] = props.assetType === 'crypto' ? useState('1') : useState('1d')
 
-  const periodDisplay = props.assetType === 'stock'
+  const periodDisplay = props.assetType === 'crypto'
     ? {
-        '1d': 'Past Day',
-        '5d': 'Past 5 Days',
-        '1mo': 'Past Month',
-        '3mo': 'Past 3 Months',
-        '1y': 'Past Year'
-      }
-    : {
         1: 'Past Day',
         5: 'Past 5 Days',
         30: 'Past Month',
         90: 'Past 3 Months',
         365: 'Past Year'
       }
+    : {
+        '1d': 'Past Day',
+        '5d': 'Past 5 Days',
+        '1mo': 'Past Month',
+        '3mo': 'Past 3 Months',
+        '1y': 'Past Year'
+      }
 
   useEffect(() => {
     setLoadedCount(0)
     for (const key in periodDisplay) {
       console.log('fetching ' + props.graphType + ' data for ' + key + '...')
-      props.assetType === 'stock' ? fetchStockDataPoints(key) : fetchCryptoDataPoints(key)
+      props.assetType === 'crypto' ? fetchCryptoDataPoints(key) : fetchStockDataPoints(key)
     }
   }, [])
 
@@ -260,7 +260,7 @@ function PriceVolumeGraph (props) {
   }
 
   const formatPrice = (num) => {
-    if (num < 0.1) {
+    if (Math.abs(num) < 0.1) {
       return num.toFixed(7)
     }
     const options = {
@@ -277,7 +277,7 @@ function PriceVolumeGraph (props) {
           variant="secondary"
           className={props.graphType + 'PeriodToggle'}
           onClick={() => {
-            props.assetType === 'stock' ? setPeriod('1d') : setPeriod('1')
+            props.assetType === 'crypto' ? setPeriod('1') : setPeriod('1d')
           }}
         >
           1D
@@ -286,7 +286,7 @@ function PriceVolumeGraph (props) {
           variant="secondary"
           className={props.graphType + 'PeriodToggle'}
           onClick={() => {
-            props.assetType === 'stock' ? setPeriod('5d') : setPeriod('5')
+            props.assetType === 'crypto' ? setPeriod('5') : setPeriod('5d')
           }}
         >
           5D
@@ -295,7 +295,7 @@ function PriceVolumeGraph (props) {
           variant="secondary"
           className={props.graphType + 'PeriodToggle'}
           onClick={() => {
-            props.assetType === 'stock' ? setPeriod('1mo') : setPeriod('30')
+            props.assetType === 'crypto' ? setPeriod('30') : setPeriod('1mo')
           }}
         >
           1M
@@ -304,7 +304,7 @@ function PriceVolumeGraph (props) {
           variant="secondary"
           className={props.graphType + 'PeriodToggle'}
           onClick={() => {
-            props.assetType === 'stock' ? setPeriod('3mo') : setPeriod('90')
+            props.assetType === 'crypto' ? setPeriod('90') : setPeriod('3mo')
           }}
         >
           3M
@@ -313,7 +313,7 @@ function PriceVolumeGraph (props) {
           variant="secondary"
           className={props.graphType + 'PeriodToggle'}
           onClick={() => {
-            props.assetType === 'stock' ? setPeriod('1y') : setPeriod('365')
+            props.assetType === 'crypto' ? setPeriod('365') : setPeriod('1y')
           }}
         >
           1Y

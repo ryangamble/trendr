@@ -89,7 +89,7 @@ function StockStatistics (props) {
   }, [props.symbol])
 
   function formatPrice (num) {
-    if (num < 0.1) {
+    if (Math.abs(num) < 0.1) {
       return num.toFixed(7)
     }
     const options = {
