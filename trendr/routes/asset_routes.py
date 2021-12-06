@@ -63,14 +63,12 @@ def sentiment_values():
     current_app.logger.info(f"Getting sentiment data points")
 
     content = request.args
-    print(content)
     params = {"asset_identifier": None, "start_timestamp": None, "end_timestamp": None}
     for param in params:
         if param in content:
             val = content[param]
             if param.endswith("timestamp"):
                 val = datetime.fromtimestamp(int(val))
-                print(val)
             params[param] = val
         else:
             current_app.logger.error(f"No {param} given")
@@ -92,7 +90,7 @@ def sentiment_values():
     )
 
 
-@assets.route("/sentiment_important_posts", methods=["POST"])
+@assets.route("/sentiment_important_posts", methods=["GET"])
 def sentiment_important_posts():
     current_app.logger.info(f"Getting sentiment data points")
 
@@ -102,7 +100,7 @@ def sentiment_important_posts():
         if param in content:
             val = content[param]
             if param.endswith("timestamp"):
-                val = datetime.fromtimestamp(val)
+                val = datetime.fromtimestamp(int(val))
             params[param] = val
         else:
             current_app.logger.error(f"No {param} given")

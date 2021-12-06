@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import MyNavBar from '../NavBar/MyNavBar'
 import SearchBar from '../SearchBar/SearchBar'
 
 import { useSelector } from 'react-redux'
 import { FearGreed } from '../Results/Graph'
-import axios from 'axios'
 
 function Home () {
   const currentTheme = useSelector((state) => state.theme.currentTheme)

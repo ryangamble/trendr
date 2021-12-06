@@ -200,7 +200,7 @@ function Results (props) {
             <Col xs={12} sm={12} md={12} lg={6}>
               <CoinStatistics id={symbol} />
               <br />
-              <SentimentGraph symbol={symbol} />
+              <SentimentGraph symbol={symbol} type={type}/>
               <br />
               <TweetSummary symbol={symbol}/>
               <br />

@@ -23,7 +23,7 @@ def populate_database_with_symbols():
     for token in tokens:
         symbol = token["symbol"]
         asset = Asset(
-            identifier="crypto:" + symbol,
+            identifier="crypto:" + token["id"],
             coinGeckoid=token["id"],
             reddit_q=symbol,
             twitter_q=symbol,

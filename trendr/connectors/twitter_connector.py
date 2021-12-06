@@ -83,7 +83,7 @@ def get_tweets_mentioning_asset(
 
     # 100 is the allowed max
     return api.search_tweets(
-        q=asset_identifier,
+        q=f'{asset_identifier} -filter:retweets',
         lang="en",
         result_type="mixed",
         since_id=latest_tweet_id,
