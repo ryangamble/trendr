@@ -242,6 +242,33 @@ def gather_comments_by_id(**kwargs) -> list:
     return gather_items_by_id(**kwargs)
 
 
+def gather_comments_by_submissions_ids(api: pmaw.PushshiftAPI, posts_id_list=None):
+    # if not posts_id_list:
+    #     return None
+    '''
+    Plan: Get the comment ids for each post in the list,
+    then retreive all the comments using their ids.
+
+    This function should be called when storing comments about
+    an asset, but ensuring the comment ids are unitque.
+    Also ensure those comments are retireved for the sentiment analysis.
+    Check under tasks/social/reddit and under tasks/sentiment and under tasks/search.py
+    '''
+    if not api:
+        api = create_praw_pmaw_api()
+
+    # posts = api.search_submissions(subreddit="science", limit=50)
+    # print(posts)
+    post_ids = ['kxi2w8','kxi2g1','kxhzrl','kxhyh6','kxhwh0',
+    'kxhv53','kxhm7b','kxhm3s','kxhg37','kxhak9']
+
+    comment_id_dict = api.search_submission_comment_ids(ids=post_ids)
+    print(comment_id_dict)
+    comments_arr = api.search_comments(ids=comment_id_dict)
+    print(comments_arr)
+    comments_arr = "dsdad"
+    return comments_arr
+
 def convert_time(unix_time) -> datetime:
     """
     Returns an RFC 1123 time string from a unix timestamp

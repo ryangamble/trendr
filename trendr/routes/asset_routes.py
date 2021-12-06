@@ -33,6 +33,12 @@ from trendr.tasks.symbols import populate_database
 
 assets = Blueprint("assets", __name__, url_prefix="/assets")
 
+@assets.route("/test", methods=["GET"])
+def test():
+    subs = reddit_connector.gather_comments_by_submissions_ids(
+        api=reddit_connector.create_praw_pmaw_api())
+    print(subs)
+    return "yesy"
 
 @assets.route("/populate_assets", methods=["POST"])
 def populate_assets():
