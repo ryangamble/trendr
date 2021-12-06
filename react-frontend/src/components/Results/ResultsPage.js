@@ -125,7 +125,7 @@ function Results (props) {
                 currencyCallback={setCurrencyCallback}
               />
               <br />
-              <SentimentGraph symbol={symbol} />
+              <SentimentGraph symbol={symbol} type={type}/>
               <br />
               <TweetSummary symbol={symbol}/>
               <br />

@@ -102,7 +102,7 @@ def get_stored_tweet_by_id(tweet_id: int) -> Tweet or None:
     return Tweet.query.filter_by(tweet_id=tweet_id).one()
 
 
-def get_stored_tweets_mentioning_asset(asset_identifier: str) -> [Tweet]:
+def get_stored_tweets_mentioning_asset(asset_identifier: str) -> list[Tweet]:
     """
     Gets all tweets from the database that contain the asset_identifier
 
