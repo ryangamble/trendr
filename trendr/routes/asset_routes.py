@@ -126,18 +126,15 @@ def sentiment_important_posts():
 
 @assets.route("/perform_asset_search", methods=["GET"])
 def perform_asset_search():
-    # TODO: Remove block, it's temporary while we have no assets
-    asset = Asset.query.filter_by(identifier="AAPL").first()
-    if asset is None:
-        asset = Asset(
-            identifier="AAPL", reddit_q="AAPL|apple", twitter_q="AAPL OR apple"
-        )
-        db.session.add(asset)
-        db.session.commit()
-    else:
-        asset.reddit_q = "AAPL"
-        asset.twitter_q = "AAPL OR apple"
-        db.session.commit()
+    symbol = request.args.get("symbol")
+    if not symbol:
+        current_app.logger.error("No symbol given")
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
+
+    asset = Asset.query.filter_by(identifier=symbol).first()
+    if not asset:
+        current_app.logger.error("Asset not supported")
+        return json_response({"error": f"Asset {symbol} not supported"}, status=400)
 
     search = new_search(asset)
     since = (search.ran_at - timedelta(days=1)).timestamp()
