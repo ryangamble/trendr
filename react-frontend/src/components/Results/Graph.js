@@ -549,6 +549,14 @@ function SentimentGraph (props) {
     return date.substring(0, date.indexOf('-'))
   }
 
+  const timeAxisLabel = (date) => {
+    const hour = date.substring(17, 19)
+    if (hour === '00') {
+      return date.substring(5, 11)
+    }
+    return ''
+  }
+
   return (
     <>
     {points === null
@@ -580,7 +588,7 @@ function SentimentGraph (props) {
                 <HorizontalGridLines />
                 <XAxis
                   title="Time"
-                  hideTicks
+                  tickFormat={xVal => `${timeAxisLabel(xVal)}`}
                   style={{ title: { fill: currentTheme.foreground } }}
                 />
                 <YAxis
