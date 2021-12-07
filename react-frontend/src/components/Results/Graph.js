@@ -485,9 +485,7 @@ function SentimentGraph (props) {
         const data = res.data.data;
         if (data == null || JSON.parse(JSON.stringify(data)).length === 0) {
           // if no data is found, call perform_asset_search
-          if (!searched) {
-            assetSearch()
-          }
+          assetSearch()
           // continue to query sentiment_values endpoint on 30 sec interval until data is recieved
           setTimeout(() => {
             fetchSentimentData(true)
