@@ -30,6 +30,7 @@ import {
 
 import axios from 'axios'
 import './Results.css'
+import ImportantPosts from './ImportantPosts'
 import '../../../node_modules/react-vis/dist/style.css'
 
 const FlexRadialChart = makeVisFlexible(RadialChart)
@@ -438,8 +439,11 @@ function PriceVolumeGraph (props) {
 function SentimentGraph (props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
 
+  const [showModal, setShowModal] = useState(false)
   const [points, setPoints] = useState(null)
   const [hoveredNode, setHoveredNode] = useState(null)
+  const [type, setType] = useState(null)
+  const [posts, setPosts] = useState(null)
 
   // const [crosshairValues, setCrosshairValues] = useState(null)
   // const [selectedPointId, setSelectedPointId] = useState(null)
@@ -501,18 +505,19 @@ function SentimentGraph (props) {
         if (data.length > 1) {
           for (let i = 0; i < data.length; i++) {
             const redditSentiment = data[i.toString()].reddit_sentiment
-            if (redditSentiment != null) {
+            const twitterSentiment = data[i.toString()].twitter_sentiment
+
+            if (redditSentiment != null && twitterSentiment != null) {
               redditPoints.push({
                 x: unixToUTC(parseFloat(data[i.toString()].timestamp) * 1000),
-                y: parseFloat(redditSentiment)
+                y: parseFloat(redditSentiment),
+                type: 'Reddit'
               })
-            }
 
-            const twitterSentiment = data[i.toString()].twitter_sentiment
-            if (twitterSentiment != null) {
               twitterPoints.push({
                 x: unixToUTC(parseFloat(data[i.toString()].timestamp) * 1000),
-                y: parseFloat(twitterSentiment)
+                y: parseFloat(twitterSentiment),
+                type: 'Twitter'
               })
             }
           }
@@ -529,6 +534,7 @@ function SentimentGraph (props) {
   }
 
   const onClickHandler = (point) => {
+    console.log('clickd on point', point)
     axios('http://localhost:5000/assets/sentiment_important_posts', {
       method: 'GET',
       params: {
@@ -537,9 +543,22 @@ function SentimentGraph (props) {
       }
     })
       .then((res) => {
-        console.log(res.data);
-      }).catch((err) => {
-        console.log(err);
+        console.log('important posts:', res.data)
+        if (res.data == null) {
+          return
+        }
+        setType(point.type)
+        if (point.type === 'Twitter') {
+          setPosts(res.data.data.tweets);
+        } else {
+          setPosts(res.data.data.reddit_comments.concat(res.data.data.reddit_submissions));
+        }
+      })
+      .then(() => {
+        setShowModal(true)
+      })
+      .catch((err) => {
+        console.log(err)
       })
   }
 
@@ -557,8 +576,20 @@ function SentimentGraph (props) {
     return ''
   }
 
+  const formatSentimentPoint = (data) => {
+    return [{ title: 'Sentiment Score', value: data[0].y }]
+  }
+
   return (
     <>
+    <ImportantPosts
+      show={showModal}
+      onHide={() => {
+        setShowModal(false)
+        setPosts(null)
+      }}
+      type={type}
+      posts={posts}/>
     {points === null
       ? (
       <Container fluid>
@@ -621,8 +652,10 @@ function SentimentGraph (props) {
                 ))}
                 {hoveredNode && <MarkSeries
                   data={[hoveredNode]}
+                  size={8}
                   />
                 }
+                {hoveredNode && <Crosshair values={[hoveredNode]} itemsFormat={formatSentimentPoint}/>}
                 <Voronoi
                   nodes={points.reduce((acc, d) => [...acc, ...d], [])}
                   onHover={node => setHoveredNode(node)}
