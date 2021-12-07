@@ -6,7 +6,6 @@ api = None
 
 
 @celery.task
-@store_in_db(wraps=twitter_connector.get_tweets_mentioning_asset)
 def store_tweets_mentioning_asset(*args, **kwargs):
     global api
     if api is None:
@@ -20,7 +19,6 @@ def store_tweets_mentioning_asset(*args, **kwargs):
 
 
 @celery.task
-@store_in_db(wraps=twitter_connector.get_tweet_by_id)
 def store_tweet_by_id(*args, **kwargs):
     global api
     if api is None:
