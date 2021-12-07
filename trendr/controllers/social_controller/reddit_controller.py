@@ -92,7 +92,7 @@ def store_reddit_results(
     """
     Store reddit result (comments or submissions) in database
 
-    :param result: [description]
+    :param results: [description]
     :param overwrite: [description], defaults to True
     :return: tuple containing (db model results stored in, list of newly-created submission ids)
     """
