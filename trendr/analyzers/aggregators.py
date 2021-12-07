@@ -69,7 +69,9 @@ def create_data_point(
         time, asset_id=search.asset_id
     )
 
-    tweet_scores = [t.sentiment_score for t in tweets]
+    tweet_scores = [
+        t.sentiment_score * get_time_score(delta=time - t.tweeted_at) for t in tweets
+    ]
     if tweet_scores:
         twitter_avg = sum(tweet_scores) / len(tweet_scores)
     else:
@@ -79,7 +81,10 @@ def create_data_point(
     tweets_ind_by_importance = sorted(range(len(tweets)), key=lambda x: tweet_scores[x])
     important_tweets = [tweets[i] for i in tweets_ind_by_importance[-top:]]
 
-    reddit_submission_scores = [rs.sentiment_score for rs in reddit_submissions]
+    reddit_submission_scores = [
+        rs.sentiment_score * get_time_score(delta=time - rs.posted_at)
+        for rs in reddit_submissions
+    ]
     reddit_avg = sum(reddit_submission_scores)
     # sort list of reddit_submission indicies by their corresponding scores
     reddit_submissions_ind_by_importance = sorted(
@@ -89,7 +94,10 @@ def create_data_point(
         reddit_submissions[i] for i in reddit_submissions_ind_by_importance[-top:]
     ]
 
-    reddit_comment_scores = [rc.sentiment_score for rc in reddit_comments]
+    reddit_comment_scores = [
+        rc.sentiment_score * get_time_score(delta=time - rc.posted_at)
+        for rc in reddit_comments
+    ]
     reddit_avg += sum(reddit_comment_scores)
     # sort list of reddit_submission indicies by their corresponding scores
     reddit_comments_ind_by_importance = sorted(
