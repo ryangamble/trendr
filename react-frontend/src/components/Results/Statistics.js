@@ -225,7 +225,7 @@ function CoinStatistics (props) {
   function formatPrice (num) {
     if (num == null) return 'Not available'
     if (num < 0.1) {
-      return '$' + num.toFixed(7).toString()
+      return num.toFixed(7).toString()
     }
     const options = {
       style: 'currency',
