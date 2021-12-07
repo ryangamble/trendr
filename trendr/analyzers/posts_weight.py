@@ -136,20 +136,19 @@ def assign_score_reddit_submission(submission: RedditSubmission):
             subscribers_score = 2
         else:
             subscribers_score = 1
-    
-    
-    comments_count = len(submission.comments)
-    if comments_count is None:
-        comments_count = 0
 
-    score = 0
-    if submission.polarity is not None and submission.score is not None:
+
+    comments_count = len(submission.comments)
+
+    if submission.polarity is None:
+        score = None
+    else:
         score = (
             (comments_count * 3 + subscribers_score)
             * submission.polarity
             * submission.score
         )
-    
+
     submission.sentiment_score = score
 
 
