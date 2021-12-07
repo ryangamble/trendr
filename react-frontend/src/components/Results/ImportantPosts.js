@@ -27,8 +27,14 @@ function ImportantPosts (props) {
         {
           props.posts &&
           props.posts.map((post, i) => {
+            // TODO: Add a check for twitter/reddit
+            let embedUrl = post
+            embedUrl = embedUrl.replace('www.reddit.com', 'www.redditmedia.com')
+            embedUrl = embedUrl.substring(0, embedUrl.lastIndexOf('/', embedUrl.length - 2))
+            embedUrl += '?ref_source=embed&amp;ref=share&amp;embed=true'
+            console.log(`EMBED URL: ${embedUrl}`)
             return (
-              <a key={i} href={post}>{post}</a>
+              <iframe key={i} src={embedUrl} height="599" width="640" />
             )
           })
         }
