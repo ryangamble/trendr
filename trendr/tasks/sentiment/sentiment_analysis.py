@@ -20,7 +20,21 @@ def analyze_by_ids(ids: List[int], social_type: SearchType):
         reddit_submission_analysis_by_ids.apply(ids)
     elif social_type == SearchType.REDDIT_COMMENT:
         reddit_comment_analysis_by_ids.apply(ids)
-    return ids
+
+
+@celery.task
+def analyze_by_ids_chunk(ids: List[int], social_type: SearchType, n: int):
+    # Synchronously calling subtasks is probably the only thing you are
+    #   supposed to never do with celery, and beacuse of this it is not possible
+    #   to chunk results unless we switch to a celery fork
+    print(ids, social_type)
+    if social_type == SearchType.TWITTER:
+        task = tweet_analysis_by_ids.chunks(ids, n).apply_async()
+    elif social_type == SearchType.REDDIT_SUBMISSION:
+        task = reddit_submission_analysis_by_ids.chunks(ids, n).apply_async()
+    elif social_type == SearchType.REDDIT_COMMENT:
+        task = reddit_comment_analysis_by_ids.chunks(ids, n).apply_async()
+    task.get(1000)
 
 
 @celery.task

@@ -1,9 +1,7 @@
-from enum import Enum
 import datetime
-from functools import wraps
 from typing import List
 from celery.canvas import chord, chain
-from trendr.extensions import celery, db
+from trendr.extensions import celery
 from trendr.models.search_model import Search, SearchType
 from trendr.models.asset_model import Asset
 from trendr.tasks.social.twitter.gather import store_tweets_mentioning_asset
@@ -20,6 +18,7 @@ def perform_search(
     latest_ts: int = None,
     search_id: int = None,
     reddit_limit: int = None,
+    chunk_size: int = 10,
 ):
     asset = Asset.query.filter_by(id=asset_id).one()
     if search_id is None:
@@ -100,4 +99,4 @@ def perform_search(
 
 @celery.task
 def create_datapoints(*args, **kwargs):
-    return create_datapoints_ntask(*args, **kwargs)
+    create_datapoints_ntask(*args, **kwargs)
