@@ -53,7 +53,8 @@ function SetPassword () {
             history.push('/login')
           })
           .catch((error) => {
-            //alert(JSON.stringify(error.response.data.response.errors))
+            // alert(JSON.stringify(error.response.data.response.errors))
+            console.log(error)
             // if we get an error here we are already logged out...
             // remove the global user
             dispatch(removeUser())
