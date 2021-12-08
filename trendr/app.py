@@ -27,6 +27,7 @@ from trendr.models.tweet_model import Tweet
 from trendr.models.search_model import Search
 from trendr.models.sentiment_model import SentimentDataPoint
 from trendr.models.user_model import User, Role
+from trendr.models.result_history_model import ResultHistory
 
 
 def create_app(for_celery=False, for_testing=False):
