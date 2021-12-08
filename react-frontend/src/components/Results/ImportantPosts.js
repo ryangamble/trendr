@@ -24,10 +24,16 @@ function ImportantPosts (props) {
       </Modal.Header>
       <Modal.Body>
         {
+          (props.posts && props.posts.length === 0) && <div>no posts</div>
+        }
+        {
           props.posts &&
           (props.type === 'Reddit'
             ? (
                 props.posts.map((post, i) => {
+                  if (post == null) {
+                    return null
+                  }
                   let embedUrl = post
                   embedUrl = embedUrl.replace('www.reddit.com', 'www.redditmedia.com')
                   embedUrl = embedUrl.substring(0, embedUrl.lastIndexOf('/', embedUrl.length - 2))
@@ -48,6 +54,9 @@ function ImportantPosts (props) {
               )
             : (
                 props.posts.map((post, i) => {
+                  if (post == null) {
+                    return null
+                  }
                   let embedUrl = post
                   embedUrl = embedUrl.substring(embedUrl.lastIndexOf('/') + 1)
                   console.log(post)

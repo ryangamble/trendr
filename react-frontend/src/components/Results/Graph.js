@@ -453,6 +453,8 @@ function SentimentGraph (props) {
   // const [selectedPointId, setSelectedPointId] = useState(null)
 
   useEffect(() => {
+    // perform asset search once each time user searches
+    assetSearch()
     fetchSentimentData(false)
   }, [])
 
@@ -488,8 +490,6 @@ function SentimentGraph (props) {
       .then((res) => {
         const data = res.data.data;
         if (data == null || JSON.parse(JSON.stringify(data)).length === 0) {
-          // if no data is found, call perform_asset_search
-          assetSearch()
           // continue to query sentiment_values endpoint on 30 sec interval until data is recieved
           setTimeout(() => {
             fetchSentimentData(true)
@@ -545,15 +545,16 @@ function SentimentGraph (props) {
       }
     })
       .then((res) => {
-        console.log('important posts:', res.data)
         if (res.data == null) {
           return
         }
         setType(point.type)
         if (point.type === 'Twitter') {
           setPosts(res.data.data.tweets);
+          console.log('important posts:', res.data.data.tweets)
         } else {
-          setPosts(res.data.data.reddit_comments.concat(res.data.data.reddit_submissions));
+          setPosts(res.data.data.reddit_comments.concat(res.data.data.reddit_submissions))
+          console.log('important posts:', res.data.data.reddit_comments, res.data.data.reddit_sentiment)
         }
       })
       .then(() => {
