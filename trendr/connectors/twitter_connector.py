@@ -68,7 +68,7 @@ def get_tweet_by_id(tweet_id: int, api: tweepy.API = None) -> tweepy.models.Stat
 
 @store_in_db()
 def get_tweets_mentioning_asset(
-    asset_identifier: str, limit: int = 5000, api: tweepy.API = None
+    asset_identifier: str, limit: int = 2000, api: tweepy.API = None
 ) -> tweepy.cursor.ItemIterator:
     """
     Queries Twitter for tweets that mention an asset_identifier (AAPL, BTC) within the last 7 days, starting at the
