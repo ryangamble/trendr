@@ -91,11 +91,11 @@ def test_twitter_sentiment_no_assets_populated(client, db):
     response = asset_bindings.twitter_sentiment(client, params={"query": "equity:AAPL"})
     assert response.status_code == 400
     resp_data = response.json
-    assert resp_data == {'error': 'Asset equity:AAPL not supported'}
+    assert resp_data == {"error": "Asset equity:AAPL not supported"}
 
 
 def test_reddit_sentiment_no_assets_populated(client, db):
     response = asset_bindings.reddit_sentiment(client, params={"query": "equity:AAPL"})
     assert response.status_code == 400
     resp_data = response.json
-    assert resp_data == {'error': 'Asset equity:AAPL not supported'}
+    assert resp_data == {"error": "Asset equity:AAPL not supported"}
