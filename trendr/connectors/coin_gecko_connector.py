@@ -94,6 +94,8 @@ def get_historic_prices(coin, days, currency="usd"):
     :param days: How many days of data to return
     :return: a list of prices
     """
+    if currency is None:
+        currency = "usd"
     currency = currency.lower()
     if currency not in supported_currencies:
         return None
