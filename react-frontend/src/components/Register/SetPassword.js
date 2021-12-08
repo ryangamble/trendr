@@ -42,7 +42,7 @@ function SetPassword () {
         // Upon success, we will logout, then go to login page
         axios
           .post(
-            'http://localhost:5000/auth/logout',
+            `${process.env.REACT_APP_API_ROOT}/auth/logout`,
             {},
             { withCredentials: true }
           )
