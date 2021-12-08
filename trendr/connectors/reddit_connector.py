@@ -243,8 +243,8 @@ def gather_comments_by_id(**kwargs) -> list:
 
 
 def gather_comments_by_submissions_ids(api: pmaw.PushshiftAPI, posts_id_list=None):
-    # if not posts_id_list:
-    #     return None
+    if not posts_id_list:
+        return None
     '''
     Plan: Get the comment ids for each post in the list,
     then retreive all the comments using their ids.
@@ -254,20 +254,23 @@ def gather_comments_by_submissions_ids(api: pmaw.PushshiftAPI, posts_id_list=Non
     Also ensure those comments are retireved for the sentiment analysis.
     Check under tasks/social/reddit and under tasks/sentiment and under tasks/search.py
     '''
+    COMMENTS_COUNT = 2000
     if not api:
         api = create_praw_pmaw_api()
 
-    # posts = api.search_submissions(subreddit="science", limit=50)
-    # print(posts)
-    post_ids = ['kxi2w8','kxi2g1','kxhzrl','kxhyh6','kxhwh0',
-    'kxhv53','kxhm7b','kxhm3s','kxhg37','kxhak9']
+    posts_id_list = posts_id_list[0:15]
+    # comment_id_dict = api.search_submission_comment_ids(ids=posts_id_list)
+    comment_id_dict = api.search_submission_comment_ids(ids=posts_id_list, limit=COMMENTS_COUNT)
+    print('Comments Dictionry:\n')
+    print(type(comment_id_dict))
+    first = list(comment_id_dict)
+    if len(first) > 0:
+        for i in first[0]:
+            print(i, ':', first[0][i])
 
-    comment_id_dict = api.search_submission_comment_ids(ids=post_ids)
-    print(comment_id_dict)
-    comments_arr = api.search_comments(ids=comment_id_dict)
-    print(comments_arr)
-    comments_arr = "dsdad"
-    return comments_arr
+    # comments_arr = api.search_comments(ids=comment_id_dict)
+    # print(comments_arr)
+    return comment_id_dict
 
 def convert_time(unix_time) -> datetime:
     """

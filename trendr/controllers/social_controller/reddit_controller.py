@@ -10,7 +10,9 @@ from trendr.models.reddit_model import (
     Subreddit,
 )
 from trendr.models.search_model import Search
-
+from trendr.connectors import (
+    reddit_connector
+)
 
 def attach_to(
     parent: Union[RedditAuthor, Subreddit, RedditSubmission],
@@ -216,6 +218,7 @@ def store_reddit_submissions(
     :param overwrite: overwrite existing submissions if updated information is found, defaults to True
     :return: list of newly-created submissions ids
     """
+    # print(submissions)
     if not submissions:
         return []
 
@@ -229,7 +232,14 @@ def store_reddit_submissions(
         search = Search.query.filter_by(id=search_id).one()
         asset = search.asset
 
+    submission_ids = []
+    print('\n\nprinting submissions now!\n\n')
+    # print(submissions)
     for result in submissions:
+        # print(result['id'])
+        # print('result!')
+        submission_ids.append(result['id'])
+
         res_text = result["selftext"] if "selftext" in result else None
         existing = RedditSubmission.query.filter_by(reddit_id=result["id"]).first()
         if existing:
@@ -287,6 +297,17 @@ def store_reddit_submissions(
 
     db.session.commit()
 
+    print('This is the reddit controller!')
+    print(submission_ids)
+# rasbtp
+    subs = reddit_connector.gather_comments_by_submissions_ids(
+        api=reddit_connector.create_praw_pmaw_api(), posts_id_list=submission_ids)
+    print(subs)
+    print('almost finished!')
+    for x in subs:
+        print(x)
+    print('finished!')
+    # store_reddit_comments(subs)
     res_ids.extend([added.id for added in to_add])
 
     # return ids

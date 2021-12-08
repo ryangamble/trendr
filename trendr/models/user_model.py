@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.types import Boolean
 from trendr.extensions import db
 from trendr.models.association_tables import user_asset_association
+from trendr.models import result_history_model
 
 
 class Role(db.Model, fsqla.FsRoleMixin):

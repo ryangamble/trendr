@@ -157,24 +157,24 @@ def assign_score_reddit_comment(comment: RedditComment):
     #   a high weight as well, but do not consider comments seperately
 
     subscribers_score = 1
-
-    if comment.subreddit.subscribers:
-        if comment.subreddit.subscribers > 1000000:
-            subscribers_score = 10
-        elif comment.subreddit.subscribers > 500000:
-            subscribers_score = 8
-        elif comment.subreddit.subscribers > 100000:
-            subscribers_score = 7
-        elif comment.subreddit.subscribers > 30000:
-            subscribers_score = 6
-        elif comment.subreddit.subscribers > 10000:
-            subscribers_score = 5
-        elif comment.subreddit.subscribers > 5000:
-            subscribers_score = 3
-        elif comment.subreddit.subscribers > 1000:
-            subscribers_score = 2
-        else:
-            subscribers_score = 1
+    if comment and comment.subreddit and comment.subreddit.subscribers:
+        if comment.subreddit.subscribers:
+            if comment.subreddit.subscribers > 1000000:
+                subscribers_score = 10
+            elif comment.subreddit.subscribers > 500000:
+                subscribers_score = 8
+            elif comment.subreddit.subscribers > 100000:
+                subscribers_score = 7
+            elif comment.subreddit.subscribers > 30000:
+                subscribers_score = 6
+            elif comment.subreddit.subscribers > 10000:
+                subscribers_score = 5
+            elif comment.subreddit.subscribers > 5000:
+                subscribers_score = 3
+            elif comment.subreddit.subscribers > 1000:
+                subscribers_score = 2
+            else:
+                subscribers_score = 1
 
     score = subscribers_score * comment.polarity * comment.score
     comment.sentiment_score = score
