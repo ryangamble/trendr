@@ -271,7 +271,7 @@ def crypto_stats():
         current_app.logger.error("No id given")
         return json_response({"error": "Parameter 'id' is required"}, status=400)
     if not currency:
-        currency='usd'
+        currency = "usd"
     response_body = cg.get_coin_live_stats(id, currency)
     current_app.logger.info("Getting crypto stats for " + id)
     return json_response(response_body, status=200)
@@ -283,15 +283,49 @@ def stock_stats():
     Gets general statistics for stocks and etf
     :return: JSON response containing stock/etf statistics
     """
-    currency_affected_values =[
-     "operatingCashflow", "ebitda", "targetLowPrice", "grossProfits", "freeCashflow", "targetMedianPrice",
-    "currentPrice","targetMeanPrice", "debtToEquity", "targetHighPrice", "totalCash",  "totalDebt",
-    "totalRevenue", "totalCashPerShare", "revenuePerShare", "heldPercentInstitutions", "netIncomeToCommon",
-    "enterpriseValue", "sharesShortPriorMonth", "previousClose", "regularMarketOpen", "twoHundredDayAverage",
-    "volume24Hr", "regularMarketDayHigh", "navPrice", "averageDailyVolume10Day", "regularMarketPreviousClose",
-    "fiftyDayAverage", "open", "averageVolume10days", "regularMarketDayLow", "regularMarketVolume",
-    "marketCap", "averageVolume", "dayLow", "ask", "volume", "fiftyTwoWeekHigh", "fiftyTwoWeekLow",
-    "bid", "dayHigh", "regularMarketPrice"
+    currency_affected_values = [
+        "operatingCashflow",
+        "ebitda",
+        "targetLowPrice",
+        "grossProfits",
+        "freeCashflow",
+        "targetMedianPrice",
+        "currentPrice",
+        "targetMeanPrice",
+        "debtToEquity",
+        "targetHighPrice",
+        "totalCash",
+        "totalDebt",
+        "totalRevenue",
+        "totalCashPerShare",
+        "revenuePerShare",
+        "heldPercentInstitutions",
+        "netIncomeToCommon",
+        "enterpriseValue",
+        "sharesShortPriorMonth",
+        "previousClose",
+        "regularMarketOpen",
+        "twoHundredDayAverage",
+        "volume24Hr",
+        "regularMarketDayHigh",
+        "navPrice",
+        "averageDailyVolume10Day",
+        "regularMarketPreviousClose",
+        "fiftyDayAverage",
+        "open",
+        "averageVolume10days",
+        "regularMarketDayLow",
+        "regularMarketVolume",
+        "marketCap",
+        "averageVolume",
+        "dayLow",
+        "ask",
+        "volume",
+        "fiftyTwoWeekHigh",
+        "fiftyTwoWeekLow",
+        "bid",
+        "dayHigh",
+        "regularMarketPrice",
     ]
     symbol = request.args.get("symbol")
     currency = request.args.get("currency")
@@ -328,7 +362,6 @@ def stock_stats():
         hist = curr_ticker.history(period="1d")
         multiplier = float(hist.iloc[-1]["Open"])
 
-
     asset_ticker = yf.Ticker(symbol)
     if not asset_ticker or not hasattr(asset_ticker, "info"):
         current_app.logger.error("Couldn't retrieve statistics for " + symbol)
@@ -340,8 +373,8 @@ def stock_stats():
         # it's in U.S dollar, don;t change anything
         pass
     else:
-        response_body['financialCurrency'] = currency
-        response_body['currency'] = currency
+        response_body["financialCurrency"] = currency
+        response_body["currency"] = currency
         for term in currency_affected_values:
             if term in response_body and response_body[term] != None:
                 response_body[term] = response_body[term] / multiplier

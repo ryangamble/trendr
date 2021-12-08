@@ -142,14 +142,14 @@ def get_market_cap_history(coin: str, days: int = 3):
     return convert_time(market_cap)
 
 
-def get_coin_live_stats(coin, currency='usd'):
+def get_coin_live_stats(coin, currency="usd"):
     """
     :param coin: The id of the coin as defined in the coingecko json file and API
     :return: current live stats of a coin as a dictionary
     """
     cg_api = CoinGeckoAPI()
     coin = coin.lower()
-    currency=currency.lower()
+    currency = currency.lower()
     info = cg_api.get_coin_by_id(coin, localization=False)
 
     if len(info) == 0:
@@ -162,7 +162,6 @@ def get_coin_live_stats(coin, currency='usd'):
                 exchanges.append(market["market"]["name"])
 
     # print(info["market_data"]["high_24h"]["USD"])
-
 
     coin_stats = {
         "Name": info["name"],
@@ -270,5 +269,5 @@ def get_coin_links(coin_id):
     return links
 
 
-get_coin_live_stats('bitcoin')
-print(get_coin_live_stats('bitcoin', currency='aed'))
+get_coin_live_stats("bitcoin")
+print(get_coin_live_stats("bitcoin", currency="aed"))
