@@ -137,7 +137,6 @@ def assign_score_reddit_submission(submission: RedditSubmission):
         else:
             subscribers_score = 1
 
-
     comments_count = len(submission.comments)
 
     if submission.polarity is None:
