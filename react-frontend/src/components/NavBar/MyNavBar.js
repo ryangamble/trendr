@@ -4,7 +4,7 @@ import { Navbar, Container, Nav, Button } from 'react-bootstrap'
 import { Link, useHistory } from 'react-router-dom'
 
 import axios from 'axios'
-import { removeUser } from '../Theme/userActions'
+import { removeUser } from '../Actions/userActions'
 
 function MyNavBar () {
   // color theme

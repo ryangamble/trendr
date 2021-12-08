@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { useHistory, Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { registerConfirmation, registerUser } from "../Theme/userActions";
-import { toggleTheme, themes } from "../Theme/themeActions";
-import MyNavBar from "../NavBar/MyNavBar";
-import { Row, Col, Form, Button, Card } from "react-bootstrap";
+import React, { useState } from 'react'
+import { useHistory, Link } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { updateCurrency } from '../Actions/currencyActions'
+import { registerUser, registerConfirmation } from '../Actions/userActions'
+import { toggleTheme, themes } from '../Actions/themeActions'
+import MyNavBar from '../NavBar/MyNavBar'
+import { Row, Col, Form, Button, Card } from 'react-bootstrap'
 
 import axios from "axios";
 
@@ -56,6 +57,7 @@ function Login () {
             ) {
               dispatch(toggleTheme());
             }
+            dispatch(updateCurrency(response.data.currency));
           })
           .catch((err) => {
             console.log(err);

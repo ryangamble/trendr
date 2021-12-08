@@ -265,11 +265,14 @@ def crypto_stats():
     :return: JSON response containing crypto statistics
     """
     id = request.args.get("id")
+    currency = request.args.get("currency")
+
     if not id:
         current_app.logger.error("No id given")
         return json_response({"error": "Parameter 'id' is required"}, status=400)
-
-    response_body = cg.get_coin_live_stats(id)
+    if not currency:
+        currency = "usd"
+    response_body = cg.get_coin_live_stats(id, currency)
     current_app.logger.info("Getting crypto stats for " + id)
     return json_response(response_body, status=200)
 
@@ -280,10 +283,84 @@ def stock_stats():
     Gets general statistics for stocks and etf
     :return: JSON response containing stock/etf statistics
     """
+    currency_affected_values = [
+        "operatingCashflow",
+        "ebitda",
+        "targetLowPrice",
+        "grossProfits",
+        "freeCashflow",
+        "targetMedianPrice",
+        "currentPrice",
+        "targetMeanPrice",
+        "debtToEquity",
+        "targetHighPrice",
+        "totalCash",
+        "totalDebt",
+        "totalRevenue",
+        "totalCashPerShare",
+        "revenuePerShare",
+        "heldPercentInstitutions",
+        "netIncomeToCommon",
+        "enterpriseValue",
+        "sharesShortPriorMonth",
+        "previousClose",
+        "regularMarketOpen",
+        "twoHundredDayAverage",
+        "volume24Hr",
+        "regularMarketDayHigh",
+        "navPrice",
+        "averageDailyVolume10Day",
+        "regularMarketPreviousClose",
+        "fiftyDayAverage",
+        "open",
+        "averageVolume10days",
+        "regularMarketDayLow",
+        "regularMarketVolume",
+        "marketCap",
+        "averageVolume",
+        "dayLow",
+        "ask",
+        "volume",
+        "fiftyTwoWeekHigh",
+        "fiftyTwoWeekLow",
+        "bid",
+        "dayHigh",
+        "regularMarketPrice",
+    ]
     symbol = request.args.get("symbol")
+    currency = request.args.get("currency")
+
     if not symbol:
         current_app.logger.error("No symbol given")
         return json_response({"error": "Parameter 'symbol' is required"}, status=400)
+
+    multiplier = 1
+    if currency == None or currency == "USD":
+        pass
+    else:
+        currency = currency.upper()
+        # check for a currency
+        SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+        currencies_path = os.path.join(
+            SITE_ROOT, "../routes/helpers", "YahooCurrencies.csv"
+        )
+        df_currencies = pd.read_csv(currencies_path)
+        currency_symbol = ""
+        for i in range(len(df_currencies)):
+            y_symbol = currency + "/USD"
+            if df_currencies.iloc[i]["Name"] == y_symbol:
+                currency_symbol = df_currencies.iloc[i]["Ticker"]
+                break
+
+        if len(currency_symbol) == 0:
+            current_app.logger.error("Wrong Currency provided")
+            return json_response(
+                {"error": "Parameter 'curreny', Wrong Currency provided"}, status=400
+            )
+
+        curr_ticker = yf.Ticker(currency_symbol)
+        hist = curr_ticker.history(period="1d")
+        multiplier = float(hist.iloc[-1]["Open"])
 
     asset_ticker = yf.Ticker(symbol)
     if not asset_ticker or not hasattr(asset_ticker, "info"):
@@ -291,6 +368,17 @@ def stock_stats():
         return json_response({"error": "Couldn't retrieve statistics"}, status=500)
 
     response_body = asset_ticker.info
+
+    if type(multiplier) == int:
+        # it's in U.S dollar, don;t change anything
+        pass
+    else:
+        response_body["financialCurrency"] = currency
+        response_body["currency"] = currency
+        for term in currency_affected_values:
+            if term in response_body and response_body[term] != None:
+                response_body[term] = response_body[term] / multiplier
+
     current_app.logger.info("Getting stock stats for " + symbol)
     return json_response(response_body, status=200)
 
@@ -332,6 +420,7 @@ def token_top_holders():
 def crypto_price_history():
     id = request.args.get("id")
     days = request.args.get("days")
+    currency = request.args.get("currency")
     if not id:
         current_app.logger.error("No id given")
         return json_response({"error": "Parameter 'id' is required"}, status=400)
@@ -339,7 +428,12 @@ def crypto_price_history():
         current_app.logger.error("No days given")
         return json_response({"error": "Parameter 'days' is required"}, status=400)
 
-    response_body = cg.get_historic_prices(id, days)
+    response_body = cg.get_historic_prices(id, days, currency)
+    if response_body == None:
+        return json_response(
+            {"error": "Parameter 'currency' value is unsupported"}, status=400
+        )
+
     current_app.logger.info(
         "Getting crypto price history for " + id + " over " + days + " days"
     )
@@ -370,11 +464,43 @@ def stock_history():
     Gets historical data for an asset (stock or crypto)
     :return: JSON response containing historical data
     """
+
     period = request.args.get("period")
     symbol = request.args.get("symbol")
+    currency = request.args.get("currency")
+
+    multiplier = 1
+    if currency == None or currency == "USD":
+        pass
+    else:
+        # check for a currency
+        SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+        currencies_path = os.path.join(
+            SITE_ROOT, "../routes/helpers", "YahooCurrencies.csv"
+        )
+        df_currencies = pd.read_csv(currencies_path)
+        currency_symbol = ""
+        for i in range(len(df_currencies)):
+            y_symbol = currency + "/USD"
+            if df_currencies.iloc[i]["Name"] == y_symbol:
+                currency_symbol = df_currencies.iloc[i]["Ticker"]
+                break
+
+        if len(currency_symbol) == 0:
+            current_app.logger.error("Wrong Currency provided")
+            return json_response(
+                {"error": "Parameter 'curreny',Wrong Currency provided"}, status=400
+            )
+
+        curr_ticker = yf.Ticker(currency_symbol)
+        hist = curr_ticker.history(period="1d")
+        multiplier = float(hist.iloc[-1]["Open"])
+
     if not period:
-        current_app.logger.error("No period given")
-        return json_response({"error": "Parameter 'period' is required"}, status=400)
+        current_app.logger.error("Wrong Currency symbol")
+        return json_response(
+            {"error": "Parameter 'symbol' is unsuppoerted"}, status=400
+        )
     if not symbol:
         current_app.logger.error("No symbol given")
         return json_response({"error": "Parameter 'symbol' is required"}, status=400)
@@ -397,12 +523,23 @@ def stock_history():
         "Getting stock pirce and volume history for " + symbol + " over " + period
     )
     # TODO: Figure out how to return this like the other endpoints w/o breaking the frontend
-    return asset_ticker.history(
+    history_df = asset_ticker.history(
         period=period,
         interval=period_to_interval_map.get(period),
         prepost="True",
         actions="False",
-    ).to_json()
+    )
+    if type(multiplier) == int:
+        pass
+    else:
+        # convert prices to this currency
+        history_df["Open"] = history_df["Open"] / multiplier
+        history_df["High"] = history_df["High"] / multiplier
+        history_df["Low"] = history_df["Low"] / multiplier
+        history_df["Close"] = history_df["Close"] / multiplier
+        history_df["Volume"] = history_df["Volume"] / multiplier
+
+    return history_df.to_json()
 
 
 @assets.route("/reddit_mentions_count", methods=["GET"])
