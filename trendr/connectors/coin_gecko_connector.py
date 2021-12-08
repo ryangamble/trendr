@@ -23,17 +23,87 @@ def convert_time(date_list):
     return date_list
 
 
-def get_historic_prices(coin, days):
+supported_currencies = [
+    "aed",
+    "ars",
+    "aud",
+    "bch",
+    "bdt",
+    "bhd",
+    "bits",
+    "bmd",
+    "bnb",
+    "brl",
+    "btc",
+    "cad",
+    "chf",
+    "clp",
+    "cny",
+    "czk",
+    "dkk",
+    "dot",
+    "eos",
+    "eth",
+    "eur",
+    "gbp",
+    "hkd",
+    "huf",
+    "idr",
+    "ils",
+    "inr",
+    "jpy",
+    "krw",
+    "kwd",
+    "link",
+    "lkr",
+    "ltc",
+    "mmk",
+    "mxn",
+    "myr",
+    "ngn",
+    "nok",
+    "nzd",
+    "php",
+    "pkr",
+    "pln",
+    "rub",
+    "sar",
+    "sats",
+    "sek",
+    "sgd",
+    "thb",
+    "try",
+    "twd",
+    "uah",
+    "usd",
+    "vef",
+    "vnd",
+    "xag",
+    "xau",
+    "xdr",
+    "xlm",
+    "xrp",
+    "yfi",
+    "zar",
+]
+
+
+def get_historic_prices(coin, days, currency="usd"):
     """
     :param coin: The id of the coin as defined in the coingecko json file and API
     :param days: How many days of data to return
     :return: a list of prices
     """
+    if currency is None:
+        currency = "usd"
+    currency = currency.lower()
+    if currency not in supported_currencies:
+        return None
     cg_api = CoinGeckoAPI()
     coin = coin.lower()
-    prices = cg_api.get_coin_market_chart_by_id(id=coin, vs_currency="usd", days=days)[
-        "prices"
-    ]
+    prices = cg_api.get_coin_market_chart_by_id(
+        id=coin, vs_currency=currency, days=days
+    )["prices"]
     return convert_time(prices)
 
 
@@ -74,14 +144,14 @@ def get_market_cap_history(coin: str, days: int = 3):
     return convert_time(market_cap)
 
 
-def get_coin_live_stats(coin):
+def get_coin_live_stats(coin, currency="usd"):
     """
     :param coin: The id of the coin as defined in the coingecko json file and API
     :return: current live stats of a coin as a dictionary
     """
     cg_api = CoinGeckoAPI()
     coin = coin.lower()
-
+    currency = currency.lower()
     info = cg_api.get_coin_by_id(coin, localization=False)
 
     if len(info) == 0:
@@ -93,23 +163,25 @@ def get_coin_live_stats(coin):
             if market["market"]["name"] not in exchanges:
                 exchanges.append(market["market"]["name"])
 
+    # print(info["market_data"]["high_24h"]["USD"])
+
     coin_stats = {
         "Name": info["name"],
         "Symbol": info["symbol"],
         "Image": info["image"]["large"],
         "Address": info["platforms"],
         "MarketCapRank": info["market_data"]["market_cap_rank"],
-        "DayHigh": info["market_data"]["high_24h"]["USD"]
-        if "USD" in info["market_data"]["high_24h"]
+        "DayHigh": info["market_data"]["high_24h"][currency]
+        if currency in info["market_data"]["high_24h"]
         else info["market_data"]["high_24h"]["usd"],
-        "DayLow": info["market_data"]["low_24h"]["USD"]
-        if "USD" in info["market_data"]["low_24h"]
+        "DayLow": info["market_data"]["low_24h"][currency]
+        if currency in info["market_data"]["low_24h"]
         else info["market_data"]["low_24h"]["usd"],
-        "Price": info["market_data"]["current_price"]["usd"]
-        if "usd" in info["market_data"]["current_price"]
+        "Price": info["market_data"]["current_price"][currency]
+        if currency in info["market_data"]["current_price"]
         else None,
-        "MarketCap": info["market_data"]["market_cap"]["usd"]
-        if "usd" in info["market_data"]["market_cap"]
+        "MarketCap": info["market_data"]["market_cap"][currency]
+        if currency in info["market_data"]["market_cap"]
         else None,
         "24HrMarketCapChange": info["market_data"]["market_cap_change_percentage_24h"]
         if info["market_data"]["market_cap_change_percentage_24h"] != None
@@ -197,3 +269,7 @@ def get_coin_links(coin_id):
         links["telegram_url"] = "https://t.me/" + data["telegram_channel_identifier"]
 
     return links
+
+
+get_coin_live_stats("bitcoin")
+print(get_coin_live_stats("bitcoin", currency="aed"))

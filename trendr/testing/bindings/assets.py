@@ -8,7 +8,7 @@ def fear_greed(client):
 
 
 def perform_asset_search(client):
-    return client.get("/assets/perform_asset_search")
+    return client.get("/assets/perform-asset-search")
 
 
 def search(client, params):
@@ -107,8 +107,12 @@ def twitter_sentiment(client, params):
     return client.get(f"/assets/twitter_sentiment{param_string}")
 
 
-def reddit_sentiment(client):
-    return client.get("/assets/reddit_sentiment")
+def reddit_sentiment(client, params):
+    param_string = "?"
+    for key, value in params.items():
+        param_string += f"{key}={value}&"
+    param_string = param_string[:-1]
+    return client.get(f"/assets/reddit_sentiment{param_string}")
 
 
 def tweet_summary(client, asset_identifier):

@@ -28,6 +28,7 @@ const getNumberUnit = (num) => {
 
 function StockStatistics (props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
+  const currentCurrency = useSelector((state) => state.currency.currentCurrency)
 
   const [asset, setAsset] = useState({})
   const [loading, setLoading] = useState(true)
@@ -38,7 +39,8 @@ function StockStatistics (props) {
       .get(`${process.env.REACT_APP_API_ROOT}/assets/stock/stats`, {
         method: 'GET',
         params: {
-          symbol: props.symbol
+          symbol: props.symbol,
+          currency: currentCurrency
         }
       })
       .then((res) => {
@@ -47,7 +49,7 @@ function StockStatistics (props) {
           companyName: data.longName ? data.longName : data.shortName,
           logo: data.logo_url,
           symbol: data.symbol,
-          currency: data.currency ? data.currency : 'USD',
+          currency: currentCurrency,
           dayOpen: data.open,
           dayHigh: data.dayHigh,
           dayLow: data.dayLow,
@@ -64,7 +66,6 @@ function StockStatistics (props) {
             : 'N/A',
           website: data.website
         })
-        props.currencyCallback(data.currency)
 
         axios
           .get(`${process.env.REACT_APP_API_ROOT}/assets/stocks/listed-exchanges`, {
@@ -79,6 +80,7 @@ function StockStatistics (props) {
           })
           .catch((error) => {
             console.log(error)
+            setAsset(prevData => { return { ...prevData, exchanges: false } })
           })
       })
       .then(() => {
@@ -90,17 +92,20 @@ function StockStatistics (props) {
   }, [props.symbol])
 
   function formatPrice (num) {
-    if (num < 0.1) {
+    if (Math.abs(num) < 0.1) {
       return num.toFixed(7)
     }
     const options = {
       style: 'currency',
-      currency: 'usd'
+      currency: currentCurrency
     }
     return num.toLocaleString('en-US', options)
   }
 
   function renderExchanges () {
+    if (!asset.exchanges) {
+      return (null)
+    }
     const list = []
     for (const key in asset.exchanges) {
       list.push(<div key={key}>{asset.exchanges[key]}<br/></div>)
@@ -180,7 +185,7 @@ function StockStatistics (props) {
                 </tr>
                 <tr>
                   <td className="statName">Exchanges</td>
-                  <td className="statValue">{asset.exchanges ? renderExchanges() : <Spinner animation="border" size="sm"/>}</td>
+                  <td className="statValue">{asset.exchanges != null ? renderExchanges() : <Spinner animation="border" size="sm"/>}</td>
                 </tr>
               </tbody>
             </Table>
@@ -193,6 +198,7 @@ function StockStatistics (props) {
 
 function CoinStatistics (props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
+  const currentCurrency = useSelector((state) => state.currency.currentCurrency)
 
   const [crypto, setCrypto] = useState([])
   const [loading, setLoading] = useState(true)
@@ -203,7 +209,8 @@ function CoinStatistics (props) {
       .get(`${process.env.REACT_APP_API_ROOT}/assets/crypto/stats`, {
         method: 'GET',
         params: {
-          id: props.id
+          id: props.id,
+          currency: currentCurrency
         }
       })
       .then((res) => {
@@ -222,11 +229,11 @@ function CoinStatistics (props) {
   function formatPrice (num) {
     if (num == null) return 'Not available'
     if (num < 0.1) {
-      return '$' + num.toFixed(7).toString()
+      return num.toFixed(7).toString()
     }
     const options = {
       style: 'currency',
-      currency: 'usd'
+      currency: currentCurrency
     }
     return num.toLocaleString('en-US', options)
   }
@@ -289,6 +296,10 @@ function CoinStatistics (props) {
             <Table size="sm" style={{ color: currentTheme.foreground }}>
               <tbody>
                 <tr>
+                  <td className="statName">Currency</td>
+                  <td className="statValue">{currentCurrency}</td>
+                </tr>
+                <tr>
                   <td className="statName">Price</td>
                   <td className="statValue">{formatPrice(crypto.Price)}</td>
                 </tr>
@@ -314,7 +325,7 @@ function CoinStatistics (props) {
                 </tr>
                 <tr>
                   <td className="statName">Market Cap</td>
-                  <td className="statValue">{formatPrice(crypto.MarketCap)}</td>
+                  <td className="statValue">{getNumberUnit(crypto.MarketCap)}</td>
                 </tr>
                 <tr>
                   <td className="statName">Exchanges</td>
