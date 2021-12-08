@@ -1,6 +1,6 @@
 from flask_security.models import fsqla_v2 as fsqla
 from sqlalchemy.orm import relationship
-from sqlalchemy.types import Boolean
+from sqlalchemy.types import Boolean, String
 from trendr.extensions import db
 from trendr.models.association_tables import user_asset_association
 
@@ -13,8 +13,9 @@ class User(db.Model, fsqla.FsUserMixin):
     __tablename__ = "user"
 
     # settings
-    _settings_attrs = ("dark_mode",)
+    _settings_attrs = ("dark_mode", "currency")
     dark_mode = db.Column(Boolean, nullable=False, default=False)
+    currency = db.Column(String, nullable=False, default="usd")
 
     # There is a one-many relationship between users and searches
     searches = relationship("Search", back_populates="user")

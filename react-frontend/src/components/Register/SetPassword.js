@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import MyNavBar from '../NavBar/MyNavBar'
 import { Row, Col, Form, Button, Card } from 'react-bootstrap'
 import axios from 'axios'
-import { removeUser } from '../Theme/userActions'
+import { removeUser } from '../Actions/userActions'
 
 function SetPassword () {
   const { resetCode } = useParams()
