@@ -104,7 +104,7 @@ def twitter_sentiment(client, params):
     for key, value in params.items():
         param_string += f"{key}={value}&"
     param_string = param_string[:-1]
-    return client.get(f"/assets/twitter-sentiment{param_string}")
+    return client.get(f"/assets/twitter_sentiment{param_string}")
 
 
 def reddit_sentiment(client, params):
@@ -112,7 +112,7 @@ def reddit_sentiment(client, params):
     for key, value in params.items():
         param_string += f"{key}={value}&"
     param_string = param_string[:-1]
-    return client.get(f"/assets/reddit-sentiment{param_string}")
+    return client.get(f"/assets/reddit_sentiment{param_string}")
 
 
 def tweet_summary(client, asset_identifier):

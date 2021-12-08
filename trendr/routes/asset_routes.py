@@ -431,10 +431,15 @@ def twitter_sentiment():
         current_app.logger.error("No query given")
         return json_response({"error": "Parameter 'query' is required"}, status=400)
 
+    asset = Asset.query.filter_by(identifier=query).first()
+    if not asset:
+        current_app.logger.error("Asset not supported")
+        return json_response({"error": f"Asset {query} not supported"}, status=400)
+
     # If the last two searches failed to return any tweets, return error
     recent_searches = (
         db.session.query(Search)
-        .filter(Search.search_string == query)
+        .filter(Search.asset_id == asset.id)
         .order_by(Search.ran_at.desc())
         .limit(2)
     )
@@ -518,10 +523,15 @@ def reddit_sentiment():
         current_app.logger.error("No query given")
         return json_response({"error": "Parameter 'query' is required"}, status=400)
 
+    asset = Asset.query.filter_by(identifier=query).first()
+    if not asset:
+        current_app.logger.error("Asset not supported")
+        return json_response({"error": f"Asset {query} not supported"}, status=400)
+
     # If the last two searches failed to return any comments, return error
     recent_searches = (
         db.session.query(Search)
-        .filter(Search.search_string == query)
+        .filter(Search.asset_id == asset.id)
         .order_by(Search.ran_at.desc())
         .limit(2)
     )
