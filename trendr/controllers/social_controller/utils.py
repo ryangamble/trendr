@@ -2,13 +2,14 @@ import tweepy
 import pmaw
 import functools
 from typing import Union
+from tweepy import models
 
 from .reddit_controller import store_reddit_results
 from .tweet_controller import store_twitter_results
 
 
 def store_results(
-    results: Union[tweepy.models.SearchResults, tweepy.models.Status, pmaw.Response],
+    results: Union[tweepy.cursor.ItemIterator, tweepy.models.Status, pmaw.Response],
     overwrite: bool = True,
     search_id: int = None,
 ) -> list[int]:
@@ -18,7 +19,7 @@ def store_results(
     :return: list of db ids of newly added objects
     """
 
-    if isinstance(results, tweepy.models.SearchResults) or isinstance(
+    if isinstance(results, tweepy.cursor.ItemIterator) or isinstance(
         results, tweepy.models.Status
     ):
         return store_twitter_results(results, overwrite, search_id)

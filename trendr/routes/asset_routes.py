@@ -1,14 +1,12 @@
 from datetime import timedelta, datetime
 import json
 import os
-import re
 import yfinance as yf
 import yahooquery as yq
 import finnhub
 import pandas as pd
-from flask import Blueprint, request, current_app
-from textblob import TextBlob
 
+from flask import Blueprint, request, current_app, redirect
 from trendr.controllers.search_controller import new_search
 from trendr.controllers.sentiment_data_point_controller import (
     get_important_posts,
@@ -23,7 +21,9 @@ from trendr.connectors import (
 )
 from trendr.extensions import db
 from trendr.models.asset_model import Asset
-from trendr.models.search_model import SearchType
+from trendr.models.search_model import SearchType, Search
+from trendr.models.tweet_model import Tweet
+from trendr.models.reddit_model import RedditComment
 from trendr.tasks.social.twitter.gather import store_tweet_by_id
 from trendr.tasks.social.reddit.gather import store_comments, store_submissions
 from trendr.tasks.search import perform_search
@@ -58,17 +58,17 @@ def fear_greed():
     return json_response(response_body, status=200)
 
 
-@assets.route("/sentiment_values", methods=["POST"])
+@assets.route("/sentiment_values", methods=["GET"])
 def sentiment_values():
     current_app.logger.info(f"Getting sentiment data points")
 
-    content = request.get_json()
+    content = request.args
     params = {"asset_identifier": None, "start_timestamp": None, "end_timestamp": None}
     for param in params:
         if param in content:
             val = content[param]
             if param.endswith("timestamp"):
-                val = datetime.fromtimestamp(val)
+                val = datetime.fromtimestamp(int(val))
             params[param] = val
         else:
             current_app.logger.error(f"No {param} given")
@@ -90,17 +90,17 @@ def sentiment_values():
     )
 
 
-@assets.route("/sentiment_important_posts", methods=["POST"])
+@assets.route("/sentiment_important_posts", methods=["GET"])
 def sentiment_important_posts():
     current_app.logger.info(f"Getting sentiment data points")
 
-    content = request.get_json()
+    content = request.args
     params = {"asset_identifier": None, "timestamp": None}
     for param in params:
         if param in content:
             val = content[param]
             if param.endswith("timestamp"):
-                val = datetime.fromtimestamp(val)
+                val = datetime.fromtimestamp(int(val))
             params[param] = val
         else:
             current_app.logger.error(f"No {param} given")
@@ -124,18 +124,15 @@ def sentiment_important_posts():
 
 @assets.route("/perform_asset_search", methods=["GET"])
 def perform_asset_search():
-    # TODO: Remove block, it's temporary while we have no assets
-    asset = Asset.query.filter_by(identifier="AAPL").first()
-    if asset is None:
-        asset = Asset(
-            identifier="AAPL", reddit_q="AAPL|apple", twitter_q="AAPL OR apple"
-        )
-        db.session.add(asset)
-        db.session.commit()
-    else:
-        asset.reddit_q = "AAPL"
-        asset.twitter_q = "AAPL OR apple"
-        db.session.commit()
+    symbol = request.args.get("symbol")
+    if not symbol:
+        current_app.logger.error("No symbol given")
+        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
+
+    asset = Asset.query.filter_by(identifier=symbol).first()
+    if not asset:
+        current_app.logger.error("Asset not supported")
+        return json_response({"error": f"Asset {symbol} not supported"}, status=400)
 
     search = new_search(asset)
     since = (search.ran_at - timedelta(days=1)).timestamp()
@@ -566,28 +563,72 @@ def twitter_sentiment():
     Gets twitter sentiment for an asset (stock or crypto)
     :return: JSON response containing twitter sentiment
     """
-    symbol = request.args.get("symbol")
-    if not symbol:
-        current_app.logger.error("No symbol given")
-        return json_response({"error": "Parameter 'symbol' is required"}, status=400)
+    query = request.args.get("query")
+    if not query:
+        current_app.logger.error("No query given")
+        return json_response({"error": "Parameter 'query' is required"}, status=400)
+
+    asset = Asset.query.filter_by(identifier=query).first()
+    if not asset:
+        current_app.logger.error("Asset not supported")
+        return json_response({"error": f"Asset {query} not supported"}, status=400)
+
+    # If the last two searches failed to return any tweets, return error
+    recent_searches = (
+        db.session.query(Search)
+        .filter(Search.asset_id == asset.id)
+        .order_by(Search.ran_at.desc())
+        .limit(2)
+    )
+
+    failed_searches = 0
+    for search in recent_searches:
+        if search.twitter_sentiment == None:
+            failed_searches += 1
+
+    if failed_searches >= 2:
+        current_app.logger.error("Cannot get Twitter sentiment for " + query)
+        return json_response(
+            {"error": "Cannot get Twitter sentiment for " + query}, status=400
+        )
+
+    # Gets the most recent search for given keyword
+    most_recent_search_id = (
+        db.session.query(Search.id)
+        .filter(Search.search_string == query)
+        .order_by(Search.ran_at.desc())
+        .limit(1)
+        .all()
+    )
+
+    if not most_recent_search_id:
+        current_app.logger.warning("No Tweets for " + query)
+        current_app.logger.info(
+            "Sending request to get Twitter sentiment data for " + query
+        )
+        return redirect("/assets/perform-asset-search?query=" + query)
+
+    # Gets the Tweets of the given search id
+    results = (
+        db.session.query(Tweet)
+        .select_from(Search)
+        .join(Search.tweets)
+        .filter(Search.id == most_recent_search_id[0][0])
+        .all()
+    )
+
+    if len(results) == 0:
+        current_app.logger.warning("No Tweets for most recent search of " + query)
+        current_app.logger.info(
+            "Sending request to get Twitter sentiment data for " + query
+        )
+        return redirect("/assets/perform-asset-search?query=" + query)
 
     response_body = []
-    results = twitter_connector.get_stored_tweets_mentioning_asset(symbol)
     for result in results:
-        text_clean = re.sub(r"@[A-Za-z0-9]+", "", result.text)
-        text_clean = re.sub(r"#", "", text_clean)
-        text_clean = re.sub("\n", " ", text_clean)
+        response_body.append([result.text, result.polarity, result.subjectivity])
 
-        # using this will take a lot longer than TextBlob's default analyzer
-        # blob = TextBlob(result.text, analyzer=NaiveBayesAnalyzer())
-
-        blob = TextBlob(text_clean)
-
-        # first number: polarity (-1.0 = very negative, 0 = neutral, 1.0 = very positive)
-        # second number: subjectivity (0.0 = objective, 1.0 = subjective)
-        response_body.append([text_clean, blob.sentiment])
-
-    current_app.logger.info("Getting twitter sentiment data for " + symbol)
+    current_app.logger.info("Getting twitter sentiment data for " + query)
     return json_response(response_body, status=200)
 
 
@@ -613,15 +654,75 @@ def reddit_sentiment():
     Gets reddit sentiment for an asset (stock or crypto)
     :return: JSON response containing reddit sentiment
     """
-    res_1 = store_tweet_by_id.delay(tweet_id=1450846775221399566)
-    res_2 = store_submissions.delay(keywords=["apple"], limit=50)
-    res_3 = store_comments.delay(keywords=["apple"], limit=50)
 
-    response_body = [
-        res_1.get(timeout=100),
-        res_2.get(timeout=100),
-        res_3.get(timeout=100),
-    ]
+    query = request.args.get("query")
+    if not query:
+        current_app.logger.error("No query given")
+        return json_response({"error": "Parameter 'query' is required"}, status=400)
+
+    asset = Asset.query.filter_by(identifier=query).first()
+    if not asset:
+        current_app.logger.error("Asset not supported")
+        return json_response({"error": f"Asset {query} not supported"}, status=400)
+
+    # If the last two searches failed to return any comments, return error
+    recent_searches = (
+        db.session.query(Search)
+        .filter(Search.asset_id == asset.id)
+        .order_by(Search.ran_at.desc())
+        .limit(2)
+    )
+
+    failed_searches = 0
+    for search in recent_searches:
+        if search.reddit_sentiment == None:
+            failed_searches += 1
+
+    if failed_searches >= 2:
+        current_app.logger.error("Cannot get Reddit sentiment for " + query)
+        return json_response(
+            {"error": "Cannot get Reddit sentiment for " + query}, status=400
+        )
+
+    # Gets the most recent search for given keyword
+    most_recent_search_id = (
+        db.session.query(Search.id)
+        .filter(Search.search_string == query)
+        .order_by(Search.ran_at.desc())
+        .filter(Search.reddit_sentiment != None)
+        .limit(1)
+        .all()
+    )
+
+    if not most_recent_search_id:
+        current_app.logger.warning("No Reddit comments for " + query)
+        current_app.logger.info(
+            "Sending request to get Reddit sentiment data for " + query
+        )
+        return redirect("/assets/perform-asset-search?query=" + query)
+
+    # Gets the reddit submissions of the given search id
+    results = (
+        db.session.query(RedditComment)
+        .select_from(Search)
+        .join(Search.reddit_comments)
+        .filter(Search.id == most_recent_search_id[0][0])
+        .all()
+    )
+
+    if len(results) == 0:
+        current_app.logger.warning(
+            "No Reddit comments for most recent search of " + query
+        )
+        current_app.logger.info(
+            "Sending request to get Reddit sentiment data for " + query
+        )
+        return redirect("/assets/perform-asset-search?query=" + query)
+
+    response_body = []
+    for result in results:
+        response_body.append([result.text, result.polarity, result.subjectivity])
+
     current_app.logger.info("Getting reddit sentiment")
     return json_response(response_body, status=200)
 

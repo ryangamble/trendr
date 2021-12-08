@@ -19,7 +19,9 @@ import {
   FlexibleXYPlot,
   RadialChart,
   LineSeries,
+  LineMarkSeries,
   MarkSeries,
+  Voronoi,
   Crosshair,
   Borders,
   DiscreteColorLegend,
@@ -28,6 +30,7 @@ import {
 
 import axios from 'axios'
 import './Results.css'
+import ImportantPosts from './ImportantPosts'
 import '../../../node_modules/react-vis/dist/style.css'
 
 const FlexRadialChart = makeVisFlexible(RadialChart)
@@ -440,148 +443,236 @@ function PriceVolumeGraph (props) {
 function SentimentGraph (props) {
   const currentTheme = useSelector((state) => state.theme.currentTheme)
 
-  const [twitterData, setTwitterData] = useState([])
-  const [redditData, setRedditData] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [showModal, setShowModal] = useState(false)
+  const [points, setPoints] = useState(null)
+  const [hoveredNode, setHoveredNode] = useState(null)
+  const [type, setType] = useState(null)
+  const [posts, setPosts] = useState(null)
+
+  // const [crosshairValues, setCrosshairValues] = useState(null)
+  // const [selectedPointId, setSelectedPointId] = useState(null)
 
   useEffect(() => {
-    fetchTwitterData()
-    fetchRedditData()
-    setLoading(false)
-  }, [props])
+    // perform asset search once each time user searches
+    assetSearch()
+    fetchSentimentData(false)
+  }, [])
 
-  // TODO: Make this fetch actual data
-  function fetchRedditData (req) {
-    const data = new Array(10).fill(0).reduce((prev, curr) =>
-      [...prev, {
-        x: Math.random() * 2 - 1,
-        y: Math.random(),
-        size: 1
-      }], [])
-    setRedditData(data)
+  function assetSearch () {
+    axios('http://localhost:5000/assets/perform_asset_search', {
+      method: 'GET',
+      params: {
+        symbol: props.type + ':' + props.symbol
+      }
+    }).then((res) => {
+      console.log("Perfoming sentiment search for", props.symbol, res.data)
+    }).catch((err) => {
+      console.log(err);
+    });
   }
 
-  function fetchTwitterData (req) {
-    const data = new Array(10).fill(0).reduce((prev, curr) =>
-      [...prev, {
-        x: Math.random() * 2 - 1,
-        y: Math.random(),
-        size: 1
-      }], [])
-    setTwitterData(data)
+  /*
+    attempts to fetch the data, if its not there, backend calls perform_search_asset
+  */
+
+  function fetchSentimentData (searched) {
+    const currentDate = Math.floor(Date.now() / 1000);
+    const lastWeekDate = Math.floor((Date.now() - 604800000) / 1000);
+    // call backend to fetch sentiment data
+    axios('http://localhost:5000/assets/sentiment_values', {
+      method: 'GET',
+      params: {
+        asset_identifier: props.type + ':' + props.symbol,
+        start_timestamp: lastWeekDate,
+        end_timestamp: currentDate
+      }
+    })
+      .then((res) => {
+        const data = res.data.data;
+        if (data == null || JSON.parse(JSON.stringify(data)).length === 0) {
+          // continue to query sentiment_values endpoint on 30 sec interval until data is recieved
+          setTimeout(() => {
+            fetchSentimentData(true)
+          }, 30000)
+        }
+        return data == null ? [] : JSON.parse(JSON.stringify(data))
+      })
+      .then((data) => {
+        console.log(data)
+        if (data.length === 0) {
+          return null
+        }
+        const redditPoints = []
+        const twitterPoints = []
+        if (data.length > 1) {
+          for (let i = 0; i < data.length; i++) {
+            const redditSentiment = data[i.toString()].reddit_sentiment
+            const twitterSentiment = data[i.toString()].twitter_sentiment
+
+            if (redditSentiment != null && twitterSentiment != null) {
+              redditPoints.push({
+                x: unixToUTC(parseFloat(data[i.toString()].timestamp) * 1000),
+                y: parseFloat(redditSentiment),
+                type: 'Reddit'
+              })
+
+              twitterPoints.push({
+                x: unixToUTC(parseFloat(data[i.toString()].timestamp) * 1000),
+                y: parseFloat(twitterSentiment),
+                type: 'Twitter'
+              })
+            }
+          }
+        }
+        const p = [redditPoints, twitterPoints].map((p, i) => p.map(d => ({ ...d, line: i })))
+        return p
+      }).then((p) => {
+        console.log(p)
+        setPoints(p)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
-  // function fetchTwitterData() {
-  //   axios
-  //     .get("http://localhost:5000/assets/twitter-sentiment", {
-  //       method: "GET",
-  //       params: {
-  //         symbol: props.symbol,
-  //       }
-  //     })
-  //     .then((res) => {
-  //       // console.log(res.data)
-  //       return JSON.parse(JSON.stringify(res.data));
-  //     })
-  //     .then((data) => {
-  //       // console.log(data['0']['1']['1'])
-  //       var points = [];
-  //       for (var i = 0; i < data.length; i++) {
-  //         // console.log(data[i.toString()]['1'])
-  //         points.push({
-  //           x: parseFloat(data[i.toString()]['1']['0']),
-  //           y: parseFloat(data[i.toString()]['1']['1']),
-  //           size: 1,
-  //         });
-  //       }
-  //       console.log("twitter sentiment analysis points")
-  //       console.log(points)
-  //       return points;
-  //     })
-  //     .then((points) => {
-  //       return setTwitterData(points)
-  //     })
-  //     .then(()=> {
-  //       setLoading(false)
-  //     })
-  // }
+  const onClickHandler = (point) => {
+    console.log('clickd on point', point)
+    axios('http://localhost:5000/assets/sentiment_important_posts', {
+      method: 'GET',
+      params: {
+        asset_identifier: props.type + ':' + props.symbol,
+        timestamp: (new Date(point.x).getTime() / 1000)
+      }
+    })
+      .then((res) => {
+        if (res.data == null) {
+          return
+        }
+        setType(point.type)
+        if (point.type === 'Twitter') {
+          setPosts(res.data.data.tweets);
+          console.log('important posts:', res.data.data.tweets)
+        } else {
+          setPosts(res.data.data.reddit_comments.concat(res.data.data.reddit_submissions))
+          console.log('important posts:', res.data.data.reddit_comments, res.data.data.reddit_sentiment)
+        }
+      })
+      .then(() => {
+        setShowModal(true)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
 
-  const markSeriesProps = {
-    animation: true,
-    stroke: 'grey',
-    strokeWidth: 1,
-    opacityType: 'category',
-    opacity: '0.4'
+  const unixToUTC = (unix) => {
+    let date = new Date(parseInt(unix)).toString()
+    date = date.replace(' ', ', ')
+    return date.substring(0, date.indexOf('-'))
+  }
+
+  const timeAxisLabel = (date) => {
+    const hour = date.substring(17, 19)
+    if (hour === '00') {
+      return date.substring(5, 11)
+    }
+    return ''
+  }
+
+  const formatSentimentPoint = (data) => {
+    return [{ title: 'Sentiment Score', value: data[0].y }]
   }
 
   return (
     <>
-      {loading
-        ? (
+    <ImportantPosts
+      show={showModal}
+      onHide={() => {
+        setShowModal(false)
+        setPosts(null)
+      }}
+      type={type}
+      posts={posts}/>
+    {points === null
+      ? (
+      <Container fluid>
+        <Spinner animation="border" />
+      </Container>
+        )
+      : (
+          points[0].length === 0 && points[1].length === 0
+            ? (
         <Container fluid>
-          <Spinner animation="border" />
+          Sentiment data unavailable
         </Container>
-          )
-        : (
+              )
+            : (
         <Container className="graphLayout">
           <Row>
             <div className="chartTitle">
               <h2>Sentiment Data</h2>
             </div>
           </Row>
-          {twitterData.length > 0 || redditData.legnth > 0
-            ? <Row>
-              <div className="chartContainer">
-                <FlexibleXYPlot
-                  xDomain={[-1.0, 1.0]}
-                  yDomain={[0, 1.0]}
-                >
+          <Row>
+            <div className="chartContainer">
+              <FlexibleXYPlot
+                xType="ordinal"
+              >
 
-                  <HorizontalGridLines />
-                  <VerticalGridLines />
-                  <XAxis
-                    title="Polarity"
-                    style={{ title: { fill: currentTheme.foreground } }}
+                <HorizontalGridLines />
+                <XAxis
+                  title="Time"
+                  tickFormat={xVal => `${timeAxisLabel(xVal)}`}
+                  style={{ title: { fill: currentTheme.foreground } }}
+                />
+                <YAxis
+                  title="Sentiment Score"
+                  style={{ title: { fill: currentTheme.foreground } }}
+                />
+                <DiscreteColorLegend
+                  orientation="horizontal"
+                  style={{ position: 'absolute', right: '0%', top: '0%', backgroundColor: 'rgba(108,117,125, 0.7)', borderRadius: '5px' }}
+                  items={[
+                    {
+                      title: 'Twitter',
+                      color: '#0D6EFD',
+                      strokeWidth: 5
+                    },
+                    {
+                      title: 'Reddit',
+                      color: 'red',
+                      strokeWidth: 5
+                    }
+                  ]}
+                />
+                {points.map((d, i) => (
+                  <LineMarkSeries
+                    key={i}
+                    opacity={0.5}
+                    data={d}
+                    color={i === 0 ? 'red' : '#0D6EFD'}
                   />
-                  <YAxis
-                    title="Subjectivity"
-                    style={{ title: { fill: currentTheme.foreground } }}
+                ))}
+                {hoveredNode && <MarkSeries
+                  data={[hoveredNode]}
+                  size={8}
                   />
-                  <DiscreteColorLegend
-                    orientation="horizontal"
-                    style={{ position: 'absolute', right: '0%', top: '0%', backgroundColor: 'rgba(108,117,125, 0.7)', borderRadius: '5px' }}
-                    items={[
-                      {
-                        title: 'Twitter',
-                        color: '#0D6EFD',
-                        strokeWidth: 5
-                      },
-                      {
-                        title: 'Reddit',
-                        color: 'red',
-                        strokeWidth: 5
-                      }
-                    ]}
-                  />
-                  <MarkSeries
-                    {...markSeriesProps}
-                    data={twitterData}
-                    color="#0D6EFD"
-                  />
-                  <MarkSeries
-                    {...markSeriesProps}
-                    data={redditData}
-                    color="red"
-                  />
-                </FlexibleXYPlot>
-              </div>
-            </Row>
-            : <div>
-              no data
+                }
+                {hoveredNode && <Crosshair values={[hoveredNode]} itemsFormat={formatSentimentPoint}/>}
+                <Voronoi
+                  nodes={points.reduce((acc, d) => [...acc, ...d], [])}
+                  onHover={node => setHoveredNode(node)}
+                  onBlur={() => setHoveredNode(null)}
+                  onClick={() => onClickHandler(hoveredNode)}
+                  polygonStyle={{ stroke: null }}
+                />
+              </FlexibleXYPlot>
             </div>
-          }
+          </Row>
         </Container>
-          )}
+              )
+        )
+      }
     </>
   )
 }

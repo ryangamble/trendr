@@ -80,6 +80,7 @@ function StockStatistics (props) {
           })
           .catch((error) => {
             console.log(error)
+            setAsset(prevData => { return { ...prevData, exchanges: false } })
           })
       })
       .then(() => {
@@ -102,6 +103,9 @@ function StockStatistics (props) {
   }
 
   function renderExchanges () {
+    if (!asset.exchanges) {
+      return (null)
+    }
     const list = []
     for (const key in asset.exchanges) {
       list.push(<div key={key}>{asset.exchanges[key]}<br/></div>)
@@ -181,7 +185,7 @@ function StockStatistics (props) {
                 </tr>
                 <tr>
                   <td className="statName">Exchanges</td>
-                  <td className="statValue">{asset.exchanges ? renderExchanges() : <Spinner animation="border" size="sm"/>}</td>
+                  <td className="statValue">{asset.exchanges != null ? renderExchanges() : <Spinner animation="border" size="sm"/>}</td>
                 </tr>
               </tbody>
             </Table>

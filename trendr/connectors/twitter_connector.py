@@ -68,27 +68,28 @@ def get_tweet_by_id(tweet_id: int, api: tweepy.API = None) -> tweepy.models.Stat
 
 @store_in_db()
 def get_tweets_mentioning_asset(
-    asset_identifier: str, api: tweepy.API = None
-) -> tweepy.models.SearchResults:
+    asset_identifier: str, limit: int = 2000, api: tweepy.API = None
+) -> tweepy.cursor.ItemIterator:
     """
     Queries Twitter for tweets that mention an asset_identifier (AAPL, BTC) within the last 7 days, starting at the
     latest tweet we have already stored
     :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
+    :param limit: The maximum number of posts to get
     :param api: An optional tweepy.API object, if one is not provided it will be created
-    :return: A tweepy.SearchResults object
+    :return: A tweepy.cursor.ItemIterator object
     """
     latest_tweet_id = get_latest_tweet_id(asset_identifier)
     if not api:
         api = auth_to_api(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
 
-    # 100 is the allowed max
-    return api.search_tweets(
-        q=asset_identifier,
+    return tweepy.Cursor(
+        api.search_tweets,
+        q=f"{asset_identifier} -filter:retweets",
         lang="en",
         result_type="mixed",
         since_id=latest_tweet_id,
         count=100,
-    )
+    ).items(limit)
 
 
 def get_stored_tweet_by_id(tweet_id: int) -> Tweet or None:
@@ -102,7 +103,7 @@ def get_stored_tweet_by_id(tweet_id: int) -> Tweet or None:
     return Tweet.query.filter_by(tweet_id=tweet_id).one()
 
 
-def get_stored_tweets_mentioning_asset(asset_identifier: str) -> [Tweet]:
+def get_stored_tweets_mentioning_asset(asset_identifier: str) -> list[Tweet]:
     """
     Gets all tweets from the database that contain the asset_identifier
 
