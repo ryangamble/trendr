@@ -29,15 +29,6 @@ def store_twitter_results(
     loop_count = 0
     for result in results:
 
-        if loop_count == 100:
-            loop_count = 0
-            db.session.add_all(to_add)
-            if search:
-                search.tweets.extend(to_add)
-            db.session.commit()
-            res_ids.extend([added.id for added in to_add])
-            to_add = []
-
         # do not accepted mixed-type results
         if not isinstance(result, tweepy.models.Status):
             raise Exception(f"Unsupported type for result: {type(result)}")
@@ -62,6 +53,8 @@ def store_twitter_results(
                 search.tweets.append(existing)
             if asset and asset not in existing.assets:
                 existing.assets.append(asset)
+
+            db.session.commit()
         else:
             if result.entities["urls"]:
                 embed_url = result.entities["urls"][0]["expanded_url"]
@@ -84,18 +77,12 @@ def store_twitter_results(
 
             if asset:
                 new_tweet.assets.append(asset)
+            if search:
+                search.tweets.append(new_tweet)
 
-            to_add.append(new_tweet)
-
-    # add batch
-    db.session.add_all(to_add)
-
-    if search:
-        search.tweets.extend(to_add)
-
-    db.session.commit()
-
-    res_ids.extend([added.id for added in to_add])
+            db.session.add(new_tweet)
+            db.session.commit()
+            res_ids.append(new_tweet.id)
 
     # return ids
     return res_ids
