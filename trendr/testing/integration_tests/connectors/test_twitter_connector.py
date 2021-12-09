@@ -20,8 +20,9 @@ def test_get_tweet_by_id_positive(client, db):
     """
     tweet_id = 1464764077666881542
     expected_tweet_text = "Just checked, and AAPL’s at $156.81. (It dropped $5.13.)"
-    tweet = twitter_connector.get_stored_tweet_by_id(tweet_id)
-    assert tweet
+    db_tweet_ids = twitter_connector.get_tweet_by_id(tweet_id)
+    assert db_tweet_ids == [1]
+    tweet = Tweet.query.filter_by(id=db_tweet_ids[0]).first()
     assert isinstance(tweet, Tweet)
     assert tweet.tweet_id == tweet_id
     assert tweet.text == expected_tweet_text
@@ -32,12 +33,9 @@ def test_get_tweets_mentioning_asset_positive(client, db):
     Tests that if you attempt to get tweets with a search string, then you get some results back
     """
     search_term = "apple"
-    tweets = twitter_connector.get_stored_tweets_mentioning_asset(search_term)
-    assert tweets
-    assert isinstance(tweets, list)
-    for tweet in tweets:
-        assert isinstance(tweet, Tweet)
-    assert len(tweets) >= 1
+    db_tweet_ids = twitter_connector.get_tweets_mentioning_asset(search_term)
+    assert isinstance(db_tweet_ids, list)
+    assert len(db_tweet_ids) >= 1
     # Tweets are returned when attributes other than text contain the search term such as tweet.entities.urls so we
     # can't always assert the search term will be in the tweet text
 

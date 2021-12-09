@@ -134,17 +134,7 @@ def store_reddit_comments(
         search = Search.query.filter_by(id=search_id).one()
         asset = search.asset
 
-    loop_count = 0
     for result in comments:
-
-        if loop_count == 100:
-            loop_count = 0
-            db.session.add_all(to_add)
-            if search:
-                search.reddit_comments.extend(to_add)
-            db.session.commit()
-            res_ids.extend([added.id for added in to_add])
-            to_add = []
 
         existing = RedditComment.query.filter_by(reddit_id=result["id"]).first()
         if existing:
@@ -162,6 +152,7 @@ def store_reddit_comments(
                 search.reddit_comments.append(existing)
             if asset and asset not in existing.assets:
                 existing.assets.append(asset)
+
         else:
             # generate new db row
             new_comment = RedditComment(
@@ -207,7 +198,6 @@ def store_reddit_comments(
         search.reddit_comments.extend(to_add)
 
     db.session.commit()
-
     res_ids.extend([added.id for added in to_add])
 
     # return ids
@@ -239,17 +229,7 @@ def store_reddit_submissions(
         search = Search.query.filter_by(id=search_id).one()
         asset = search.asset
 
-    loop_count = 0
     for result in submissions:
-
-        if loop_count == 100:
-            loop_count = 0
-            db.session.add_all(to_add)
-            if search:
-                search.reddit_submissions.extend(to_add)
-            db.session.commit()
-            res_ids.extend([added.id for added in to_add])
-            to_add = []
 
         res_text = result["selftext"] if "selftext" in result else None
         existing = RedditSubmission.query.filter_by(reddit_id=result["id"]).first()
@@ -268,6 +248,7 @@ def store_reddit_submissions(
                 search.reddit_submissions.append(existing)
             if asset and asset not in existing.assets:
                 existing.assets.append(asset)
+
         else:
             # generate new db row
             new_submission = RedditSubmission(
@@ -297,7 +278,6 @@ def store_reddit_submissions(
                 name=result["subreddit"], reddit_id=result["subreddit_id"]
             )
             new_submission.subreddit = subreddit
-
             to_add.append(new_submission)
 
     # add batch
@@ -309,6 +289,5 @@ def store_reddit_submissions(
     db.session.commit()
 
     res_ids.extend([added.id for added in to_add])
-
     # return ids
     return res_ids

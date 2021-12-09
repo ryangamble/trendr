@@ -39,76 +39,82 @@ def assign_score_tweet(tweet: Tweet):
     """
 
     retweet_score = 0
-    if tweet.retweets > 100000:
-        retweet_score = 100
-    elif tweet.retweets > 50000:
-        retweet_score = 75
-    elif tweet.retweets > 10000:
-        retweet_score = 40
-    elif tweet.retweets > 5000:
-        retweet_score = 30
-    elif tweet.retweets > 3000:
-        retweet_score = 25
-    elif tweet.retweets > 1000:
-        retweet_score = 20
-    elif tweet.retweets > 500:
-        retweet_score = 15
-    elif tweet.retweets > 300:
-        retweet_score = 12
-    elif tweet.retweets > 100:
-        retweet_score = 9
-    elif tweet.retweets > 80:
-        retweet_score = 7
-    elif tweet.retweets > 50:
-        retweet_score = 6
-    elif tweet.retweets > 30:
-        retweet_score = 4
-    elif tweet.retweets > 10:
-        retweet_score = 3
-    elif tweet.retweets > 5:
-        retweet_score = 2
-    elif tweet.retweets > 1:
-        retweet_score = 1
-    else:
-        retweet_score = 0
+    if tweet.retweets:
+        if tweet.retweets > 100000:
+            retweet_score = 100
+        elif tweet.retweets > 50000:
+            retweet_score = 75
+        elif tweet.retweets > 10000:
+            retweet_score = 40
+        elif tweet.retweets > 5000:
+            retweet_score = 30
+        elif tweet.retweets > 3000:
+            retweet_score = 25
+        elif tweet.retweets > 1000:
+            retweet_score = 20
+        elif tweet.retweets > 500:
+            retweet_score = 15
+        elif tweet.retweets > 300:
+            retweet_score = 12
+        elif tweet.retweets > 100:
+            retweet_score = 9
+        elif tweet.retweets > 80:
+            retweet_score = 7
+        elif tweet.retweets > 50:
+            retweet_score = 6
+        elif tweet.retweets > 30:
+            retweet_score = 4
+        elif tweet.retweets > 10:
+            retweet_score = 3
+        elif tweet.retweets > 5:
+            retweet_score = 2
+        elif tweet.retweets > 1:
+            retweet_score = 1
+        else:
+            retweet_score = 0
 
     likes_score = 0
-    if tweet.likes > 100000:
-        likes_score = 100
-    elif tweet.likes > 50000:
-        likes_score = 75
-    elif tweet.likes > 10000:
-        likes_score = 40
-    elif tweet.likes > 5000:
-        likes_score = 30
-    elif tweet.likes > 3000:
-        likes_score = 25
-    elif tweet.likes > 1000:
-        likes_score = 20
-    elif tweet.likes > 500:
-        likes_score = 15
-    elif tweet.likes > 300:
-        likes_score = 12
-    elif tweet.likes > 100:
-        likes_score = 9
-    elif tweet.likes > 80:
-        likes_score = 7
-    elif tweet.likes > 50:
-        likes_score = 6
-    elif tweet.likes > 30:
-        likes_score = 4
-    elif tweet.likes > 10:
-        likes_score = 3
-    elif tweet.likes > 5:
-        likes_score = 2
-    elif tweet.likes > 1:
-        likes_score = 1
-    else:
-        likes_score = 0
+    if tweet.likes:
+        if tweet.likes > 100000:
+            likes_score = 100
+        elif tweet.likes > 50000:
+            likes_score = 75
+        elif tweet.likes > 10000:
+            likes_score = 40
+        elif tweet.likes > 5000:
+            likes_score = 30
+        elif tweet.likes > 3000:
+            likes_score = 25
+        elif tweet.likes > 1000:
+            likes_score = 20
+        elif tweet.likes > 500:
+            likes_score = 15
+        elif tweet.likes > 300:
+            likes_score = 12
+        elif tweet.likes > 100:
+            likes_score = 9
+        elif tweet.likes > 80:
+            likes_score = 7
+        elif tweet.likes > 50:
+            likes_score = 6
+        elif tweet.likes > 30:
+            likes_score = 4
+        elif tweet.likes > 10:
+            likes_score = 3
+        elif tweet.likes > 5:
+            likes_score = 2
+        elif tweet.likes > 1:
+            likes_score = 1
+        else:
+            likes_score = 0
 
-    score = (
-        retweet_score * 2 + likes_score + tweet.subjectivity * 1.3
-    ) * tweet.polarity
+    if tweet.subjectivity is not None and tweet.polarity is not None:
+        score = (
+            retweet_score * 2 + likes_score + tweet.subjectivity * 1.3
+        ) * tweet.polarity
+    else:
+        score = None
+
     tweet.sentiment_score = score
 
 

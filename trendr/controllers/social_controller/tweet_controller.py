@@ -26,17 +26,7 @@ def store_twitter_results(
         search = Search.query.filter_by(id=search_id).one()
         asset = search.asset
 
-    loop_count = 0
     for result in results:
-
-        if loop_count == 100:
-            loop_count = 0
-            db.session.add_all(to_add)
-            if search:
-                search.tweets.extend(to_add)
-            db.session.commit()
-            res_ids.extend([added.id for added in to_add])
-            to_add = []
 
         # do not accepted mixed-type results
         if not isinstance(result, tweepy.models.Status):
@@ -62,6 +52,7 @@ def store_twitter_results(
                 search.tweets.append(existing)
             if asset and asset not in existing.assets:
                 existing.assets.append(asset)
+
         else:
             if result.entities["urls"]:
                 embed_url = result.entities["urls"][0]["expanded_url"]

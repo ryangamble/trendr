@@ -42,13 +42,7 @@ def tweet_analysis():
     print("Running tweet analysis")
     tweets_to_analyze = Tweet.query.filter_by(polarity=None).all()
     print(f"Tweets to analyze: {tweets_to_analyze}")
-    loop_count = 0
     for tweet in tweets_to_analyze:
-
-        if loop_count == 100:
-            loop_count = 0
-            db.session.commit()
-
         polarity, subjectivity = pattern_analyzer(tweet.text)
         tweet.polarity = polarity
         tweet.subjectivity = subjectivity
@@ -61,14 +55,11 @@ def tweet_analysis_by_ids(*ids: int):
     print("Running tweet analysis")
     tweets_to_analyze = Tweet.query.filter(Tweet.id.in_(ids)).all()
     print(f"Tweets to analyze: {tweets_to_analyze}")
-    loop_count = 0
     for tweet in tweets_to_analyze:
-
-        if loop_count == 100:
-            loop_count = 0
-            db.session.commit()
-
-        polarity, subjectivity = pattern_analyzer(tweet.text)
+        if tweet.text:
+            polarity, subjectivity = pattern_analyzer(tweet.text)
+        else:
+            polarity = subjectivity = None
         tweet.polarity = polarity
         tweet.subjectivity = subjectivity
         assign_score_tweet(tweet)
@@ -81,13 +72,7 @@ def reddit_submission_analysis():
     print("Running reddit submission analysis")
     submissions_to_analyze = RedditSubmission.query.filter_by(polarity=None).all()
     print(f"Reddit submissions to analyze: {submissions_to_analyze}")
-    loop_count = 0
     for submission in submissions_to_analyze:
-
-        if loop_count == 100:
-            loop_count = 0
-            db.session.commit()
-
         if submission.text:
             polarity, subjectivity = pattern_analyzer(submission.text)
             submission.polarity = polarity
@@ -106,13 +91,7 @@ def reddit_submission_analysis_by_ids(*ids: int):
         RedditSubmission.id.in_(ids)
     ).all()
     print(f"Reddit submissions to analyze: {submissions_to_analyze}")
-    loop_count = 0
     for submission in submissions_to_analyze:
-
-        if loop_count == 100:
-            loop_count = 0
-            db.session.commit()
-
         if submission.text:
             polarity, subjectivity = pattern_analyzer(submission.text)
             submission.polarity = polarity
@@ -130,13 +109,7 @@ def reddit_comment_analysis():
     print("Running reddit comment analysis")
     comments_to_analyze = RedditComment.query.filter_by(polarity=None).all()
     print(f"Reddit comments to analyze: {comments_to_analyze}")
-    loop_count = 0
     for comment in comments_to_analyze:
-
-        if loop_count == 100:
-            loop_count = 0
-            db.session.commit()
-
         if comment.text:
             polarity, subjectivity = pattern_analyzer(comment.text)
             comment.polarity = polarity
@@ -145,7 +118,6 @@ def reddit_comment_analysis():
             comment.polarity = None
             comment.subjectivity = None
         assign_score_reddit_comment(comment)
-
     db.session.commit()
 
 
@@ -154,13 +126,7 @@ def reddit_comment_analysis_by_ids(*ids: int):
     print("Running reddit comment analysis")
     comments_to_analyze = RedditComment.query.filter(RedditComment.id.in_(ids)).all()
     print(f"Reddit comments to analyze: {comments_to_analyze}")
-    loop_count = 0
     for comment in comments_to_analyze:
-
-        if loop_count == 100:
-            loop_count = 0
-            db.session.commit()
-
         if comment.text:
             polarity, subjectivity = pattern_analyzer(comment.text)
             comment.polarity = polarity

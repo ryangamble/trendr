@@ -140,6 +140,8 @@ def get_affecting_socials(
 
     tweets = Tweet.query.filter(
         Tweet.assets.any(id=asset_id),
+        Tweet.polarity != None,
+        Tweet.subjectivity != None,
         Tweet.tweeted_at <= max_time,
         Tweet.tweeted_at >= min_time,
     ).all()
