@@ -134,7 +134,6 @@ def store_reddit_comments(
         search = Search.query.filter_by(id=search_id).one()
         asset = search.asset
 
-    loop_count = 0
     for result in comments:
 
         existing = RedditComment.query.filter_by(reddit_id=result["id"]).first()
@@ -154,7 +153,6 @@ def store_reddit_comments(
             if asset and asset not in existing.assets:
                 existing.assets.append(asset)
 
-            db.session.commit()
         else:
             # generate new db row
             new_comment = RedditComment(
@@ -191,12 +189,16 @@ def store_reddit_comments(
             ):
                 subreddit.subscribers = result["subreddit_subscribers"]
 
-            if search:
-                search.reddit_comments.append(new_comment)
-            db.session.add(new_comment)
-            db.session.commit()
+            to_add.append(new_comment)
 
-            res_ids.append(new_comment.id)
+    # add batch
+    db.session.add_all(to_add)
+
+    if search:
+        search.reddit_comments.extend(to_add)
+
+    db.session.commit()
+    res_ids.extend([added.id for added in to_add])
 
     # return ids
     return res_ids
@@ -218,6 +220,7 @@ def store_reddit_submissions(
         return []
 
     res_ids = []
+    to_add = []
 
     search = None
     asset = None
@@ -246,7 +249,6 @@ def store_reddit_submissions(
             if asset and asset not in existing.assets:
                 existing.assets.append(asset)
 
-            db.session.commit()
         else:
             # generate new db row
             new_submission = RedditSubmission(
@@ -266,8 +268,6 @@ def store_reddit_submissions(
 
             if asset:
                 new_submission.assets.append(asset)
-            if search:
-                search.reddit_submissions.append(new_submission)
 
             # assign author
             author = store_reddit_author(username=result["author"])
@@ -278,9 +278,16 @@ def store_reddit_submissions(
                 name=result["subreddit"], reddit_id=result["subreddit_id"]
             )
             new_submission.subreddit = subreddit
+            to_add.append(new_submission)
 
-            db.session.add(new_submission)
-            db.session.commit()
-            res_ids.append(new_submission.id)
+    # add batch
+    db.session.add_all(to_add)
+
+    if search:
+        search.reddit_submissions.extend(to_add)
+
+    db.session.commit()
+
+    res_ids.extend([added.id for added in to_add])
     # return ids
     return res_ids
