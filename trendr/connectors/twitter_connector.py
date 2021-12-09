@@ -99,7 +99,6 @@ def get_stored_tweet_by_id(tweet_id: int) -> Tweet or None:
     :param tweet_id: The Twitter id for the tweet
     :return: A Tweet model object
     """
-    get_tweet_by_id(tweet_id)
     return Tweet.query.filter_by(tweet_id=tweet_id).one()
 
 
@@ -111,7 +110,6 @@ def get_stored_tweets_mentioning_asset(asset_identifier: str) -> list[Tweet]:
     :return: A list of Tweet model objects
     """
     # TODO: If this starts returning too many results we may want to provide a limit
-    get_tweets_mentioning_asset(asset_identifier)
     return Tweet.query.filter(Tweet.text.ilike(f"%{asset_identifier}%")).all()
 
 
