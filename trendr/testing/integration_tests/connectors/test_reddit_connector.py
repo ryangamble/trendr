@@ -49,6 +49,7 @@ def test_get_post_by_id_positive(pmaw_api: pmaw.PushshiftAPI):
     )
 
 
+@pytest.mark.timeout(30)
 def test_get_comment_by_id_positive(pmaw_api: pmaw.PushshiftAPI):
     """
     Tests retreiving comment by id
