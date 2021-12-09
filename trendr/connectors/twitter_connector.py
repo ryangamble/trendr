@@ -67,10 +67,6 @@ def get_tweet_by_id(tweet_id: int, api: tweepy.API = None) -> tweepy.models.Stat
 
 
 @store_in_db()
-def store_tweets_mentioning_asset(*args, **kwargs):
-    return get_tweets_mentioning_asset(*args, **kwargs)
-
-
 def get_tweets_mentioning_asset(
     asset_identifier: str, limit: int = 2000, api: tweepy.API = None
 ) -> tweepy.cursor.ItemIterator:
@@ -95,6 +91,7 @@ def get_tweets_mentioning_asset(
         count=100,
     ).items(limit)
 
+
 def get_stored_tweet_by_id(tweet_id: int) -> Tweet or None:
     """
     Gets all stored information available for given tweet.
@@ -113,7 +110,6 @@ def get_stored_tweets_mentioning_asset(asset_identifier: str) -> list[Tweet]:
     :return: A list of Tweet model objects
     """
     # TODO: If this starts returning too many results we may want to provide a limit
-    store_tweets_mentioning_asset(asset_identifier)
     return Tweet.query.filter(Tweet.text.ilike(f"%{asset_identifier}%")).all()
 
 
@@ -125,7 +121,7 @@ def twitter_accounts_mentioning_asset_summary(asset_identifier: str) -> dict:
     :param asset_identifier: The identifier for the asset (AAPL, BTC), not a database id
     :return: a Python dictionary with relevant stats
     """
-    tweets = get_tweets_mentioning_asset(asset_identifier)
+    tweets = get_stored_tweets_mentioning_asset(asset_identifier)
 
     followers_count_list = []
     following_count_list = []
