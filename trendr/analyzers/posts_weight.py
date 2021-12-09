@@ -107,7 +107,7 @@ def assign_score_tweet(tweet: Tweet):
             likes_score = 1
         else:
             likes_score = 0
-            
+
     if tweet.subjectivity is not None and tweet.polarity is not None:
         score = (
             retweet_score * 2 + likes_score + tweet.subjectivity * 1.3
