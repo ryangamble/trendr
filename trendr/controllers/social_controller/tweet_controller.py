@@ -26,7 +26,6 @@ def store_twitter_results(
         search = Search.query.filter_by(id=search_id).one()
         asset = search.asset
 
-    loop_count = 0
     for result in results:
 
         # do not accepted mixed-type results

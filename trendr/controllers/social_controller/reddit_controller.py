@@ -134,7 +134,6 @@ def store_reddit_comments(
         search = Search.query.filter_by(id=search_id).one()
         asset = search.asset
 
-    loop_count = 0
     for result in comments:
 
         existing = RedditComment.query.filter_by(reddit_id=result["id"]).first()
