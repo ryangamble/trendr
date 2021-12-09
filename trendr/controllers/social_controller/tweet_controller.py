@@ -53,7 +53,6 @@ def store_twitter_results(
             if asset and asset not in existing.assets:
                 existing.assets.append(asset)
 
-            db.session.commit()
         else:
             if result.entities["urls"]:
                 embed_url = result.entities["urls"][0]["expanded_url"]
@@ -76,12 +75,18 @@ def store_twitter_results(
 
             if asset:
                 new_tweet.assets.append(asset)
-            if search:
-                search.tweets.append(new_tweet)
 
-            db.session.add(new_tweet)
-            db.session.commit()
-            res_ids.append(new_tweet.id)
+            to_add.append(new_tweet)
+
+    # add batch
+    db.session.add_all(to_add)
+
+    if search:
+        search.tweets.extend(to_add)
+
+    db.session.commit()
+
+    res_ids.extend([added.id for added in to_add])
 
     # return ids
     return res_ids

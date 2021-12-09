@@ -47,7 +47,7 @@ def tweet_analysis():
         tweet.polarity = polarity
         tweet.subjectivity = subjectivity
         assign_score_tweet(tweet)
-        db.session.commit()
+    db.session.commit()
 
 
 @celery.task
@@ -63,7 +63,7 @@ def tweet_analysis_by_ids(*ids: int):
         tweet.polarity = polarity
         tweet.subjectivity = subjectivity
         assign_score_tweet(tweet)
-        db.session.commit()
+    db.session.commit()
     return ids
 
 
@@ -81,7 +81,7 @@ def reddit_submission_analysis():
             submission.polarity = None
             submission.subjectivity = None
         assign_score_reddit_submission(submission)
-        db.session.commit()
+    db.session.commit()
 
 
 @celery.task
@@ -100,7 +100,7 @@ def reddit_submission_analysis_by_ids(*ids: int):
             submission.polarity = None
             submission.subjectivity = None
         assign_score_reddit_submission(submission)
-        db.session.commit()
+    db.session.commit()
     return ids
 
 
@@ -118,7 +118,7 @@ def reddit_comment_analysis():
             comment.polarity = None
             comment.subjectivity = None
         assign_score_reddit_comment(comment)
-        db.session.commit()
+    db.session.commit()
 
 
 @celery.task
@@ -135,5 +135,5 @@ def reddit_comment_analysis_by_ids(*ids: int):
             comment.polarity = None
             comment.subjectivity = None
         assign_score_reddit_comment(comment)
-        db.session.commit()
+    db.session.commit()
     return ids
