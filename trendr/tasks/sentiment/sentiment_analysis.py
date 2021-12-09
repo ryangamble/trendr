@@ -67,8 +67,10 @@ def tweet_analysis_by_ids(*ids: int):
         if loop_count == 100:
             loop_count = 0
             db.session.commit()
-
-        polarity, subjectivity = pattern_analyzer(tweet.text)
+        if tweet.text:
+            polarity, subjectivity = pattern_analyzer(tweet.text)
+        else:
+            polarity = subjectivity = None
         tweet.polarity = polarity
         tweet.subjectivity = subjectivity
         assign_score_tweet(tweet)

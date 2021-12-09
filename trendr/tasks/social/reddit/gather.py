@@ -6,7 +6,7 @@ pmaw_api = None
 
 
 @celery.task
-@store_in_db(wraps=reddit_connector.gather_submissions)
+@store_in_db()
 def store_submissions(*args, **kwargs):
     global pmaw_api
     if pmaw_api is None:
@@ -16,7 +16,7 @@ def store_submissions(*args, **kwargs):
 
 
 @celery.task
-@store_in_db(wraps=reddit_connector.gather_comments)
+@store_in_db()
 def store_comments(*args, **kwargs):
     global pmaw_api
     if pmaw_api is None:
@@ -26,7 +26,7 @@ def store_comments(*args, **kwargs):
 
 
 @celery.task
-@store_in_db(wraps=reddit_connector.gather_submissions_by_id)
+@store_in_db()
 def store_submissions_by_id(*args, **kwargs):
     global pmaw_api
     if pmaw_api is None:
@@ -36,7 +36,7 @@ def store_submissions_by_id(*args, **kwargs):
 
 
 @celery.task
-@store_in_db(wraps=reddit_connector.gather_comments_by_id)
+@store_in_db()
 def store_comments_by_id(*args, **kwargs):
     global pmaw_api
     if pmaw_api is None:
