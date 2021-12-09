@@ -124,7 +124,7 @@ def sentiment_important_posts():
 
 @assets.route("/perform_asset_search", methods=["GET"])
 def perform_asset_search():
-    symbol = "AAPL"  # request.args.get("symbol")
+    symbol = request.args.get("symbol")
     if not symbol:
         current_app.logger.error("No symbol given")
         return json_response({"error": "Parameter 'symbol' is required"}, status=400)
