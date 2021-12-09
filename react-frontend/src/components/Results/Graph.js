@@ -385,11 +385,20 @@ function PriceVolumeGraph (props) {
                   }}
                 />
 
-                <YAxis />
-                <XAxis hideTicks />
+                <YAxis
+                  title={props.graphType === 'price' ? 'Price' : 'Volume'}
+                  style={{ title: { fill: currentTheme.foreground } }}
+                />
+                <XAxis
+                  hideTicks
+                  title="Time"
+                />
 
                 <Crosshair
                   values={crosshairValues}
+                  titleFormat={(d) => {
+                    return { title: 'Date', value: d[0].x }
+                  }}
                   itemsFormat={
                     props.graphType === 'price'
                       ? itemsFormatPrice
@@ -658,7 +667,15 @@ function SentimentGraph (props) {
                   size={8}
                   />
                 }
-                {hoveredNode && <Crosshair values={[hoveredNode]} itemsFormat={formatSentimentPoint}/>}
+                {hoveredNode &&
+                  <Crosshair
+                    values={[hoveredNode]}
+                    titleFormat={(d) => {
+                      return { title: 'Date', value: d[0].x }
+                    }}
+                    itemsFormat={formatSentimentPoint}
+                  />
+                }
                 <Voronoi
                   nodes={points.reduce((acc, d) => [...acc, ...d], [])}
                   onHover={node => setHoveredNode(node)}
@@ -1051,6 +1068,9 @@ function MentionsGraph (props) {
 
                     <Crosshair
                       values={crosshairValues}
+                      titleFormat={(d) => {
+                        return { title: 'Date', value: d[0].x }
+                      }}
                       itemsFormat={formatMentions}
                     />
 
